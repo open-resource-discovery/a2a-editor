@@ -14,26 +14,21 @@ export async function selectPredefinedAgent(
   agent: PredefinedAgent,
   options?: {
     connectHeaders?: Record<string, string>;
-    resetCard?: boolean;
     closeSettingsPanel?: boolean;
   },
 ): Promise<void> {
-  const { resetCard = true, closeSettingsPanel: shouldCloseSettings = false, connectHeaders } = options ?? {};
+  const { closeSettingsPanel: shouldCloseSettings = false, connectHeaders } = options ?? {};
 
   // Clear chat and HTTP logs
   useChatStore.getState().clearChat();
   useHttpLogStore.getState().clearLogs();
-
-  // Reset agent card if requested
-  if (resetCard) {
-    useAgentCardStore.getState().reset();
-  }
 
   // Select agent and configure connection
   usePredefinedAgentsStore.getState().select(agent.id);
   useConnectionStore.getState().setFromPredefined(agent);
 
   // Connect and process the card
+  // Keep the old card visible while fetching; replace atomically on success
   const card = await useConnectionStore.getState().connect(connectHeaders);
   if (card) {
     useAgentCardStore.getState().setRawJson(JSON.stringify(card, null, 2));
@@ -43,5 +38,8 @@ export async function selectPredefinedAgent(
     if (shouldCloseSettings) {
       useUIStore.getState().closeSettingsPanel();
     }
+  } else {
+    // Connection failed — clear stale card
+    useAgentCardStore.getState().reset();
   }
 }

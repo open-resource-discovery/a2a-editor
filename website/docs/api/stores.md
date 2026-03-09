@@ -9,13 +9,7 @@ The library uses Zustand for state management. You can access these stores for c
 ## Import
 
 ```tsx
-import {
-  useAgentCardStore,
-  useConnectionStore,
-  useChatStore,
-  useValidationStore,
-  useUIStore,
-} from "@open-resource-discovery/a2a-editor";
+import { useAgentCardStore, useConnectionStore, useChatStore, useUIStore } from "@open-resource-discovery/a2a-editor";
 ```
 
 ## useAgentCardStore
@@ -70,24 +64,6 @@ const {
 } = useChatStore();
 ```
 
-## useValidationStore
-
-Manages validation results.
-
-```tsx
-const {
-  results, // ValidationResult[]
-  isValidating, // boolean
-  validate, // (rawJson: string) => Promise<void>
-  clear, // () => void
-} = useValidationStore();
-
-// Selectors
-import { selectValidationSummary } from "@open-resource-discovery/a2a-editor";
-const summary = useValidationStore(selectValidationSummary);
-// Returns: { pass: number, fail: number, warning: number, total: number }
-```
-
 ## useUIStore
 
 Manages UI state like panel visibility and mobile view.
@@ -95,10 +71,8 @@ Manages UI state like panel visibility and mobile view.
 ```tsx
 const {
   settingsPanelOpen,
-  validationPanelOpen,
   mobileView, // "selector" | "card" | "json"
   setSettingsPanelOpen,
-  setValidationPanelOpen,
   setMobileView,
   closeAllPanels,
 } = useUIStore();

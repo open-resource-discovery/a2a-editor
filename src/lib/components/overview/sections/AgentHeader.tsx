@@ -32,8 +32,8 @@ export function AgentHeader({ card }: AgentHeaderProps) {
         {card.iconUrl && <img src={card.iconUrl} alt={card.name} className="h-12 w-12 rounded-lg object-cover" />}
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
-            <h2 className="text-xl font-bold truncate m-0 leading-none">{card.name}</h2>
-            <Badge variant="outline" className="shrink-0">
+            <span className="text-xl font-bold truncate leading-none">{card.name}</span>
+            <Badge variant="outline" className="shrink-0 translate-y-px">
               v{card.version}
             </Badge>
           </div>

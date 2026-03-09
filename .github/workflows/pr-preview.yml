@@ -1,0 +1,69 @@
+name: PR Preview
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize, closed]
+
+jobs:
+  pr-preview:
+    permissions:
+      contents: read
+      actions: write # required for upload-artifact in fork PRs
+      pull-requests: read
+
+    runs-on: [self-hosted, solinas]
+
+    concurrency:
+      group: preview-${{ github.repository }}-${{ github.event.pull_request.number }}
+      cancel-in-progress: true
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Setup Node
+        if: github.event.action != 'closed'
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+
+      - name: Install dependencies
+        if: github.event.action != 'closed'
+        run: npm ci
+
+      - name: Build standalone bundle
+        if: github.event.action != 'closed'
+        run: npm run build:standalone
+        env:
+          NODE_ENV: production
+          VITE_PREDEFINED_AGENTS: ${{ secrets.VITE_PREDEFINED_AGENTS }}
+
+      - name: Copy standalone assets to website
+        if: github.event.action != 'closed'
+        run: |
+          mkdir -p website/static/standalone
+          cp dist-standalone/a2a-playground.js website/static/standalone/
+          cp dist-standalone/a2a-playground.css website/static/standalone/
+
+      - name: Install website dependencies
+        if: github.event.action != 'closed'
+        run: cd website && npm ci
+
+      - name: Build Docusaurus website
+        if: github.event.action != 'closed'
+        run: cd website && npm run build
+        env:
+          NODE_ENV: production
+          PR_PREVIEW_NUMBER: ${{ github.event.pull_request.number }}
+          BASE_URL: /ORD/pr-preview/a2a-editor/pr-${{ github.event.pull_request.number }}/
+          VITE_PREDEFINED_AGENTS: ${{ secrets.VITE_PREDEFINED_AGENTS }}
+
+      - name: PR preview
+        uses: open-resource-discovery/pr-preview-action@main
+        with:
+          fork: true
+          target-repo: ORD/pr-preview
+          pages-base-url: https://pages.github.tools.sap/ORD/pr-preview
+          umbrella-dir: a2a-editor
+          token: ${{ secrets.PR_PREVIEW_TOKEN }}

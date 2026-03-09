@@ -93,7 +93,9 @@ export function ConnectionSection() {
         </div>
       </CardHeader>
       <CardContent className="pt-0 space-y-3">
-        <div className="flex gap-2">
+        <div>
+          <label className="text-xs text-muted-foreground">Agent URL</label>
+          <div className="flex gap-2">
           <Input
             placeholder="Agent URL"
             value={url}
@@ -120,6 +122,7 @@ export function ConnectionSection() {
               Connect
             </Button>
           )}
+          </div>
         </div>
 
         {/* Auth for fetching agent card — independent of card's securitySchemes */}
@@ -138,41 +141,53 @@ export function ConnectionSection() {
 
           {connAuthType === "basic" && (
             <div className="space-y-2">
-              <Input
-                placeholder="Username"
-                value={effectiveUsername}
-                onChange={(e) => setLocalUsername(e.target.value)}
-                className="h-8 text-sm"
-                autoComplete="off"
-              />
+              <div>
+                <label className="text-xs text-muted-foreground">Username</label>
+                <Input
+                  placeholder="Username"
+                  value={effectiveUsername}
+                  onChange={(e) => setLocalUsername(e.target.value)}
+                  className="h-8 text-sm"
+                  autoComplete="off"
+                />
+              </div>
+              <div>
+                <label className="text-xs text-muted-foreground">Password</label>
+                <PasswordInput
+                  placeholder="Password"
+                  value={effectivePassword}
+                  onChange={(e) => setLocalPassword(e.target.value)}
+                  className="h-8 text-sm"
+                  autoComplete="off"
+                />
+              </div>
+            </div>
+          )}
+
+          {connAuthType === "bearer" && (
+            <div>
+              <label className="text-xs text-muted-foreground">Bearer Token</label>
               <PasswordInput
-                placeholder="Password"
-                value={effectivePassword}
-                onChange={(e) => setLocalPassword(e.target.value)}
+                placeholder="Bearer Token"
+                value={effectiveToken}
+                onChange={(e) => setLocalToken(e.target.value)}
                 className="h-8 text-sm"
                 autoComplete="off"
               />
             </div>
           )}
 
-          {connAuthType === "bearer" && (
-            <PasswordInput
-              placeholder="Bearer Token"
-              value={effectiveToken}
-              onChange={(e) => setLocalToken(e.target.value)}
-              className="h-8 text-sm"
-              autoComplete="off"
-            />
-          )}
-
           {connAuthType === "apiKey" && (
-            <PasswordInput
-              placeholder="API Key"
-              value={effectiveApiKey}
-              onChange={(e) => setLocalApiKey(e.target.value)}
-              className="h-8 text-sm"
-              autoComplete="off"
-            />
+            <div>
+              <label className="text-xs text-muted-foreground">API Key</label>
+              <PasswordInput
+                placeholder="API Key"
+                value={effectiveApiKey}
+                onChange={(e) => setLocalApiKey(e.target.value)}
+                className="h-8 text-sm"
+                autoComplete="off"
+              />
+            </div>
           )}
         </form>
 

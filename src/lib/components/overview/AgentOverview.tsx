@@ -49,7 +49,6 @@ export function AgentOverview({ disableExamplePrompts = false }: AgentOverviewPr
       {card.securitySchemes && Object.keys(card.securitySchemes).length > 0 && (
         <SecuritySection
           schemes={card.securitySchemes}
-          requirements={card.security}
         />
       )}
       <CapabilitiesSection capabilities={card.capabilities} />

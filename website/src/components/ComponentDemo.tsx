@@ -103,7 +103,7 @@ function ComponentBasedDemo({ type, height }: { type: DemoType; height: string }
           showSettings: type === "playground",
           showEditor: type === "playground" || type === "editor",
           showChat: true,
-          showValidation: type === "playground" || type === "editor",
+          showValidation: false,
           defaultTab: "overview" as const,
           theme,
         };

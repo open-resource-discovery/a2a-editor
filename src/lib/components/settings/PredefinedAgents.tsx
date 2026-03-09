@@ -174,7 +174,6 @@ export function PredefinedAgents() {
 
     await selectPredefinedAgent(agent, {
       connectHeaders,
-      resetCard: true,
       closeSettingsPanel: true,
     });
   };

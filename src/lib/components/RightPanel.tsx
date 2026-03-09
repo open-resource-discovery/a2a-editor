@@ -26,7 +26,7 @@ interface RightPanelProps {
 
 export function RightPanel({
   showChat = true,
-  showValidation = true,
+  showValidation = false,
   showRawHttp = true,
   defaultTab = "overview",
   maxExamplePrompts = 2,

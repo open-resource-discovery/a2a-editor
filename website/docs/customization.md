@@ -15,7 +15,6 @@ All components support props to toggle various features:
   showSettings={false} // Hide settings panel
   showChat={false} // Hide chat tab
   showRawHttp={false} // Hide raw HTTP tab
-  showValidation={false} // Hide validation tab
   showEditor={false} // Hide Monaco editor (shows card only)
   showToolbar={true} // Show editor toolbar
   readOnly={true} // Disable editing
@@ -84,17 +83,16 @@ function CustomAgentLoader() {
 For custom UIs, prefer composing with the public stores, hooks, and entry points instead of relying on internal component paths.
 
 ```tsx
-import { useAgentCardStore, useValidationStore } from "@open-resource-discovery/a2a-editor";
+import { useAgentCardStore } from "@open-resource-discovery/a2a-editor";
 import { AgentCardView } from "@open-resource-discovery/a2a-editor/card-view";
 
 function CustomPage() {
   const parsedCard = useAgentCardStore((state) => state.parsedCard);
-  const summary = useValidationStore((state) => state.summary);
 
   return (
     <div>
       <AgentCardView className="h-[400px]" />
-      <pre>{JSON.stringify({ name: parsedCard?.name, summary }, null, 2)}</pre>
+      <pre>{JSON.stringify({ name: parsedCard?.name }, null, 2)}</pre>
     </div>
   );
 }
@@ -132,12 +130,6 @@ Use callbacks to integrate with your application:
   onConnect={(url, card) => {
     // Log analytics
     trackConnection(url, card.name);
-  }}
-  onValidationComplete={(results) => {
-    // Show notification if errors
-    if (results.some((r) => r.severity === "error")) {
-      showNotification("Validation errors found");
-    }
   }}
 />
 ```

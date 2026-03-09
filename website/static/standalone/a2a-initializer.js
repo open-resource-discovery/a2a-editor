@@ -8,9 +8,9 @@
  * - el: Target element selector (required)
  * - agentUrl: Agent URL to auto-connect
  * - agentCard: Initial agent card JSON
- * - showChat: Show chat panel (default: true)
- * - showValidation: Show validation panel (default: true)
- * - showSettings: Show settings panel (default: true)
+ * - showChat: Show chat panel (default: false)
+ * - showValidation: Show validation panel (default: false)
+ * - showSettings: Show settings panel (default: false)
  * - readOnly: Make editor read-only (default: false)
  * - defaultTab: Default active tab ("overview" | "chat" | "validation")
  * - theme: Color theme ("light" | "dark" | "system")
@@ -29,7 +29,7 @@ window.addEventListener("DOMContentLoaded", function () {
 
     // Feature toggles
     showChat: true,
-    showValidation: true,
+    showValidation: false,
     showSettings: true,
     readOnly: false,
     defaultTab: "overview",

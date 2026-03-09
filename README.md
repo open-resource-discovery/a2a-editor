@@ -30,6 +30,12 @@ function App() {
 ### Docker
 
 ```bash
+docker run -p 8080:80 ghcr.io/open-resource-discovery/a2a-editor:latest
+```
+
+Or build from source:
+
+```bash
 docker build -t a2a-editor .
 docker run -p 8080:80 a2a-editor
 ```

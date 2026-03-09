@@ -19,7 +19,7 @@ import "@open-resource-discovery/a2a-editor/styles";
 function App() {
   return (
     <div style={{ height: "100vh" }}>
-      <AgentViewer initialAgentUrl="https://example.com/.well-known/agent.json" showValidation={true} />
+      <AgentViewer initialAgentUrl="https://example.com/.well-known/agent.json" />
     </div>
   );
 }
@@ -27,15 +27,13 @@ function App() {
 
 ## Props
 
-| Prop                   | Type                                                | Default      | Description                        |
-| ---------------------- | --------------------------------------------------- | ------------ | ---------------------------------- |
-| `initialAgentCard`     | `string`                                            | -            | Initial agent card JSON string     |
-| `initialAgentUrl`      | `string`                                            | -            | Initial agent URL                  |
-| `showValidation`       | `boolean`                                           | `true`       | Show the validation tab            |
-| `defaultTab`           | `"overview" \| "validation"`                        | `"overview"` | Default tab to show                |
-| `onAgentCardChange`    | `(json: string, parsed: AgentCard \| null) => void` | -            | Callback when agent card changes   |
-| `onValidationComplete` | `(results: ValidationResult[]) => void`             | -            | Callback when validation completes |
-| `className`            | `string`                                            | -            | Additional CSS class               |
+| Prop                | Type                                                | Default      | Description                      |
+| ------------------- | --------------------------------------------------- | ------------ | -------------------------------- |
+| `initialAgentCard`  | `string`                                            | -            | Initial agent card JSON string   |
+| `initialAgentUrl`   | `string`                                            | -            | Initial agent URL                |
+| `defaultTab`        | `"overview"`                                        | `"overview"` | Default tab to show              |
+| `onAgentCardChange` | `(json: string, parsed: AgentCard \| null) => void` | -            | Callback when agent card changes |
+| `className`         | `string`                                            | -            | Additional CSS class             |
 
 ## When to Use
 
@@ -44,7 +42,7 @@ Use `AgentViewer` when:
 - You need the smallest possible bundle size
 - Monaco editor features aren't required
 - You want basic JSON editing with a textarea
-- You're building a simple viewer or validator
+- You're building a simple viewer
 
 ## Bundle Size
 

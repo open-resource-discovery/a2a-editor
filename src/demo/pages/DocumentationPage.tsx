@@ -55,15 +55,15 @@ export function DocumentationPage() {
 
             <div className="border rounded-lg overflow-hidden h-[600px]">
               <TabsContent value="full" className="h-full m-0">
-                <AgentPlayground showSettings={true} showChat={true} showValidation={true} showEditor={true} />
+                <AgentPlayground showSettings={true} showChat={true} showValidation={false} showEditor={true} />
               </TabsContent>
 
               <TabsContent value="no-chat" className="h-full m-0">
-                <AgentPlaygroundLite showSettings={false} showValidation={true} />
+                <AgentPlaygroundLite showSettings={false} showValidation={false} />
               </TabsContent>
 
               <TabsContent value="card-only" className="h-full m-0">
-                <AgentPlayground showSettings={false} showChat={true} showValidation={true} showEditor={false} />
+                <AgentPlayground showSettings={false} showChat={true} showValidation={false} showEditor={false} />
               </TabsContent>
             </div>
 
@@ -165,7 +165,7 @@ import "@open-resource-discovery/a2a-editor/styles";
 function App() {
   return (
     <AgentPlaygroundLite
-      showValidation={true}
+      showValidation={false}
       onAgentCardChange={(json, parsed) => {
         // Save to backend
       }}
@@ -183,7 +183,7 @@ function App() {
   return (
     <AgentViewer
       initialAgentUrl="https://example.com/.well-known/agent.json"
-      showValidation={true}
+      showValidation={false}
     />
   );
 }`}</code>

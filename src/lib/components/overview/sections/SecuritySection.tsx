@@ -1,5 +1,5 @@
 import { useState } from "react";
-import type { SecurityScheme, SecurityRequirement } from "@lib/types/a2a";
+import type { SecurityScheme } from "@lib/types/a2a";
 import { useConnectionStore } from "@lib/stores/connectionStore";
 import { useAgentCardStore } from "@lib/stores/agentCardStore";
 import { Card, CardContent, CardHeader, CardTitle } from "@lib/components/ui/card";
@@ -12,7 +12,6 @@ import { Shield, Key, Lock, User, Loader2, Check, ChevronDown, ChevronUp } from 
 
 interface SecuritySectionProps {
   schemes: Record<string, SecurityScheme>;
-  requirements?: SecurityRequirement[];
 }
 
 const schemeIcons: Record<string, typeof Shield> = {
@@ -38,7 +37,7 @@ function schemeLabel(name: string, scheme: SecurityScheme): string {
   }
 }
 
-export function SecuritySection({ schemes, requirements }: SecuritySectionProps) {
+export function SecuritySection({ schemes }: SecuritySectionProps) {
   const {
     basicCredentials,
     setBasicCredentials,
@@ -79,26 +78,33 @@ export function SecuritySection({ schemes, requirements }: SecuritySectionProps)
         if (activeScheme.scheme === "basic") {
           return (
             <div className="space-y-2 pt-2">
-              <Input
-                placeholder="Username"
-                value={basicCredentials.username}
-                onChange={(e) => setBasicCredentials({ username: e.target.value })}
-                className="h-8 text-sm"
-                autoComplete="off"
-              />
-              <PasswordInput
-                placeholder="Password"
-                value={basicCredentials.password}
-                onChange={(e) => setBasicCredentials({ password: e.target.value })}
-                className="h-8 text-sm"
-                autoComplete="off"
-              />
+              <div>
+                <label className="text-xs text-muted-foreground">Username</label>
+                <Input
+                  placeholder="Username"
+                  value={basicCredentials.username}
+                  onChange={(e) => setBasicCredentials({ username: e.target.value })}
+                  className="h-8 text-sm"
+                  autoComplete="off"
+                />
+              </div>
+              <div>
+                <label className="text-xs text-muted-foreground">Password</label>
+                <PasswordInput
+                  placeholder="Password"
+                  value={basicCredentials.password}
+                  onChange={(e) => setBasicCredentials({ password: e.target.value })}
+                  className="h-8 text-sm"
+                  autoComplete="off"
+                />
+              </div>
             </div>
           );
         }
         // Bearer token
         return (
           <div className="pt-2">
+            <label className="text-xs text-muted-foreground">Bearer Token</label>
             <PasswordInput
               placeholder="Bearer Token"
               value={oauth2Credentials.accessToken || ""}
@@ -114,20 +120,26 @@ export function SecuritySection({ schemes, requirements }: SecuritySectionProps)
           <div className="space-y-3 pt-2">
             {/* Client Credentials Flow */}
             <div className="space-y-2">
-              <Input
-                placeholder="Client ID"
-                value={oauth2Credentials.clientId}
-                onChange={(e) => setOAuth2Credentials({ clientId: e.target.value })}
-                className="h-8 text-sm"
-                autoComplete="off"
-              />
-              <PasswordInput
-                placeholder="Client Secret"
-                value={oauth2Credentials.clientSecret}
-                onChange={(e) => setOAuth2Credentials({ clientSecret: e.target.value })}
-                className="h-8 text-sm"
-                autoComplete="off"
-              />
+              <div>
+                <label className="text-xs text-muted-foreground">Client ID</label>
+                <Input
+                  placeholder="Client ID"
+                  value={oauth2Credentials.clientId}
+                  onChange={(e) => setOAuth2Credentials({ clientId: e.target.value })}
+                  className="h-8 text-sm"
+                  autoComplete="off"
+                />
+              </div>
+              <div>
+                <label className="text-xs text-muted-foreground">Client Secret</label>
+                <PasswordInput
+                  placeholder="Client Secret"
+                  value={oauth2Credentials.clientSecret}
+                  onChange={(e) => setOAuth2Credentials({ clientSecret: e.target.value })}
+                  className="h-8 text-sm"
+                  autoComplete="off"
+                />
+              </div>
             </div>
 
             {/* Advanced settings toggle */}
@@ -141,20 +153,26 @@ export function SecuritySection({ schemes, requirements }: SecuritySectionProps)
 
             {showAdvanced && (
               <div className="space-y-2">
-                <Input
-                  placeholder="Token URL"
-                  value={oauth2Credentials.tokenUrl}
-                  onChange={(e) => setOAuth2Credentials({ tokenUrl: e.target.value })}
-                  className="h-8 text-sm"
-                  autoComplete="off"
-                />
-                <Input
-                  placeholder="Scopes (space-separated)"
-                  value={oauth2Credentials.scopes}
-                  onChange={(e) => setOAuth2Credentials({ scopes: e.target.value })}
-                  className="h-8 text-sm"
-                  autoComplete="off"
-                />
+                <div>
+                  <label className="text-xs text-muted-foreground">Token URL</label>
+                  <Input
+                    placeholder="Token URL"
+                    value={oauth2Credentials.tokenUrl}
+                    onChange={(e) => setOAuth2Credentials({ tokenUrl: e.target.value })}
+                    className="h-8 text-sm"
+                    autoComplete="off"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs text-muted-foreground">Scopes</label>
+                  <Input
+                    placeholder="Scopes (space-separated)"
+                    value={oauth2Credentials.scopes}
+                    onChange={(e) => setOAuth2Credentials({ scopes: e.target.value })}
+                    className="h-8 text-sm"
+                    autoComplete="off"
+                  />
+                </div>
               </div>
             )}
 
@@ -203,8 +221,9 @@ export function SecuritySection({ schemes, requirements }: SecuritySectionProps)
       case "apiKey":
         return (
           <div className="pt-2">
+            <label className="text-xs text-muted-foreground">{activeScheme.name || "API Key"}</label>
             <PasswordInput
-              placeholder={`${activeScheme.name || "API Key"}`}
+              placeholder={activeScheme.name || "API Key"}
               value={apiKeyCredentials.key}
               onChange={(e) => setApiKeyCredentials({ key: e.target.value })}
               className="h-8 text-sm"
@@ -262,19 +281,6 @@ export function SecuritySection({ schemes, requirements }: SecuritySectionProps)
         )}
 
         {renderAuthForm()}
-
-        {requirements && requirements.length > 0 && (
-          <div className="pt-2 border-t">
-            <p className="text-xs text-muted-foreground mb-1">Required:</p>
-            <div className="flex flex-wrap gap-1">
-              {requirements.map((req, i) => (
-                <Badge key={i} variant="secondary" className="text-xs">
-                  {Object.keys(req).join(", ")}
-                </Badge>
-              ))}
-            </div>
-          </div>
-        )}
       </CardContent>
     </Card>
   );

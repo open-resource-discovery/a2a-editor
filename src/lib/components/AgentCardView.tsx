@@ -48,7 +48,7 @@ export interface AgentCardViewProps {
  *   return (
  *     <AgentCardView
  *       initialAgentUrl="https://my-agent.example.com/.well-known/agent.json"
- *       showValidation={true}
+ *       showValidation={false}
  *     />
  *   );
  * }
@@ -57,7 +57,7 @@ export interface AgentCardViewProps {
 export function AgentCardView({
   initialAgentCard,
   initialAgentUrl,
-  showValidation = true,
+  showValidation = false,
   defaultTab = "overview",
   onAgentCardChange,
   onValidationComplete,
