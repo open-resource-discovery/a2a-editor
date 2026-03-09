@@ -1,8 +1,8 @@
-# A2A Editor
+# Agent2Agent Editor
 
-React components for editing, viewing, and testing [A2A (Agent-to-Agent)](https://a2a-protocol.org) protocol Agent Cards.
+UI components for editing, viewing, and testing agents that implement the [Agent2Agent](https://a2a-protocol.org) (A2A) protocol.
 
-Playground: https://open-resource-discovery.github.io/a2a-editor/playground
+👉 **LIVE DEMO:** https://open-resource-discovery.github.io/a2a-editor/playground
 
 ## Getting Started
 
