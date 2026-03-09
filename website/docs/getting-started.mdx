@@ -1,0 +1,130 @@
+---
+sidebar_position: 1
+hide_table_of_contents: false
+---
+
+import Tabs from "@theme/Tabs";
+import TabItem from "@theme/TabItem";
+import { ComponentDemo } from "@site/src/components/ComponentDemo";
+
+# Getting Started
+
+A2A Editor provides React components for editing and testing [A2A (Agent-to-Agent) Protocol](https://google.github.io/A2A/) Agent Cards.
+
+## Installation
+
+```bash
+npm install @open-resource-discovery/a2a-editor
+```
+
+## Quick Start
+
+<Tabs>
+  <TabItem value="playground" label="Full Playground" default>
+
+<ComponentDemo type="playground" height="600px" />
+
+The complete playground with Monaco editor, chat, and validation. Try the mock agents to test the interface:
+
+```tsx
+import { AgentPlayground } from "@open-resource-discovery/a2a-editor";
+import "@open-resource-discovery/a2a-editor/styles";
+
+function App() {
+  return (
+    <div style={{ height: "100vh" }}>
+      <AgentPlayground
+        showSettings={true}
+        showChat={true}
+        showValidation={true}
+        onAgentCardChange={(json, parsed) => console.log(parsed?.name)}
+      />
+    </div>
+  );
+}
+```
+
+  </TabItem>
+  <TabItem value="editor" label="Editor">
+
+<ComponentDemo type="editor" height="550px" />
+
+Monaco editor with validation and overview panels:
+
+```tsx
+import { AgentEditor } from "@open-resource-discovery/a2a-editor/editor";
+import "@open-resource-discovery/a2a-editor/styles";
+
+function App() {
+  return (
+    <div style={{ height: "100vh" }}>
+      <AgentEditor showValidation={true} onAgentCardChange={(json, parsed) => console.log(parsed)} />
+    </div>
+  );
+}
+```
+
+  </TabItem>
+  <TabItem value="card" label="Agent Card">
+
+<ComponentDemo type="card" height="550px" />
+
+Agent card overview without Monaco editor:
+
+```tsx
+import { AgentCardView } from "@open-resource-discovery/a2a-editor/card-view";
+import "@open-resource-discovery/a2a-editor/styles";
+
+const agentCard = {
+  name: "My Agent",
+  description: "An example agent",
+  url: "https://example.com/agent",
+  version: "1.0.0",
+  capabilities: {},
+  skills: [],
+  // ... rest of agent card
+};
+
+function App() {
+  return <AgentCardView initialAgentCard={JSON.stringify(agentCard, null, 2)} showValidation={true} />;
+}
+```
+
+  </TabItem>
+</Tabs>
+
+## Available Components
+
+| Import Path                                     | Component             | Description                           |
+| ----------------------------------------------- | --------------------- | ------------------------------------- |
+| `@open-resource-discovery/a2a-editor`           | `AgentPlayground`     | Full editor with Monaco + Chat        |
+| `@open-resource-discovery/a2a-editor/lite`      | `AgentPlaygroundLite` | Editor without Chat (smaller bundle)  |
+| `@open-resource-discovery/a2a-editor/editor`    | `AgentEditor`         | Monaco editor only                    |
+| `@open-resource-discovery/a2a-editor/card-view` | `AgentCardView`       | Card overview only (no editor)        |
+| `@open-resource-discovery/a2a-editor/viewer`    | `AgentViewer`         | Lightweight viewer (no Monaco, ~80KB) |
+
+## Peer Dependencies
+
+- `react` ^18.0.0 || ^19.0.0
+- `react-dom` ^18.0.0 || ^19.0.0
+
+## Features
+
+- **Monaco Editor** - Full-featured JSON editor with syntax highlighting and validation
+- **Agent Card Overview** - Visual display of capabilities, skills, and security info
+- **Chat Integration** - Test your agents with built-in streaming chat
+- **Raw HTTP Inspector** - Inspect request and response payloads for chat interactions
+- **Validation** - Validate against A2A specification with detailed error messages
+- **Tree-Shakeable** - Import only what you need for optimal bundle size
+- **TypeScript Support** - Complete type definitions included
+
+## Docker
+
+You can also run the editor as a standalone web application using Docker:
+
+```bash
+docker build -t a2a-editor .
+docker run -p 8080:80 a2a-editor
+```
+
+The editor is then available at `http://localhost:8080`.

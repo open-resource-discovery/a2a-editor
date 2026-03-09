@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>A2A Playground</title>
+    <script>
+      // Single Page App redirect for GitHub Pages
+      // Stores the path in sessionStorage and redirects to index.html
+      // which will pick it up and navigate to the correct route
+      sessionStorage.redirect = location.href;
+    </script>
+    <meta http-equiv="refresh" content="0;URL='/'" />
+  </head>
+  <body>
+    Redirecting...
+  </body>
+</html>

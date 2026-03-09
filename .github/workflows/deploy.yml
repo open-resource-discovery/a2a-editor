@@ -1,0 +1,56 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: ["main"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    environment: github-pages
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build standalone bundle
+        run: npm run build:standalone
+        env:
+          NODE_ENV: production
+          VITE_PREDEFINED_AGENTS: ${{ secrets.VITE_PREDEFINED_AGENTS }}
+
+      - name: Copy standalone assets to website
+        run: |
+          mkdir -p website/static/standalone
+          cp dist-standalone/a2a-playground.js website/static/standalone/
+          cp dist-standalone/a2a-playground.css website/static/standalone/
+
+      - name: Install website dependencies
+        run: cd website && npm ci
+
+      - name: Build Docusaurus website
+        run: cd website && npm run build
+        env:
+          NODE_ENV: production
+          BASE_URL: /ORD/a2a-editor/
+          VITE_PREDEFINED_AGENTS: ${{ secrets.VITE_PREDEFINED_AGENTS }}
+
+      - name: Deploy
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: website/build

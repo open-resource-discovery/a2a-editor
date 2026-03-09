@@ -1,0 +1,739 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>A2A Playground</title>
+    <link rel="stylesheet" href="./a2a-playground.css" />
+    <style>
+      /* Full height layout */
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        font-family:
+          system-ui,
+          -apple-system,
+          sans-serif;
+      }
+      .container {
+        display: flex;
+        height: 100%;
+        width: 100%;
+        max-width: 100%;
+      }
+
+      /* Left sidebar */
+      .sidebar {
+        width: 280px;
+        min-width: 280px;
+        border-right: 1px solid #e5e7eb;
+        padding: 16px;
+        overflow-y: auto;
+        background: #fafafa;
+        flex-shrink: 0;
+      }
+      .sidebar h2 {
+        font-size: 14px;
+        font-weight: 500;
+        margin: 0 0 12px;
+        color: #6b7280;
+      }
+
+      /* Search input */
+      .search-input {
+        width: 100%;
+        padding: 8px 12px;
+        border: 1px solid #e5e7eb;
+        border-radius: 6px;
+        font-size: 13px;
+        margin-bottom: 12px;
+        background: white;
+        box-sizing: border-box;
+      }
+      .search-input:focus {
+        outline: none;
+        border-color: #3b82f6;
+      }
+
+      /* Agent cards */
+      .agent-card {
+        padding: 12px;
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        margin-bottom: 8px;
+        cursor: pointer;
+        transition: all 0.15s;
+        background: white;
+      }
+      .agent-card:hover {
+        background: #f9fafb;
+        border-color: #d1d5db;
+      }
+      .agent-card.selected {
+        border-color: #3b82f6;
+        background: #eff6ff;
+      }
+      .agent-name {
+        font-weight: 500;
+        font-size: 14px;
+        color: #111827;
+      }
+      .agent-description {
+        font-size: 12px;
+        color: #6b7280;
+        margin-top: 4px;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+      .agent-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px;
+        margin-top: 8px;
+      }
+      .agent-tag {
+        font-size: 10px;
+        padding: 2px 8px;
+        background: #e5e7eb;
+        border-radius: 12px;
+        color: #374151;
+      }
+
+      /* Right playground */
+      .playground {
+        flex: 1;
+        min-width: 0;
+        height: 100%;
+        overflow: hidden;
+      }
+
+      /* Dark mode support - colors matching src/index.css dark theme */
+      .dark body {
+        background: #1e1e1e;
+      }
+      .dark .sidebar {
+        background: #252526;
+        border-color: #3e3e42;
+      }
+      .dark .sidebar h2 {
+        color: #969696;
+      }
+      .dark .search-input {
+        background: #1e1e1e;
+        border-color: #3e3e42;
+        color: #d4d4d4;
+      }
+      .dark .agent-card {
+        background: #252526;
+        border-color: #3e3e42;
+      }
+      .dark .agent-card:hover {
+        background: #2d2d30;
+        border-color: #4e4e52;
+      }
+      .dark .agent-card.selected {
+        border-color: #0098ff;
+        background: #264f78;
+      }
+      .dark .agent-name {
+        color: #d4d4d4;
+      }
+      .dark .agent-description {
+        color: #969696;
+      }
+      .dark .agent-tag {
+        background: #2d2d30;
+        color: #d4d4d4;
+      }
+
+      /* Sidebar header */
+      .sidebar-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 12px;
+      }
+      .sidebar-header h2 {
+        margin: 0;
+      }
+      .add-btn {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        padding: 4px 8px;
+        font-size: 12px;
+        font-weight: 500;
+        color: #374151;
+        background: transparent;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background 0.15s;
+      }
+      .add-btn:hover {
+        background: #f3f4f6;
+      }
+      .add-btn svg {
+        width: 14px;
+        height: 14px;
+      }
+      .dark .add-btn {
+        color: #d4d4d4;
+      }
+      .dark .add-btn:hover {
+        background: #2d2d30;
+      }
+
+      /* Add agent form */
+      .add-form {
+        padding: 12px;
+        margin-bottom: 12px;
+        background: #f9fafb;
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+      }
+      .add-form input {
+        width: 100%;
+        padding: 8px 12px;
+        border: 1px solid #e5e7eb;
+        border-radius: 6px;
+        font-size: 13px;
+        background: white;
+        box-sizing: border-box;
+        margin-bottom: 8px;
+      }
+      .add-form input:focus,
+      .add-form select:focus {
+        outline: none;
+        border-color: #3b82f6;
+      }
+      .add-form select {
+        width: 100%;
+        padding: 8px 12px;
+        border: 1px solid #e5e7eb;
+        border-radius: 6px;
+        font-size: 13px;
+        background: white;
+        box-sizing: border-box;
+        margin-bottom: 8px;
+        color: inherit;
+        cursor: pointer;
+      }
+      .add-form-error {
+        font-size: 12px;
+        color: #ef4444;
+        margin-bottom: 8px;
+      }
+      .add-form-buttons {
+        display: flex;
+        justify-content: flex-end;
+        gap: 8px;
+      }
+      .add-form-buttons button {
+        padding: 6px 12px;
+        font-size: 12px;
+        font-weight: 500;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.15s;
+      }
+      .btn-cancel {
+        background: transparent;
+        border: none;
+        color: #6b7280;
+      }
+      .btn-cancel:hover {
+        background: #f3f4f6;
+      }
+      .btn-add {
+        background: #3b82f6;
+        border: none;
+        color: white;
+      }
+      .btn-add:hover {
+        background: #2563eb;
+      }
+      .btn-add:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+      .dark .add-form {
+        background: #252526;
+        border-color: #3e3e42;
+      }
+      .dark .add-form input,
+      .dark .add-form select {
+        background: #1e1e1e;
+        border-color: #3e3e42;
+        color: #d4d4d4;
+      }
+      .dark .btn-cancel {
+        color: #969696;
+      }
+      .dark .btn-cancel:hover {
+        background: #2d2d30;
+      }
+
+      /* Custom agents section */
+      .section-label {
+        font-size: 11px;
+        font-weight: 500;
+        color: #969696;
+        margin: 12px 0 8px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+      .custom-agent {
+        position: relative;
+      }
+      .remove-btn {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        width: 20px;
+        height: 20px;
+        padding: 0;
+        background: transparent;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        opacity: 0;
+        transition: opacity 0.15s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #6b7280;
+      }
+      .custom-agent:hover .remove-btn {
+        opacity: 1;
+      }
+      .remove-btn:hover {
+        background: #fee2e2;
+        color: #ef4444;
+      }
+      .remove-btn svg {
+        width: 12px;
+        height: 12px;
+      }
+      .dark .remove-btn:hover {
+        background: #5c2020;
+        color: #f44747;
+      }
+
+      /* Resize handle */
+      .resize-handle {
+        width: 8px;
+        background: transparent;
+        cursor: col-resize;
+        position: relative;
+        flex-shrink: 0;
+        transition: background 0.15s;
+      }
+      .resize-handle:hover,
+      .resize-handle.dragging {
+        background: #3e3e42;
+      }
+      .resize-handle::after {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 4px;
+        height: 32px;
+        border-radius: 2px;
+        background: #969696;
+        opacity: 0;
+        transition: opacity 0.15s;
+      }
+      .resize-handle:hover::after,
+      .resize-handle.dragging::after {
+        opacity: 1;
+      }
+      .dark .resize-handle:hover,
+      .dark .resize-handle.dragging {
+        background: #3e3e42;
+      }
+      .dark .resize-handle::after {
+        background: #969696;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+          <h2>Agents</h2>
+          <button class="add-btn" id="toggle-add-form">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round">
+              <line x1="12" y1="5" x2="12" y2="19" />
+              <line x1="5" y1="12" x2="19" y2="12" />
+            </svg>
+            Add
+          </button>
+        </div>
+        <div id="add-form-container"></div>
+        <input type="text" id="agent-search" placeholder="Search agents..." class="search-input" />
+        <div id="agent-list"></div>
+      </div>
+      <div class="resize-handle" id="resize-handle"></div>
+      <div class="playground" id="a2a-playground"></div>
+    </div>
+
+    <script src="./a2a-playground.js"></script>
+    <script>
+      // Dark mode detection - supports both system preference and parent frame theme
+      function applyTheme(forceDark) {
+        let isDark;
+        if (typeof forceDark === "boolean") {
+          isDark = forceDark;
+        } else {
+          // Check system preference
+          isDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+        }
+        document.documentElement.classList.toggle("dark", isDark);
+      }
+      applyTheme();
+      window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => applyTheme());
+
+      // Allow parent frame to control theme (for Docusaurus embedding)
+      window.setTheme = function (theme) {
+        applyTheme(theme === "dark");
+      };
+
+      // Resize handle logic
+      const sidebar = document.getElementById("sidebar");
+      const resizeHandle = document.getElementById("resize-handle");
+      let isResizing = false;
+      let startX, startWidth;
+
+      resizeHandle.addEventListener("mousedown", (e) => {
+        isResizing = true;
+        startX = e.clientX;
+        startWidth = sidebar.offsetWidth;
+        resizeHandle.classList.add("dragging");
+        document.body.style.cursor = "col-resize";
+        document.body.style.userSelect = "none";
+      });
+
+      document.addEventListener("mousemove", (e) => {
+        if (!isResizing) return;
+        const delta = e.clientX - startX;
+        const newWidth = Math.max(200, Math.min(500, startWidth + delta));
+        sidebar.style.width = newWidth + "px";
+        sidebar.style.minWidth = newWidth + "px";
+      });
+
+      document.addEventListener("mouseup", () => {
+        if (isResizing) {
+          isResizing = false;
+          resizeHandle.classList.remove("dragging");
+          document.body.style.cursor = "";
+          document.body.style.userSelect = "";
+        }
+      });
+
+      let playground;
+      let selectedId = null;
+      let customAgents = [];
+      let showAddForm = false;
+
+      // Load custom agents from localStorage
+      try {
+        const stored = localStorage.getItem("a2a-custom-agents");
+        if (stored) customAgents = JSON.parse(stored);
+      } catch (e) {}
+
+      function saveCustomAgents() {
+        try {
+          localStorage.setItem("a2a-custom-agents", JSON.stringify(customAgents));
+        } catch (e) {}
+      }
+
+      // Predefined agents loaded from JSON file
+      let predefinedAgents = [];
+
+      async function loadPredefinedAgents() {
+        try {
+          const baseUrl = (() => {
+            const scripts = document.querySelectorAll('script[src*="a2a-playground"]');
+            if (scripts.length > 0) {
+              const src = scripts[scripts.length - 1].src;
+              return src.substring(0, src.lastIndexOf("/") + 1);
+            }
+            return "./";
+          })();
+          const res = await fetch(`${baseUrl}predefined-agents.json`);
+          if (res.ok) {
+            predefinedAgents = await res.json();
+          }
+        } catch (e) {
+          // Silent fail - agents are optional
+        }
+        renderAgents();
+      }
+
+      // Toggle add form
+      document.getElementById("toggle-add-form").addEventListener("click", () => {
+        showAddForm = !showAddForm;
+        renderAddForm();
+      });
+
+      function renderAddForm() {
+        const container = document.getElementById("add-form-container");
+        if (!showAddForm) {
+          container.innerHTML = "";
+          return;
+        }
+        container.innerHTML = `
+        <div class="add-form">
+          <input type="text" id="new-agent-url" placeholder="Enter agent URL...">
+          <select id="new-agent-auth">
+            <option value="none">No Authentication</option>
+            <option value="basic">Basic Auth</option>
+            <option value="apiKey">API Key</option>
+            <option value="oauth2">OAuth 2.0</option>
+          </select>
+          <div id="add-form-error" class="add-form-error" style="display: none;"></div>
+          <div class="add-form-buttons">
+            <button class="btn-cancel" id="cancel-add">Cancel</button>
+            <button class="btn-add" id="confirm-add">Add Agent</button>
+          </div>
+        </div>
+      `;
+        document.getElementById("cancel-add").onclick = () => {
+          showAddForm = false;
+          renderAddForm();
+        };
+        document.getElementById("confirm-add").onclick = handleAddAgent;
+        document.getElementById("new-agent-url").onkeydown = (e) => {
+          if (e.key === "Enter") handleAddAgent();
+        };
+        document.getElementById("new-agent-url").focus();
+      }
+
+      async function handleAddAgent() {
+        const input = document.getElementById("new-agent-url");
+        const errorEl = document.getElementById("add-form-error");
+        const addBtn = document.getElementById("confirm-add");
+        const url = input.value.trim();
+
+        if (!url) {
+          errorEl.textContent = "Please enter a URL";
+          errorEl.style.display = "";
+          return;
+        }
+
+        addBtn.disabled = true;
+        addBtn.textContent = "Adding...";
+        errorEl.style.display = "none";
+
+        try {
+          const fetchUrl = url.endsWith(".json") ? url : `${url.replace(/\/$/, "")}/.well-known/agent-card.json`;
+
+          const res = await fetch(fetchUrl);
+          if (!res.ok) throw new Error(`Failed to fetch: ${res.statusText}`);
+          const card = await res.json();
+
+          const authSelect = document.getElementById("new-agent-auth");
+          const authType = authSelect ? authSelect.value : "none";
+
+          const customAgent = {
+            id: `custom-${Date.now()}`,
+            name: card.name || "Custom Agent",
+            description: card.description,
+            url: url.replace(/\/$/, ""),
+            authType: authType,
+            tags: ["Custom"],
+          };
+
+          customAgents.push(customAgent);
+          saveCustomAgents();
+          showAddForm = false;
+          renderAddForm();
+          renderAgents();
+
+          // Auto-select new agent
+          const agentCard = document.querySelector(`[data-id="${customAgent.id}"]`);
+          if (agentCard) selectAgent(customAgent, agentCard);
+        } catch (err) {
+          errorEl.textContent = err.message || "Failed to add agent";
+          errorEl.style.display = "";
+          addBtn.disabled = false;
+          addBtn.textContent = "Add Agent";
+        }
+      }
+
+      function removeCustomAgent(e, id) {
+        e.stopPropagation();
+        customAgents = customAgents.filter((a) => a.id !== id);
+        saveCustomAgents();
+        if (selectedId === id) {
+          selectedId = null;
+        }
+        renderAgents();
+      }
+
+      // Render agents list
+      function renderAgents() {
+        const list = document.getElementById("agent-list");
+        list.innerHTML = "";
+
+        const searchQuery = document.getElementById("agent-search").value.toLowerCase();
+
+        // Filter function
+        const filterAgent = (agent) => {
+          if (!searchQuery) return true;
+          return (
+            agent.name.toLowerCase().includes(searchQuery) ||
+            (agent.description && agent.description.toLowerCase().includes(searchQuery)) ||
+            (agent.tags && agent.tags.some((t) => t.toLowerCase().includes(searchQuery)))
+          );
+        };
+
+        // Render custom agents first
+        const filteredCustom = customAgents.filter(filterAgent);
+        if (filteredCustom.length > 0) {
+          const label = document.createElement("div");
+          label.className = "section-label";
+          label.textContent = "Your Agents";
+          list.appendChild(label);
+
+          filteredCustom.forEach((agent) => {
+            const card = document.createElement("div");
+            card.className = "agent-card custom-agent" + (selectedId === agent.id ? " selected" : "");
+            card.dataset.id = agent.id;
+            card.innerHTML = `
+            <button class="remove-btn" title="Remove">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
+            </button>
+            <div class="agent-name">${agent.name}</div>
+            ${agent.description ? `<div class="agent-description">${agent.description}</div>` : ""}
+            ${
+              agent.tags && agent.tags.length > 0
+                ? `
+              <div class="agent-tags">
+                ${agent.tags
+                  .slice(0, 3)
+                  .map((tag) => `<span class="agent-tag">${tag}</span>`)
+                  .join("")}
+              </div>
+            `
+                : ""
+            }
+          `;
+            card.querySelector(".remove-btn").onclick = (e) => removeCustomAgent(e, agent.id);
+            card.onclick = () => selectAgent(agent, card);
+            list.appendChild(card);
+          });
+        }
+
+        // Render predefined agents
+        const filteredPredefined = predefinedAgents.filter(filterAgent);
+        if (filteredPredefined.length > 0) {
+          if (filteredCustom.length > 0) {
+            const label = document.createElement("div");
+            label.className = "section-label";
+            label.textContent = "Examples";
+            list.appendChild(label);
+          }
+
+          filteredPredefined.forEach((agent) => {
+            const card = document.createElement("div");
+            card.className = "agent-card" + (selectedId === agent.id ? " selected" : "");
+            card.dataset.id = agent.id;
+            card.innerHTML = `
+            <div class="agent-name">${agent.name}</div>
+            ${agent.description ? `<div class="agent-description">${agent.description}</div>` : ""}
+            ${
+              agent.tags && agent.tags.length > 0
+                ? `
+              <div class="agent-tags">
+                ${agent.tags
+                  .slice(0, 3)
+                  .map((tag) => `<span class="agent-tag">${tag}</span>`)
+                  .join("")}
+              </div>
+            `
+                : ""
+            }
+          `;
+            card.onclick = () => selectAgent(agent, card);
+            list.appendChild(card);
+          });
+        }
+
+        if (filteredCustom.length === 0 && filteredPredefined.length === 0) {
+          const empty = document.createElement("div");
+          empty.style.cssText = "text-align: center; color: #9ca3af; font-size: 12px; padding: 16px;";
+          empty.textContent = "No agents found";
+          list.appendChild(empty);
+        }
+      }
+
+      // Search functionality
+      document.getElementById("agent-search").addEventListener("input", () => {
+        renderAgents();
+      });
+
+      function selectAgent(agent, card) {
+        // Update selection UI
+        document.querySelectorAll(".agent-card").forEach((c) => c.classList.remove("selected"));
+        card.classList.add("selected");
+        selectedId = agent.id;
+
+        // Connect playground to agent
+        if (playground) {
+          playground
+            .connect(agent.url)
+            .then(() => {
+              // Switch to card/overview view after successful connection
+              playground.setActiveTab("overview");
+            })
+            .catch(() => {});
+        }
+      }
+
+      // Initialize
+      loadPredefinedAgents();
+
+      playground = A2APlayground.init({
+        el: "#a2a-playground",
+        showSettings: false,
+        showEditor: true,
+        forceDesktop: true,
+        onReady: (instance) => {
+          // Auto-select first mock agent after agents are loaded
+          function tryAutoSelect() {
+            const firstMockAgent = predefinedAgents.find((a) => a.url.startsWith("mock://"));
+            if (firstMockAgent) {
+              const card = document.querySelector(`[data-id="${firstMockAgent.id}"]`);
+              if (card) {
+                selectAgent(firstMockAgent, card);
+                return;
+              }
+            }
+            // Retry if agents haven't loaded yet
+            if (predefinedAgents.length === 0) {
+              setTimeout(tryAutoSelect, 200);
+            }
+          }
+          setTimeout(tryAutoSelect, 300);
+        },
+      });
+    </script>
+  </body>
+</html>

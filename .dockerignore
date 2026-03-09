@@ -1,0 +1,9 @@
+node_modules
+dist
+dist-standalone
+website/node_modules
+website/build
+website/.docusaurus
+.git
+.claude
+*.md

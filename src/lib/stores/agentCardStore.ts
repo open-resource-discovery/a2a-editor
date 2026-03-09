@@ -1,0 +1,137 @@
+import { create } from "zustand";
+import type { AgentCard } from "@lib/types/a2a";
+import { isMockUrl, getMockAgentCard } from "@lib/mock/agents";
+import { usePredefinedAgentsStore } from "./predefinedAgentsStore";
+import { useConnectionStore } from "./connectionStore";
+import { useHttpLogStore } from "./httpLogStore";
+
+// Helper to parse JSON and extract card/error
+function parseAgentCard(json: string): {
+  card: AgentCard | null;
+  error: string | null;
+} {
+  if (!json.trim()) {
+    return { card: null, error: null };
+  }
+  try {
+    return { card: JSON.parse(json) as AgentCard, error: null };
+  } catch (err) {
+    return {
+      card: null,
+      error: err instanceof Error ? err.message : "Invalid JSON",
+    };
+  }
+}
+
+interface AgentCardState {
+  rawJson: string;
+  parsedCard: AgentCard | null;
+  parseError: string | null;
+  isLoading: boolean;
+  isDirty: boolean;
+  setRawJson: (json: string) => void;
+  formatJson: () => void;
+  reset: () => void;
+  loadFromUrl: (url: string, headers?: Record<string, string>) => Promise<void>;
+}
+
+export const useAgentCardStore = create<AgentCardState>((set, get) => ({
+  rawJson: "",
+  parsedCard: null,
+  parseError: null,
+  isLoading: false,
+  isDirty: false,
+
+  setRawJson: (json) => {
+    const { card, error } = parseAgentCard(json);
+    set({ rawJson: json, parsedCard: card, parseError: error, isDirty: true });
+
+    // Deselect predefined agent when editor is cleared
+    if (!json.trim()) {
+      usePredefinedAgentsStore.getState().deselect();
+      useHttpLogStore.getState().clearLogs();
+    }
+
+    // Auto-configure connection when a valid card is parsed
+    if (card) {
+      const connectionStore = useConnectionStore.getState();
+      // Set URL from card if not already set or if different
+      if (card.url && connectionStore.url !== card.url) {
+        connectionStore.setUrl(card.url);
+      }
+      // Auto-configure auth from security schemes
+      connectionStore.autoConfigureAuth(card);
+    }
+  },
+
+  formatJson: () => {
+    const { parsedCard } = get();
+    if (parsedCard) {
+      set({ rawJson: JSON.stringify(parsedCard, null, 2) });
+    }
+  },
+
+  reset: () =>
+    set({
+      rawJson: "",
+      parsedCard: null,
+      parseError: null,
+      isDirty: false,
+      isLoading: false,
+    }),
+
+  loadFromUrl: async (url, headers = {}) => {
+    const connectionStore = useConnectionStore.getState();
+    connectionStore.setUrl(url);
+
+    set({ isLoading: true, parseError: null });
+    try {
+      // Handle mock agents client-side
+      if (isMockUrl(url)) {
+        const card = getMockAgentCard(url);
+        if (!card) throw new Error("Mock agent not found");
+        const json = JSON.stringify(card, null, 2);
+        set({
+          rawJson: json,
+          parsedCard: card,
+          parseError: null,
+          isDirty: false,
+        });
+        if (card.url && connectionStore.url !== card.url) {
+          connectionStore.setUrl(card.url);
+        }
+        connectionStore.autoConfigureAuth(card);
+        return;
+      }
+
+      const res = await fetch(url, { headers });
+      if (!res.ok) throw new Error(`Failed to fetch: ${res.statusText}`);
+      const data = await res.json();
+      const json = JSON.stringify(data, null, 2);
+      const card = data as AgentCard;
+      set({
+        rawJson: json,
+        parsedCard: card,
+        parseError: null,
+        isDirty: false,
+      });
+      if (card.url && connectionStore.url !== card.url) {
+        connectionStore.setUrl(card.url);
+      }
+      connectionStore.autoConfigureAuth(card);
+    } catch (err) {
+      set({
+        parseError:
+          err instanceof Error ? err.message : "Failed to load agent card",
+      });
+    } finally {
+      set({ isLoading: false });
+    }
+  },
+}));
+
+// Selectors - these now just return stored state (no computation)
+export const selectParsedCard = (state: AgentCardState): AgentCard | null =>
+  state.parsedCard;
+export const selectParseError = (state: AgentCardState): string | null =>
+  state.parseError;

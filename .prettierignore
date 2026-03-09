@@ -1,0 +1,7 @@
+dist
+dist-standalone
+website/build
+website/.docusaurus
+website/static/standalone
+node_modules
+package-lock.json
