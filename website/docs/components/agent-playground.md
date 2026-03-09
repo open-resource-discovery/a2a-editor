@@ -44,7 +44,7 @@ function App() {
 | `showEditor`            | `boolean`                                           | `true`       | Show the JSON editor               |
 | `showToolbar`           | `boolean`                                           | `true`       | Show the editor toolbar            |
 | `readOnly`              | `boolean`                                           | `false`      | Make the editor read-only          |
-| `defaultTab`            | `"overview" \| "chat" \| "rawhttp"`                  | `"overview"` | Default tab to show                |
+| `defaultTab`            | `"overview" \| "chat" \| "rawhttp"`                 | `"overview"` | Default tab to show                |
 | `maxExamplePrompts`     | `number`                                            | `2`          | Max example prompts to show        |
 | `disableExamplePrompts` | `boolean`                                           | `false`      | Disable example prompt clicks      |
 | `forceDesktop`          | `boolean`                                           | `false`      | Force desktop layout               |

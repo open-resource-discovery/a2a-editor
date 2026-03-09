@@ -9,13 +9,7 @@ TypeScript type definitions exported by the library.
 ## Import
 
 ```tsx
-import type {
-  AgentCard,
-  AgentSkill,
-  AgentCapabilities,
-  ValidationResult,
-  ChatMessage,
-} from "@open-resource-discovery/a2a-editor";
+import type { AgentCard, AgentSkill, AgentCapabilities, ChatMessage } from "@open-resource-discovery/a2a-editor";
 ```
 
 ## Agent Card Types
@@ -76,36 +70,6 @@ interface AgentProvider {
   name: string;
   organization?: string;
   url?: string;
-}
-```
-
-## Validation Types
-
-### ValidationResult
-
-```typescript
-interface ValidationResult {
-  id: string;
-  rule: string;
-  description: string;
-  status: ValidationStatus;
-  severity?: ValidationSeverity;
-  message: string;
-  path?: string;
-}
-
-type ValidationStatus = "pass" | "fail" | "warning";
-type ValidationSeverity = "error" | "warning" | "info" | "hint";
-```
-
-### ValidationSummary
-
-```typescript
-interface ValidationSummary {
-  pass: number;
-  fail: number;
-  warning: number;
-  total: number;
 }
 ```
 

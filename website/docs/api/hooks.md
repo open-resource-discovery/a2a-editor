@@ -9,13 +9,7 @@ Custom React hooks exported by the library.
 ## Import
 
 ```tsx
-import {
-  useTheme,
-  useMediaQuery,
-  useIsLargeScreen,
-  useAutoValidate,
-  useAuthHeaders,
-} from "@open-resource-discovery/a2a-editor";
+import { useTheme, useMediaQuery, useIsLargeScreen, useAuthHeaders } from "@open-resource-discovery/a2a-editor";
 ```
 
 ## useTheme
@@ -74,27 +68,6 @@ import { useMediaQuery } from "@open-resource-discovery/a2a-editor";
 const isWide = useMediaQuery("(min-width: 1200px)");
 const prefersDark = useMediaQuery("(prefers-color-scheme: dark)");
 ```
-
-## useAutoValidate
-
-Automatically validates the agent card when it changes.
-
-```tsx
-function MyComponent() {
-  // This hook sets up automatic validation
-  // Call it once in your component tree
-  useAutoValidate();
-
-  return <div>...</div>;
-}
-```
-
-This hook:
-
-- Watches the `rawJson` in `useAgentCardStore`
-- Debounces changes (waits for typing to stop)
-- Runs validation automatically
-- Updates `useValidationStore` with results
 
 ## useAuthHeaders
 

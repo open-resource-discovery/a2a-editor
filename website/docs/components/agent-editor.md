@@ -31,15 +31,15 @@ function App() {
 
 ## Props
 
-| Prop                   | Type                                                | Default      | Description                        |
-| ---------------------- | --------------------------------------------------- | ------------ | ---------------------------------- |
-| `initialAgentCard`     | `string`                                            | -            | Initial agent card JSON string     |
-| `initialAgentUrl`      | `string`                                            | -            | Initial agent URL                  |
-| `showSettings`         | `boolean`                                           | `true`       | Show the settings panel            |
-| `readOnly`             | `boolean`                                           | `false`      | Make the editor read-only          |
-| `defaultTab`           | `"overview"`                                        | `"overview"` | Default tab to show                |
-| `onAgentCardChange`    | `(json: string, parsed: AgentCard \| null) => void` | -            | Callback when agent card changes   |
-| `className`            | `string`                                            | -            | Additional CSS class               |
+| Prop                | Type                                                | Default      | Description                      |
+| ------------------- | --------------------------------------------------- | ------------ | -------------------------------- |
+| `initialAgentCard`  | `string`                                            | -            | Initial agent card JSON string   |
+| `initialAgentUrl`   | `string`                                            | -            | Initial agent URL                |
+| `showSettings`      | `boolean`                                           | `true`       | Show the settings panel          |
+| `readOnly`          | `boolean`                                           | `false`      | Make the editor read-only        |
+| `defaultTab`        | `"overview"`                                        | `"overview"` | Default tab to show              |
+| `onAgentCardChange` | `(json: string, parsed: AgentCard \| null) => void` | -            | Callback when agent card changes |
+| `className`         | `string`                                            | -            | Additional CSS class             |
 
 ## When to Use
 

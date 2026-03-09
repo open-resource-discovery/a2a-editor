@@ -83,17 +83,16 @@ function CustomAgentLoader() {
 For custom UIs, prefer composing with the public stores, hooks, and entry points instead of relying on internal component paths.
 
 ```tsx
-import { useAgentCardStore, useValidationStore } from "@open-resource-discovery/a2a-editor";
+import { useAgentCardStore } from "@open-resource-discovery/a2a-editor";
 import { AgentCardView } from "@open-resource-discovery/a2a-editor/card-view";
 
 function CustomPage() {
   const parsedCard = useAgentCardStore((state) => state.parsedCard);
-  const summary = useValidationStore((state) => state.summary);
 
   return (
     <div>
       <AgentCardView className="h-[400px]" />
-      <pre>{JSON.stringify({ name: parsedCard?.name, summary }, null, 2)}</pre>
+      <pre>{JSON.stringify({ name: parsedCard?.name }, null, 2)}</pre>
     </div>
   );
 }
