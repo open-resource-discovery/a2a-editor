@@ -1,0 +1,26 @@
+[
+  {
+    "id": "mock-echo",
+    "name": "Echo Agent",
+    "description": "Echoes back whatever you send. Useful for testing connectivity and message format.",
+    "url": "mock://echo",
+    "authType": "none",
+    "tags": ["test", "echo", "mock"]
+  },
+  {
+    "id": "mock-translator",
+    "name": "Translator Agent",
+    "description": "Mock translation agent. Supports common phrases in German, French, Spanish, and Japanese.",
+    "url": "mock://translator",
+    "authType": "none",
+    "tags": ["translation", "language", "mock"]
+  },
+  {
+    "id": "mock-calculator",
+    "name": "Calculator Agent",
+    "description": "Accepts JSON input with math operations. Send {\"operation\": \"add\", \"a\": 5, \"b\": 3}.",
+    "url": "mock://calculator",
+    "authType": "none",
+    "tags": ["math", "json", "mock"]
+  }
+]
