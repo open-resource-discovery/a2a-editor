@@ -15,7 +15,6 @@ All components support props to toggle various features:
   showSettings={false} // Hide settings panel
   showChat={false} // Hide chat tab
   showRawHttp={false} // Hide raw HTTP tab
-  showValidation={false} // Hide validation tab
   showEditor={false} // Hide Monaco editor (shows card only)
   showToolbar={true} // Show editor toolbar
   readOnly={true} // Disable editing
@@ -132,12 +131,6 @@ Use callbacks to integrate with your application:
   onConnect={(url, card) => {
     // Log analytics
     trackConnection(url, card.name);
-  }}
-  onValidationComplete={(results) => {
-    // Show notification if errors
-    if (results.some((r) => r.severity === "error")) {
-      showNotification("Validation errors found");
-    }
   }}
 />
 ```

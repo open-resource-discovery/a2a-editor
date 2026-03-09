@@ -84,7 +84,7 @@ export function AgentPlayground({
   initialAgentCard,
   initialAgentUrl,
   showSettings = true,
-  showValidation = true,
+  showValidation = false,
   showChat = true,
   showRawHttp = true,
   showEditor = true,

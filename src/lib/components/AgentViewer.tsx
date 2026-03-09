@@ -50,7 +50,7 @@ export interface AgentViewerProps {
  *   return (
  *     <AgentViewer
  *       initialAgentUrl="https://my-agent.example.com/.well-known/agent.json"
- *       showValidation={true}
+ *       showValidation={false}
  *     />
  *   );
  * }
@@ -59,7 +59,7 @@ export interface AgentViewerProps {
 export function AgentViewer({
   initialAgentCard,
   initialAgentUrl,
-  showValidation = true,
+  showValidation = false,
   defaultTab = "overview",
   onAgentCardChange,
   onValidationComplete,

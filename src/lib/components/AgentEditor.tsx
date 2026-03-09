@@ -52,7 +52,7 @@ export interface AgentEditorProps {
  *   return (
  *     <AgentEditor
  *       initialAgentUrl="https://my-agent.example.com/.well-known/agent.json"
- *       showValidation={true}
+ *       showValidation={false}
  *       onAgentCardChange={(json, parsed) => console.log(parsed?.name)}
  *     />
  *   );
@@ -63,7 +63,7 @@ export function AgentEditor({
   initialAgentCard,
   initialAgentUrl,
   showSettings = true,
-  showValidation = true,
+  showValidation = false,
   readOnly = false,
   defaultTab = "overview",
   onAgentCardChange,

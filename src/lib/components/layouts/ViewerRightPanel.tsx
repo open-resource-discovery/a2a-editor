@@ -16,7 +16,7 @@ interface ViewerRightPanelProps {
  * Right panel for AgentViewer - no chat tab
  */
 export function ViewerRightPanel({
-  showValidation = true,
+  showValidation = false,
   defaultTab = "overview",
 }: ViewerRightPanelProps) {
   const { activeTab, setActiveTab } = useUIStore();

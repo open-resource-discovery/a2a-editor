@@ -35,7 +35,7 @@ function ResizeHandle() {
  * Uses simple textarea instead of Monaco for JSON editing
  */
 export function ViewerLayout({
-  showValidation = true,
+  showValidation = false,
   defaultTab = "overview",
   className,
 }: ViewerLayoutProps) {

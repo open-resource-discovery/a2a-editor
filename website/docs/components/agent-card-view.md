@@ -19,7 +19,7 @@ import "@open-resource-discovery/a2a-editor/styles";
 function App() {
   return (
     <div style={{ height: "400px" }}>
-      <AgentCardView showValidation={true} defaultTab="overview" />
+      <AgentCardView defaultTab="overview" />
     </div>
   );
 }
@@ -31,10 +31,8 @@ function App() {
 | ---------------------- | --------------------------------------------------- | ------------ | ---------------------------------- |
 | `initialAgentCard`     | `string`                                            | -            | Initial agent card JSON string     |
 | `initialAgentUrl`      | `string`                                            | -            | Initial agent URL                  |
-| `showValidation`       | `boolean`                                           | `true`       | Show the validation tab            |
-| `defaultTab`           | `"overview" \| "validation"`                        | `"overview"` | Default tab to show                |
+| `defaultTab`           | `"overview"`                                        | `"overview"` | Default tab to show                |
 | `onAgentCardChange`    | `(json: string, parsed: AgentCard \| null) => void` | -            | Callback when agent card changes   |
-| `onValidationComplete` | `(results: ValidationResult[]) => void`             | -            | Callback when validation completes |
 | `className`            | `string`                                            | -            | Additional CSS class               |
 
 ## When to Use

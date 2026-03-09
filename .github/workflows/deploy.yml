@@ -6,14 +6,16 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
+  pages: write
+  id-token: write
 
 concurrency:
   group: "pages"
   cancel-in-progress: false
 
 jobs:
-  build-and-deploy:
+  build:
     runs-on: ubuntu-latest
     environment: github-pages
     steps:
@@ -43,14 +45,28 @@ jobs:
       - name: Install website dependencies
         run: cd website && npm ci
 
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+
       - name: Build Docusaurus website
         run: cd website && npm run build
         env:
           NODE_ENV: production
-          BASE_URL: /ORD/a2a-editor/
+          BASE_URL: /a2a-editor/
           VITE_PREDEFINED_AGENTS: ${{ secrets.VITE_PREDEFINED_AGENTS }}
 
-      - name: Deploy
-        uses: JamesIves/github-pages-deploy-action@v4
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
         with:
-          folder: website/build
+          path: website/build
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

@@ -46,10 +46,12 @@ export const useAgentCardStore = create<AgentCardState>((set, get) => ({
     const { card, error } = parseAgentCard(json);
     set({ rawJson: json, parsedCard: card, parseError: error, isDirty: true });
 
-    // Deselect predefined agent when editor is cleared
+    // Deselect predefined agent and reset connection when editor is cleared
     if (!json.trim()) {
       usePredefinedAgentsStore.getState().deselect();
       useHttpLogStore.getState().clearLogs();
+      useConnectionStore.getState().disconnect();
+      useConnectionStore.getState().setUrl("");
     }
 
     // Auto-configure connection when a valid card is parsed
@@ -71,14 +73,17 @@ export const useAgentCardStore = create<AgentCardState>((set, get) => ({
     }
   },
 
-  reset: () =>
+  reset: () => {
     set({
       rawJson: "",
       parsedCard: null,
       parseError: null,
       isDirty: false,
       isLoading: false,
-    }),
+    });
+    useConnectionStore.getState().disconnect();
+    useConnectionStore.getState().setUrl("");
+  },
 
   loadFromUrl: async (url, headers = {}) => {
     const connectionStore = useConnectionStore.getState();

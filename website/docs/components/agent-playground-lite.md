@@ -20,7 +20,6 @@ function App() {
   return (
     <div style={{ height: "100vh" }}>
       <AgentPlaygroundLite
-        showValidation={true}
         onAgentCardChange={(json, parsed) => {
           // Save to backend
         }}
@@ -37,12 +36,10 @@ function App() {
 | `initialAgentCard`     | `string`                                            | -            | Initial agent card JSON string     |
 | `initialAgentUrl`      | `string`                                            | -            | Initial agent URL                  |
 | `showSettings`         | `boolean`                                           | `true`       | Show the settings panel            |
-| `showValidation`       | `boolean`                                           | `true`       | Show the validation tab            |
 | `readOnly`             | `boolean`                                           | `false`      | Make the editor read-only          |
-| `defaultTab`           | `"overview" \| "validation"`                        | `"overview"` | Default tab to show                |
+| `defaultTab`           | `"overview"`                                        | `"overview"` | Default tab to show                |
 | `onAgentCardChange`    | `(json: string, parsed: AgentCard \| null) => void` | -            | Callback when agent card changes   |
 | `onConnect`            | `(url: string, card: AgentCard) => void`            | -            | Callback when connected to agent   |
-| `onValidationComplete` | `(results: ValidationResult[]) => void`             | -            | Callback when validation completes |
 | `className`            | `string`                                            | -            | Additional CSS class               |
 
 ## When to Use
