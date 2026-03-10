@@ -362,9 +362,7 @@ export const useConnectionStore = create<ConnectionState>((set, get) => ({
 
     // Use specified scheme or default to first
     const entries = Object.entries(card.securitySchemes);
-    const entry = schemeName
-      ? entries.find(([n]) => n === schemeName)
-      : entries[0];
+    const entry = schemeName ? entries.find(([n]) => n === schemeName) : entries[0];
     if (!entry) return;
     const [name, scheme] = entry;
     const state = get();
@@ -519,10 +517,7 @@ export const useConnectionStore = create<ConnectionState>((set, get) => ({
         "Content-Type": "application/x-www-form-urlencoded",
       };
       const requestBody = body.toString();
-      const redactedBody = requestBody.replace(
-        /client_secret=[^&]*/,
-        "client_secret=***REDACTED***",
-      );
+      const redactedBody = requestBody.replace(/client_secret=[^&]*/, "client_secret=***REDACTED***");
       const startTime = Date.now();
 
       const logEntry: HttpLogEntry = {
@@ -671,9 +666,7 @@ export const useConnectionStore = create<ConnectionState>((set, get) => ({
         if (currentState.isAuthFlowInProgress) {
           set({
             isAuthFlowInProgress: false,
-            tokenError: popup.closed
-              ? "Authorization was cancelled"
-              : "Authorization timed out",
+            tokenError: popup.closed ? "Authorization was cancelled" : "Authorization timed out",
           });
           oauthPopup = null;
           clearOAuthParams();
