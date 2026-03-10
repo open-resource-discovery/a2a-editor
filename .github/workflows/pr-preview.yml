@@ -29,7 +29,7 @@ jobs:
         if: github.event.action != 'closed'
         env:
           PR_PREVIEW_NUMBER: ${{ github.event.pull_request.number }}
-          BASE_URL: /ORD/pr-preview/a2a-editor/pr-${{ github.event.pull_request.number }}/
+          BASE_URL: /pr-preview/a2a-editor/pr-${{ github.event.pull_request.number }}/
           VITE_PREDEFINED_AGENTS: ${{ secrets.VITE_PREDEFINED_AGENTS }}
         run: |
           set -euo pipefail
@@ -46,8 +46,8 @@ jobs:
         uses: open-resource-discovery/pr-preview-action@main
         with:
           fork: true
-          target-repo: ORD/pr-preview
-          pages-base-url: https://pages.github.tools.sap/ORD/pr-preview
+          target-repo: open-resource-discovery/pr-preview
+          pages-base-url: https://open-resource-discovery.github.io/pr-preview
           umbrella-dir: a2a-editor
           token: ${{ secrets.PR_PREVIEW_TOKEN }}
           build-dir: website/build
