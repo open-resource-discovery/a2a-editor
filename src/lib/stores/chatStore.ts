@@ -5,6 +5,7 @@ import type { HttpLogEntry } from "@lib/types/httpLog";
 import { v4 as uuidv4 } from "uuid";
 import { isMockUrl, handleMockMessage } from "@lib/mock/agents";
 import { useHttpLogStore } from "./httpLogStore";
+import { validateResponse, isFullyCompliant } from "@lib/utils/a2a-compliance";
 
 const MAX_MESSAGES = 200;
 
@@ -62,40 +63,6 @@ function processJsonRpcResponse(data: unknown): {
     status: task.status?.state,
     artifacts: task.artifacts,
   };
-}
-
-/** Check if a raw JSON-RPC response is A2A protocol compliant */
-function isA2ACompliant(data: unknown): boolean {
-  if (!data || typeof data !== "object") return false;
-  const response = data as Record<string, unknown>;
-
-  // Must have jsonrpc "2.0"
-  if (response.jsonrpc !== "2.0") return false;
-
-  // Must have either result or error
-  if (!response.result && !response.error) return false;
-
-  // If error, must have code and message
-  if (response.error) {
-    const error = response.error as Record<string, unknown>;
-    if (typeof error.code !== "number" || typeof error.message !== "string") return false;
-    return true;
-  }
-
-  // If result, must have id and status
-  if (response.result) {
-    const result = response.result as Record<string, unknown>;
-    if (typeof result.id !== "string") return false;
-    if (!result.status || typeof result.status !== "object") return false;
-
-    const status = result.status as Record<string, unknown>;
-    const validStates = ["submitted", "working", "input-required", "completed", "canceled", "failed", "unknown"];
-    if (!validStates.includes(status.state as string)) return false;
-
-    return true;
-  }
-
-  return false;
 }
 
 /** Execute a fetch with HTTP logging */
@@ -287,6 +254,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
 
       const result = processJsonRpcResponse(data);
       if (result) {
+        const complianceDetails = validateResponse(data);
         const agentMessage: ChatMessage = {
           id: uuidv4(),
           role: "agent",
@@ -296,7 +264,8 @@ export const useChatStore = create<ChatState>((set, get) => ({
           timestamp: new Date(),
           status: result.status,
           artifacts: result.artifacts,
-          compliant: isA2ACompliant(data),
+          compliant: isFullyCompliant(complianceDetails),
+          complianceDetails,
           linkedChatMessageId: messageId,
         };
 
@@ -402,6 +371,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
 
       const result = processJsonRpcResponse(data);
       if (result) {
+        const complianceDetails = validateResponse(data);
         const agentMessage: ChatMessage = {
           id: uuidv4(),
           role: "agent",
@@ -411,7 +381,8 @@ export const useChatStore = create<ChatState>((set, get) => ({
           timestamp: new Date(),
           status: result.status,
           artifacts: result.artifacts,
-          compliant: isA2ACompliant(data),
+          compliant: isFullyCompliant(complianceDetails),
+          complianceDetails,
           linkedChatMessageId: messageId,
         };
 

@@ -37,40 +37,34 @@ export function ConnectionSection() {
   // Derive connAuthType: manual override takes precedence, otherwise computed from store
   const connAuthType = manualAuthType ?? mapStoreAuthType(storeConnAuthType, !!storeOAuth2Creds.accessToken);
 
-  // Credential fields: always read from store (updated by setFromPredefined)
-  const username = storeBasicCreds.username;
-  const password = storeBasicCreds.password;
-  const token = storeOAuth2Creds.accessToken ?? "";
-  const apiKeyValue = storeApiKeyCreds.key;
+  // Credential fields: read from store only for initialization (see useEffect below)
 
-  // Local overrides for credential inputs (only used when user types)
-  const [localUsername, setLocalUsername] = useState<string | null>(null);
-  const [localPassword, setLocalPassword] = useState<string | null>(null);
-  const [localToken, setLocalToken] = useState<string | null>(null);
-  const [localApiKey, setLocalApiKey] = useState<string | null>(null);
+  // Local credential state — fully independent from store after initialization
+  const [localUsername, setLocalUsername] = useState("");
+  const [localPassword, setLocalPassword] = useState("");
+  const [localToken, setLocalToken] = useState("");
+  const [localApiKey, setLocalApiKey] = useState("");
 
-  const effectiveUsername = localUsername ?? username;
-  const effectivePassword = localPassword ?? password;
-  const effectiveToken = localToken ?? token;
-  const effectiveApiKey = localApiKey ?? apiKeyValue;
-
-  // Reset manual overrides when store connection auth changes (agent switch)
+  // Reset and re-initialize from store when connection auth changes (agent switch)
+  // Intentionally only depends on storeConnAuthType — not credential values — to avoid
+  // re-syncing when SecuritySection writes to the same store credentials.
   useEffect(() => {
     setManualAuthType(null);
-    setLocalUsername(null);
-    setLocalPassword(null);
-    setLocalToken(null);
-    setLocalApiKey(null);
+    setLocalUsername(storeBasicCreds.username);
+    setLocalPassword(storeBasicCreds.password);
+    setLocalToken(storeOAuth2Creds.accessToken ?? "");
+    setLocalApiKey(storeApiKeyCreds.key);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [storeConnAuthType]);
 
   const handleConnect = useCallback(async () => {
-    const headers = buildConnHeaders(connAuthType, effectiveUsername, effectivePassword, effectiveToken, effectiveApiKey, storeApiKeyCreds.headerName);
+    const headers = buildConnHeaders(connAuthType, localUsername, localPassword, localToken, localApiKey, storeApiKeyCreds.headerName);
     const card = await connect(Object.keys(headers).length > 0 ? headers : undefined);
     if (card) {
       setRawJson(JSON.stringify(card, null, 2));
       autoConfigureAuth(card);
     }
-  }, [connAuthType, effectiveUsername, effectivePassword, effectiveToken, effectiveApiKey, storeApiKeyCreds.headerName, connect, setRawJson, autoConfigureAuth]);
+  }, [connAuthType, localUsername, localPassword, localToken, localApiKey, storeApiKeyCreds.headerName, connect, setRawJson, autoConfigureAuth]);
 
   const statusColor = {
     disconnected: "bg-muted",
@@ -145,7 +139,7 @@ export function ConnectionSection() {
                 <label className="text-xs text-muted-foreground">Username</label>
                 <Input
                   placeholder="Username"
-                  value={effectiveUsername}
+                  value={localUsername}
                   onChange={(e) => setLocalUsername(e.target.value)}
                   className="h-8 text-sm"
                   autoComplete="off"
@@ -155,7 +149,7 @@ export function ConnectionSection() {
                 <label className="text-xs text-muted-foreground">Password</label>
                 <PasswordInput
                   placeholder="Password"
-                  value={effectivePassword}
+                  value={localPassword}
                   onChange={(e) => setLocalPassword(e.target.value)}
                   className="h-8 text-sm"
                   autoComplete="off"
@@ -169,7 +163,7 @@ export function ConnectionSection() {
               <label className="text-xs text-muted-foreground">Bearer Token</label>
               <PasswordInput
                 placeholder="Bearer Token"
-                value={effectiveToken}
+                value={localToken}
                 onChange={(e) => setLocalToken(e.target.value)}
                 className="h-8 text-sm"
                 autoComplete="off"
@@ -182,7 +176,7 @@ export function ConnectionSection() {
               <label className="text-xs text-muted-foreground">API Key</label>
               <PasswordInput
                 placeholder="API Key"
-                value={effectiveApiKey}
+                value={localApiKey}
                 onChange={(e) => setLocalApiKey(e.target.value)}
                 className="h-8 text-sm"
                 autoComplete="off"

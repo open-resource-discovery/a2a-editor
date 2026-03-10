@@ -3,7 +3,7 @@ import ReactMarkdown from "react-markdown";
 import type { ChatMessage as ChatMessageType } from "@lib/types/chat";
 import { isTextPart, isDataPart, isFilePart } from "@lib/types/a2a";
 import { cn } from "@lib/utils/cn";
-import { Copy, Check, RotateCcw, FileText, CheckCircle, AlertCircle } from "lucide-react";
+import { Copy, Check, RotateCcw, FileText, CheckCircle, AlertCircle, ChevronDown, ChevronUp } from "lucide-react";
 import { Badge } from "@lib/components/ui/badge";
 import { Button } from "@lib/components/ui/button";
 import { useUIStore } from "@lib/stores/uiStore";
@@ -17,6 +17,7 @@ interface ChatMessageProps {
 export function ChatMessage({ message, onRetry }: ChatMessageProps) {
   const isUser = message.role === "user";
   const [copied, setCopied] = useState(false);
+  const [showCompliance, setShowCompliance] = useState(false);
   const { switchToRawHttp } = useUIStore();
   const getLogByChatMessageId = useHttpLogStore((state) => state.getLogByChatMessageId);
 
@@ -72,17 +73,49 @@ export function ChatMessage({ message, onRetry }: ChatMessageProps) {
                 {message.status}
               </Badge>
               {!isUser && message.compliant === true && (
-                <span className="inline-flex items-center gap-0.5 text-xs text-success">
+                <button
+                  type="button"
+                  className="inline-flex items-center gap-0.5 text-xs text-success hover:underline cursor-pointer"
+                  onClick={() => setShowCompliance((v) => !v)}
+                >
                   <CheckCircle className="h-3.5 w-3.5" />
                   compliant
-                </span>
+                  {message.complianceDetails && (
+                    showCompliance ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />
+                  )}
+                </button>
               )}
               {!isUser && message.compliant === false && (
-                <span className="inline-flex items-center gap-0.5 text-xs text-orange-600 dark:text-orange-400">
+                <button
+                  type="button"
+                  className="inline-flex items-center gap-0.5 text-xs text-orange-600 dark:text-orange-400 hover:underline cursor-pointer"
+                  onClick={() => setShowCompliance((v) => !v)}
+                >
                   <AlertCircle className="h-3.5 w-3.5" />
                   non-compliant
-                </span>
+                  {message.complianceDetails && (
+                    showCompliance ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />
+                  )}
+                </button>
               )}
+            </div>
+          )}
+
+          {/* Compliance details */}
+          {showCompliance && message.complianceDetails && (
+            <div className="mb-2 rounded bg-background/50 p-2 text-xs space-y-0.5">
+              {message.complianceDetails.map((result, i) => (
+                <div key={i} className="flex items-start gap-1.5">
+                  {result.passed ? (
+                    <CheckCircle className="h-3 w-3 mt-0.5 shrink-0 text-success" />
+                  ) : (
+                    <AlertCircle className="h-3 w-3 mt-0.5 shrink-0 text-orange-600 dark:text-orange-400" />
+                  )}
+                  <span className={cn(!result.passed && "text-orange-600 dark:text-orange-400")}>
+                    {result.message}
+                  </span>
+                </div>
+              ))}
             </div>
           )}
 

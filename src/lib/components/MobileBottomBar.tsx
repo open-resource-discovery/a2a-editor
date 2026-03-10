@@ -14,7 +14,7 @@ export function MobileBottomBar({ showSettings = true }: MobileBottomBarProps) {
   const summary = useValidationStore((state) => state.summary);
 
   return (
-    <div className="flex items-center justify-around border-t bg-background px-4 py-2 pb-[max(0.5rem,env(safe-area-inset-bottom))]">
+    <div className="flex items-center justify-center gap-2 border-t bg-background px-4 py-2 pb-[max(0.5rem,env(safe-area-inset-bottom))]">
       {showSettings && (
         <Button
           variant="ghost"

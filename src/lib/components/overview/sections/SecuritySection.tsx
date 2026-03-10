@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import type { SecurityScheme } from "@lib/types/a2a";
 import { useConnectionStore } from "@lib/stores/connectionStore";
 import { useAgentCardStore } from "@lib/stores/agentCardStore";
@@ -53,8 +53,23 @@ export function SecuritySection({ schemes }: SecuritySectionProps) {
   const { parsedCard } = useAgentCardStore();
 
   const schemeEntries = Object.entries(schemes);
-  const [selectedScheme, setSelectedScheme] = useState(schemeEntries[0]?.[0] ?? "");
+  const [selectedScheme, setSelectedScheme] = useState(() => {
+    const oauthEntry = schemeEntries.find(([, s]) => s.type === "oauth2");
+    return oauthEntry?.[0] ?? schemeEntries[0]?.[0] ?? "";
+  });
   const [showAdvanced, setShowAdvanced] = useState(false);
+
+  // Reset selected scheme when schemes change (agent switch)
+  // Prefer OAuth2 scheme when available
+  useEffect(() => {
+    const entries = Object.entries(schemes);
+    const oauthEntry = entries.find(([, s]) => s.type === "oauth2");
+    const preferredKey = oauthEntry?.[0] ?? entries[0]?.[0] ?? "";
+    setSelectedScheme(preferredKey);
+    if (parsedCard && preferredKey) {
+      autoConfigureAuth(parsedCard, preferredKey);
+    }
+  }, [schemes, parsedCard, autoConfigureAuth]);
 
   const activeEntry = schemeEntries.find(([n]) => n === selectedScheme);
   const activeScheme = activeEntry?.[1];
