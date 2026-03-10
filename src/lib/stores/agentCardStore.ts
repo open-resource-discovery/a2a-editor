@@ -4,8 +4,9 @@ import { isMockUrl, getMockAgentCard } from "@lib/mock/agents";
 import { usePredefinedAgentsStore } from "./predefinedAgentsStore";
 import { useConnectionStore } from "./connectionStore";
 import { useHttpLogStore } from "./httpLogStore";
+import { normalizeAgentCard, detectProtocolVersion } from "@lib/utils/a2a-compat";
 
-// Helper to parse JSON and extract card/error
+// Helper to parse JSON, normalize for version compat, and extract card/error
 function parseAgentCard(json: string): {
   card: AgentCard | null;
   error: string | null;
@@ -14,7 +15,17 @@ function parseAgentCard(json: string): {
     return { card: null, error: null };
   }
   try {
-    return { card: JSON.parse(json) as AgentCard, error: null };
+    const raw = JSON.parse(json);
+    const card = normalizeAgentCard(raw) as AgentCard;
+
+    // Update protocol version in connection store
+    const version = detectProtocolVersion(raw);
+    const connectionStore = useConnectionStore.getState();
+    if (connectionStore.protocolVersion !== version) {
+      useConnectionStore.setState({ protocolVersion: version });
+    }
+
+    return { card, error: null };
   } catch (err) {
     return {
       card: null,
@@ -113,16 +124,19 @@ export const useAgentCardStore = create<AgentCardState>((set, get) => ({
       if (!res.ok) throw new Error(`Failed to fetch: ${res.statusText}`);
       const data = await res.json();
       const json = JSON.stringify(data, null, 2);
-      const card = data as AgentCard;
+
+      // Detect version and normalize
+      const version = detectProtocolVersion(data);
+      const card = normalizeAgentCard(data) as AgentCard;
+      connectionStore.setUrl(card.url ?? connectionStore.url);
+      useConnectionStore.setState({ protocolVersion: version });
+
       set({
         rawJson: json,
         parsedCard: card,
         parseError: null,
         isDirty: false,
       });
-      if (card.url && connectionStore.url !== card.url) {
-        connectionStore.setUrl(card.url);
-      }
       connectionStore.autoConfigureAuth(card);
     } catch (err) {
       set({

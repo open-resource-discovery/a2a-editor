@@ -6,6 +6,8 @@ import type {
   ApiKeyCredentials,
   ConnectionStatus,
   PredefinedAgent,
+  DeviceCodeState,
+  OidcDiscoveryDoc,
 } from "@lib/types/connection";
 import type { AgentCard } from "@lib/types/a2a";
 import type { HttpLogEntry } from "@lib/types/httpLog";
@@ -20,6 +22,7 @@ import {
   getStoredOAuthParams,
   clearOAuthParams,
 } from "@lib/utils/pkce";
+import { detectProtocolVersion, normalizeAgentCard } from "@lib/utils/a2a-compat";
 
 // Compute auth headers from current state
 function computeAuthHeaders(
@@ -47,7 +50,9 @@ function computeAuthHeaders(
     }
     case "apiKey": {
       const { key, headerName } = apiKeyCredentials;
-      if (key) {
+      // Only set header for header-based API keys (default)
+      // Query and cookie API keys are handled at the request level
+      if (key && (!apiKeyCredentials.in || apiKeyCredentials.in === "header")) {
         headers[headerName] = key;
       }
       break;
@@ -71,6 +76,10 @@ interface ConnectionState {
   isTokenLoading: boolean;
   tokenError: string;
   isAuthFlowInProgress: boolean;
+  deviceCodeState: DeviceCodeState | null;
+  oidcDiscovery: OidcDiscoveryDoc | null;
+  isOidcDiscovering: boolean;
+  protocolVersion: string;
 
   setUrl: (url: string) => void;
   setAuthType: (type: AuthType) => void;
@@ -86,12 +95,19 @@ interface ConnectionState {
   startAuthCodeFlow: () => Promise<void>;
   handleAuthCallback: (code: string, state: string) => Promise<boolean>;
   cancelAuthFlow: () => void;
+  startDeviceCodeFlow: (deviceAuthUrl: string, tokenUrl: string) => Promise<void>;
+  cancelDeviceCodeFlow: () => void;
+  refreshOAuth2Token: () => Promise<boolean>;
+  discoverOidc: (openIdConnectUrl: string) => Promise<void>;
+  fetchOAuth2Metadata: (metadataUrl: string) => Promise<void>;
 }
 
 const EMPTY_AUTH_HEADERS: Record<string, string> = {};
 
 // Keep popup reference outside store to avoid non-serializable state
 let oauthPopup: Window | null = null;
+// Keep device code polling timer outside store
+let deviceCodePollTimer: ReturnType<typeof setTimeout> | null = null;
 
 export const useConnectionStore = create<ConnectionState>((set, get) => ({
   url: "",
@@ -112,6 +128,10 @@ export const useConnectionStore = create<ConnectionState>((set, get) => ({
   isTokenLoading: false,
   tokenError: "",
   isAuthFlowInProgress: false,
+  deviceCodeState: null,
+  oidcDiscovery: null,
+  isOidcDiscovering: false,
+  protocolVersion: "0.3.0",
 
   setUrl: (url) => set({ url }),
 
@@ -173,27 +193,67 @@ export const useConnectionStore = create<ConnectionState>((set, get) => ({
       if (isMockUrl(state.url)) {
         const card = getMockAgentCard(state.url);
         if (!card) throw new Error("Mock agent not found");
-        set({ connectionStatus: "connected" });
+        set({ connectionStatus: "connected", protocolVersion: "0.3.0" });
         return card;
       }
 
-      // Auto-discover: if URL doesn't end with .json, append well-known path
-      const fetchUrl = state.url.endsWith(".json")
-        ? state.url
-        : `${state.url.replace(/\/$/, "")}/.well-known/agent-card.json`;
+      // Auto-discover: if URL doesn't end with .json, try well-known paths
+      let fetchUrl: string;
+      let data: unknown;
 
-      const res = await fetch(fetchUrl, { headers: headers ?? state.authHeaders });
+      // Build effective fetch headers and URL query params
+      const fetchHeaders = headers ?? state.authHeaders;
 
-      if (!res.ok) {
-        if (res.status === 401 || res.status === 403) {
-          throw new Error(`Authentication required (${res.status})`);
+      // Append query-param API key if configured
+      const appendApiKeyQuery = (url: string): string => {
+        if (state.authType === "apiKey" && state.apiKeyCredentials.in === "query" && state.apiKeyCredentials.key) {
+          const separator = url.includes("?") ? "&" : "?";
+          return `${url}${separator}${encodeURIComponent(state.apiKeyCredentials.headerName)}=${encodeURIComponent(state.apiKeyCredentials.key)}`;
         }
-        throw new Error(`Failed to fetch agent card (${res.status})`);
+        return url;
+      };
+
+      if (state.url.endsWith(".json")) {
+        fetchUrl = appendApiKeyQuery(state.url);
+        const res = await fetch(fetchUrl, { headers: fetchHeaders });
+        if (!res.ok) {
+          if (res.status === 401 || res.status === 403) {
+            throw new Error(`Authentication required (${res.status})`);
+          }
+          throw new Error(`Failed to fetch agent card (${res.status})`);
+        }
+        data = await res.json();
+      } else {
+        const baseUrl = state.url.replace(/\/$/, "");
+        // Try v1.0.0 path first (/.well-known/agent.json), fall back to v0.3.0
+        const v1Url = appendApiKeyQuery(`${baseUrl}/.well-known/agent.json`);
+        const v03Url = appendApiKeyQuery(`${baseUrl}/.well-known/agent-card.json`);
+
+        let res = await fetch(v1Url, { headers: fetchHeaders });
+        if (res.status === 404) {
+          res = await fetch(v03Url, { headers: fetchHeaders });
+        }
+
+        if (!res.ok) {
+          if (res.status === 401 || res.status === 403) {
+            throw new Error(`Authentication required (${res.status})`);
+          }
+          throw new Error(`Failed to fetch agent card (${res.status})`);
+        }
+        data = await res.json();
       }
 
-      const data = await res.json();
-      set({ connectionStatus: "connected" });
-      return data as AgentCard;
+      // Detect protocol version and normalize the card
+      const version = detectProtocolVersion(data);
+      const card = normalizeAgentCard(data);
+
+      // Update connection URL from normalized card (e.g. supportedInterfaces[0].url)
+      if (card.url && card.url !== state.url) {
+        set({ url: card.url });
+      }
+
+      set({ connectionStatus: "connected", protocolVersion: version });
+      return card;
     } catch (err) {
       set({
         connectionStatus: "error",
@@ -213,6 +273,10 @@ export const useConnectionStore = create<ConnectionState>((set, get) => ({
     }),
 
   reset: () => {
+    if (deviceCodePollTimer) {
+      clearTimeout(deviceCodePollTimer);
+      deviceCodePollTimer = null;
+    }
     set({
       url: "",
       authType: "none",
@@ -232,6 +296,10 @@ export const useConnectionStore = create<ConnectionState>((set, get) => ({
       isTokenLoading: false,
       tokenError: "",
       isAuthFlowInProgress: false,
+      deviceCodeState: null,
+      oidcDiscovery: null,
+      isOidcDiscovering: false,
+      protocolVersion: "0.3.0",
     });
     oauthPopup = null;
   },
@@ -281,6 +349,7 @@ export const useConnectionStore = create<ConnectionState>((set, get) => ({
       oauth2Credentials,
       apiKeyCredentials,
       authHeaders,
+      protocolVersion: agent.protocolVersion ?? "0.3.0",
     });
   },
 
@@ -328,14 +397,25 @@ export const useConnectionStore = create<ConnectionState>((set, get) => ({
         }
         break;
       case "oauth2": {
+        // If oauth2MetadataUrl is present, fetch metadata to discover endpoints
+        if (scheme.oauth2MetadataUrl) {
+          // Fire and forget — will update credentials async
+          get().fetchOAuth2Metadata(scheme.oauth2MetadataUrl);
+        }
+
         const clientCredentialsFlow = scheme.flows?.clientCredentials;
         const authCodeFlow = scheme.flows?.authorizationCode;
+        const deviceCodeFlow = scheme.flows?.deviceCode;
         // Prefer authorization code flow if available
         const flow = authCodeFlow ?? clientCredentialsFlow;
         const oauth2Credentials: OAuth2Credentials = {
           ...state.oauth2Credentials,
-          tokenUrl: flow?.tokenUrl ?? state.oauth2Credentials.tokenUrl,
-          scopes: flow?.scopes ? Object.keys(flow.scopes).join(" ") : state.oauth2Credentials.scopes,
+          tokenUrl: flow?.tokenUrl ?? deviceCodeFlow?.tokenUrl ?? state.oauth2Credentials.tokenUrl,
+          scopes: flow?.scopes
+            ? Object.keys(flow.scopes).join(" ")
+            : deviceCodeFlow?.scopes
+              ? Object.keys(deviceCodeFlow.scopes).join(" ")
+              : state.oauth2Credentials.scopes,
           authorizationUrl: authCodeFlow?.authorizationUrl,
         };
         const authHeaders = computeAuthHeaders(
@@ -353,9 +433,10 @@ export const useConnectionStore = create<ConnectionState>((set, get) => ({
         break;
       }
       case "apiKey": {
-        const apiKeyCredentials = {
+        const apiKeyCredentials: ApiKeyCredentials = {
           key: state.apiKeyCredentials.key,
           headerName: scheme.name ?? "Authorization",
+          in: scheme.in ?? "header",
         };
         const authHeaders = computeAuthHeaders(
           "apiKey",
@@ -375,6 +456,10 @@ export const useConnectionStore = create<ConnectionState>((set, get) => ({
         break;
       }
       case "openIdConnect": {
+        // Start OIDC discovery if URL is provided
+        if (scheme.openIdConnectUrl) {
+          get().discoverOidc(scheme.openIdConnectUrl);
+        }
         const authHeaders = computeAuthHeaders(
           "oauth2",
           state.basicCredentials,
@@ -385,6 +470,13 @@ export const useConnectionStore = create<ConnectionState>((set, get) => ({
           requiredAuth: { type: "oauth2", label: `OpenID Connect (${name})` },
           authType: "oauth2",
           authHeaders,
+        });
+        break;
+      }
+      case "mutualTLS": {
+        // mTLS cannot be configured in-browser; just set informational label
+        set({
+          requiredAuth: { type: "none", label: `Mutual TLS (${name})` },
         });
         break;
       }
@@ -738,6 +830,419 @@ export const useConnectionStore = create<ConnectionState>((set, get) => ({
       isAuthFlowInProgress: false,
       tokenError: "",
     });
+  },
+
+  startDeviceCodeFlow: async (deviceAuthUrl, tokenUrl) => {
+    const state = get();
+    const { clientId, scopes } = state.oauth2Credentials;
+
+    if (!clientId) {
+      set({ tokenError: "Client ID is required for device code flow" });
+      return;
+    }
+
+    set({ isTokenLoading: true, tokenError: "" });
+
+    try {
+      const body = new URLSearchParams({ client_id: clientId });
+      if (scopes) {
+        body.append("scope", scopes);
+      }
+
+      const startTime = Date.now();
+      const logEntry: HttpLogEntry = {
+        id: uuidv4(),
+        chatMessageId: `device-code-${uuidv4()}`,
+        timestamp: new Date(),
+        request: {
+          method: "POST",
+          url: deviceAuthUrl,
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body: body.toString(),
+        },
+        response: null,
+      };
+
+      const response = await fetch(deviceAuthUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: body.toString(),
+      });
+
+      const responseBody = await response.text();
+      logEntry.response = {
+        status: response.status,
+        statusText: response.statusText,
+        headers: Object.fromEntries(response.headers.entries()),
+        body: responseBody,
+      };
+      logEntry.durationMs = Date.now() - startTime;
+      useHttpLogStore.getState().addLog(logEntry);
+
+      if (!response.ok) {
+        throw new Error(`Device authorization failed: ${response.status} ${responseBody}`);
+      }
+
+      const data = JSON.parse(responseBody);
+      const deviceCode = data.device_code;
+      const userCode = data.user_code;
+      const verificationUri = data.verification_uri;
+      const verificationUriComplete = data.verification_uri_complete;
+      const expiresIn = data.expires_in ?? 600;
+      const interval = data.interval ?? 5;
+
+      if (!deviceCode || !userCode || !verificationUri) {
+        throw new Error("Invalid device authorization response");
+      }
+
+      set({
+        isTokenLoading: false,
+        deviceCodeState: {
+          deviceCode,
+          userCode,
+          verificationUri,
+          verificationUriComplete,
+          expiresAt: Date.now() + expiresIn * 1000,
+          interval,
+          isPolling: true,
+        },
+      });
+
+      // Start polling for token using recursive setTimeout (handles slow_down naturally)
+      const pollForToken = (currentInterval: number) => {
+        deviceCodePollTimer = setTimeout(async () => {
+          const currentState = get();
+          if (!currentState.deviceCodeState?.isPolling) {
+            deviceCodePollTimer = null;
+            return;
+          }
+
+          // Check expiry
+          if (Date.now() > currentState.deviceCodeState.expiresAt) {
+            deviceCodePollTimer = null;
+            set({
+              deviceCodeState: null,
+              tokenError: "Device code expired. Please try again.",
+            });
+            return;
+          }
+
+          try {
+            const tokenBody = new URLSearchParams({
+              grant_type: "urn:ietf:params:oauth:grant-type:device_code",
+              device_code: currentState.deviceCodeState.deviceCode,
+              client_id: currentState.oauth2Credentials.clientId,
+            });
+
+            const tokenResponse = await fetch(tokenUrl, {
+              method: "POST",
+              headers: { "Content-Type": "application/x-www-form-urlencoded" },
+              body: tokenBody.toString(),
+            });
+
+            const tokenResponseBody = await tokenResponse.text();
+            const tokenData = JSON.parse(tokenResponseBody);
+
+            if (tokenData.error === "authorization_pending") {
+              pollForToken(currentInterval);
+              return;
+            }
+
+            if (tokenData.error === "slow_down") {
+              // Increase interval by 5 seconds per RFC 8628
+              pollForToken(currentInterval + 5);
+              return;
+            }
+
+            if (tokenData.error === "access_denied") {
+              deviceCodePollTimer = null;
+              set({
+                deviceCodeState: null,
+                tokenError: "Authorization denied by user",
+              });
+              return;
+            }
+
+            if (tokenData.error === "expired_token") {
+              deviceCodePollTimer = null;
+              set({
+                deviceCodeState: null,
+                tokenError: "Device code expired",
+              });
+              return;
+            }
+
+            if (tokenData.error) {
+              deviceCodePollTimer = null;
+              set({
+                deviceCodeState: null,
+                tokenError: tokenData.error_description ?? tokenData.error,
+              });
+              return;
+            }
+
+            // Success — got a token
+            deviceCodePollTimer = null;
+
+            const accessToken = tokenData.access_token;
+            const refreshToken = tokenData.refresh_token;
+            const tokenExpiresIn = tokenData.expires_in;
+
+            if (!accessToken) {
+              set({
+                deviceCodeState: null,
+                tokenError: "No access_token in response",
+              });
+              return;
+            }
+
+            // Log the successful token exchange
+            const tokenLogEntry: HttpLogEntry = {
+              id: uuidv4(),
+              chatMessageId: `device-token-${uuidv4()}`,
+              timestamp: new Date(),
+              request: {
+                method: "POST",
+                url: tokenUrl,
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: tokenBody.toString().replace(/device_code=[^&]+/, "device_code=[REDACTED]"),
+              },
+              response: {
+                status: tokenResponse.status,
+                statusText: tokenResponse.statusText,
+                headers: Object.fromEntries(tokenResponse.headers.entries()),
+                body: tokenResponseBody,
+              },
+              durationMs: 0,
+            };
+            useHttpLogStore.getState().addLog(tokenLogEntry);
+
+            const updatedOAuth2 = {
+              ...currentState.oauth2Credentials,
+              accessToken,
+              refreshToken,
+              expiresAt: tokenExpiresIn ? Date.now() + tokenExpiresIn * 1000 : undefined,
+            };
+            const authHeaders = computeAuthHeaders(
+              "oauth2",
+              currentState.basicCredentials,
+              updatedOAuth2,
+              currentState.apiKeyCredentials,
+            );
+
+            set({
+              oauth2Credentials: updatedOAuth2,
+              authHeaders,
+              deviceCodeState: null,
+              tokenError: "",
+            });
+          } catch {
+            // Network error during poll — keep polling, don't fail
+            pollForToken(currentInterval);
+          }
+        }, currentInterval * 1000);
+      };
+
+      pollForToken(interval);
+    } catch (err) {
+      set({
+        isTokenLoading: false,
+        tokenError: err instanceof Error ? err.message : "Device code flow failed",
+      });
+    }
+  },
+
+  cancelDeviceCodeFlow: () => {
+    if (deviceCodePollTimer) {
+      clearTimeout(deviceCodePollTimer);
+      deviceCodePollTimer = null;
+    }
+    set({
+      deviceCodeState: null,
+      tokenError: "",
+    });
+  },
+
+  refreshOAuth2Token: async () => {
+    const state = get();
+    const { refreshToken, tokenUrl, clientId, clientSecret } = state.oauth2Credentials;
+
+    if (!refreshToken) {
+      set({ tokenError: "No refresh token available" });
+      return false;
+    }
+
+    if (!tokenUrl) {
+      set({ tokenError: "Token URL is required for refresh" });
+      return false;
+    }
+
+    set({ isTokenLoading: true, tokenError: "" });
+
+    try {
+      const body = new URLSearchParams({
+        grant_type: "refresh_token",
+        refresh_token: refreshToken,
+        client_id: clientId,
+      });
+
+      if (clientSecret) {
+        body.append("client_secret", clientSecret);
+      }
+
+      const requestHeaders = {
+        "Content-Type": "application/x-www-form-urlencoded",
+      };
+      const requestBody = body.toString();
+      const startTime = Date.now();
+
+      const logEntry: HttpLogEntry = {
+        id: uuidv4(),
+        chatMessageId: `oauth-refresh-${uuidv4()}`,
+        timestamp: new Date(),
+        request: {
+          method: "POST",
+          url: tokenUrl,
+          headers: requestHeaders,
+          body: requestBody.replace(/refresh_token=[^&]+/, "refresh_token=[REDACTED]"),
+        },
+        response: null,
+      };
+
+      const response = await fetch(tokenUrl, {
+        method: "POST",
+        headers: requestHeaders,
+        body: requestBody,
+      });
+
+      const responseBody = await response.text();
+      logEntry.response = {
+        status: response.status,
+        statusText: response.statusText,
+        headers: Object.fromEntries(response.headers.entries()),
+        body: responseBody,
+      };
+      logEntry.durationMs = Date.now() - startTime;
+      useHttpLogStore.getState().addLog(logEntry);
+
+      if (!response.ok) {
+        throw new Error(`Token refresh failed: ${response.status} ${responseBody}`);
+      }
+
+      const data = JSON.parse(responseBody);
+      const accessToken = data.access_token;
+      const newRefreshToken = data.refresh_token;
+      const expiresIn = data.expires_in;
+
+      if (!accessToken) {
+        throw new Error("No access_token in refresh response");
+      }
+
+      const oauth2Credentials = {
+        ...state.oauth2Credentials,
+        accessToken,
+        refreshToken: newRefreshToken ?? refreshToken,
+        expiresAt: expiresIn ? Date.now() + expiresIn * 1000 : undefined,
+      };
+
+      const authHeaders = computeAuthHeaders(
+        "oauth2",
+        state.basicCredentials,
+        oauth2Credentials,
+        state.apiKeyCredentials,
+      );
+
+      set({
+        oauth2Credentials,
+        authHeaders,
+        isTokenLoading: false,
+        tokenError: "",
+      });
+
+      return true;
+    } catch (err) {
+      set({
+        isTokenLoading: false,
+        tokenError: err instanceof Error ? err.message : "Token refresh failed",
+      });
+      return false;
+    }
+  },
+
+  discoverOidc: async (openIdConnectUrl) => {
+    set({ isOidcDiscovering: true, oidcDiscovery: null });
+
+    try {
+      const discoveryUrl = openIdConnectUrl.endsWith("/.well-known/openid-configuration")
+        ? openIdConnectUrl
+        : `${openIdConnectUrl.replace(/\/$/, "")}/.well-known/openid-configuration`;
+
+      const response = await fetch(discoveryUrl);
+      if (!response.ok) {
+        throw new Error(`OIDC discovery failed: ${response.status}`);
+      }
+
+      const doc: OidcDiscoveryDoc = await response.json();
+      const state = get();
+
+      // Populate OAuth2 credentials from discovered endpoints
+      const oauth2Credentials: OAuth2Credentials = {
+        ...state.oauth2Credentials,
+        tokenUrl: doc.token_endpoint ?? state.oauth2Credentials.tokenUrl,
+        authorizationUrl: doc.authorization_endpoint ?? state.oauth2Credentials.authorizationUrl,
+        scopes: doc.scopes_supported?.join(" ") ?? state.oauth2Credentials.scopes,
+      };
+
+      const authHeaders = computeAuthHeaders(
+        "oauth2",
+        state.basicCredentials,
+        oauth2Credentials,
+        state.apiKeyCredentials,
+      );
+
+      set({
+        oidcDiscovery: doc,
+        isOidcDiscovering: false,
+        oauth2Credentials,
+        authHeaders,
+      });
+    } catch (err) {
+      set({
+        isOidcDiscovering: false,
+        tokenError: err instanceof Error ? err.message : "OIDC discovery failed",
+      });
+    }
+  },
+
+  fetchOAuth2Metadata: async (metadataUrl) => {
+    try {
+      const response = await fetch(metadataUrl);
+      if (!response.ok) {
+        throw new Error(`OAuth2 metadata fetch failed: ${response.status}`);
+      }
+
+      const metadata = await response.json();
+      const state = get();
+
+      // Use discovered endpoints as fallback (don't overwrite explicitly set values from flows)
+      const oauth2Credentials: OAuth2Credentials = {
+        ...state.oauth2Credentials,
+        tokenUrl: state.oauth2Credentials.tokenUrl || metadata.token_endpoint || "",
+        authorizationUrl: state.oauth2Credentials.authorizationUrl || metadata.authorization_endpoint,
+        scopes: state.oauth2Credentials.scopes || (metadata.scopes_supported?.join(" ") ?? ""),
+      };
+
+      const authHeaders = computeAuthHeaders(
+        "oauth2",
+        state.basicCredentials,
+        oauth2Credentials,
+        state.apiKeyCredentials,
+      );
+
+      set({ oauth2Credentials, authHeaders });
+    } catch {
+      // Metadata fetch is best-effort; silently fail
+    }
   },
 }));
 

@@ -5,6 +5,13 @@ import type { HttpLogEntry } from "@lib/types/httpLog";
 import { v4 as uuidv4 } from "uuid";
 import { isMockUrl, handleMockMessage } from "@lib/mock/agents";
 import { useHttpLogStore } from "./httpLogStore";
+import { useConnectionStore } from "./connectionStore";
+import {
+  normalizeTaskResponse,
+  getJsonRpcMethod,
+  buildOutboundRole,
+  ALL_VALID_STATES,
+} from "@lib/utils/a2a-compat";
 
 const MAX_MESSAGES = 200;
 
@@ -89,8 +96,7 @@ function isA2ACompliant(data: unknown): boolean {
     if (!result.status || typeof result.status !== "object") return false;
 
     const status = result.status as Record<string, unknown>;
-    const validStates = ["submitted", "working", "input-required", "completed", "canceled", "failed", "unknown"];
-    if (!validStates.includes(status.state as string)) return false;
+    if (!ALL_VALID_STATES.has(status.state as string)) return false;
 
     return true;
   }
@@ -258,13 +264,14 @@ export const useChatStore = create<ChatState>((set, get) => ({
         };
         useHttpLogStore.getState().addLog(syntheticLog);
       } else {
+        const version = useConnectionStore.getState().protocolVersion;
         const rpcRequest = {
           jsonrpc: "2.0",
           id: uuidv4(),
-          method: "message/send",
+          method: getJsonRpcMethod(version),
           params: {
             message: {
-              role: "user",
+              role: buildOutboundRole(version),
               parts,
               messageId,
               contextId: state.contextId,
@@ -285,6 +292,10 @@ export const useChatStore = create<ChatState>((set, get) => ({
         );
       }
 
+      // Normalize v1.0.0 responses to v0.3.0 format before processing
+      const compliant = isA2ACompliant(data);
+      data = normalizeTaskResponse(data);
+
       const result = processJsonRpcResponse(data);
       if (result) {
         const agentMessage: ChatMessage = {
@@ -296,7 +307,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
           timestamp: new Date(),
           status: result.status,
           artifacts: result.artifacts,
-          compliant: isA2ACompliant(data),
+          compliant: compliant,
           linkedChatMessageId: messageId,
         };
 
@@ -392,13 +403,17 @@ export const useChatStore = create<ChatState>((set, get) => ({
       }
       const requestBody = JSON.stringify(parsed);
 
-      const data = await fetchWithLogging(
+      let data: unknown = await fetchWithLogging(
         agentUrl,
         { ...customHeaders },
         requestBody,
         messageId,
         derivedFromLogId,
       );
+
+      // Check compliance before normalization, then normalize
+      const compliant = isA2ACompliant(data);
+      data = normalizeTaskResponse(data);
 
       const result = processJsonRpcResponse(data);
       if (result) {
@@ -411,7 +426,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
           timestamp: new Date(),
           status: result.status,
           artifacts: result.artifacts,
-          compliant: isA2ACompliant(data),
+          compliant: compliant,
           linkedChatMessageId: messageId,
         };
 

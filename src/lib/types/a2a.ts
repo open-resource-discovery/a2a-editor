@@ -3,7 +3,7 @@
 
 export interface AgentCard {
   name: string;
-  url: string;
+  url?: string; // Top-level in v0.3.0; absent in v1.0.0 (derived from supportedInterfaces)
   version: string;
   description?: string;
   provider?: AgentProvider;
@@ -17,6 +17,13 @@ export interface AgentCard {
   security?: SecurityRequirement[];
   protocolVersions?: string[];
   extensions?: AgentExtension[];
+  supportedInterfaces?: SupportedInterface[]; // v1.0.0
+}
+
+export interface SupportedInterface {
+  url: string;
+  protocolBinding: string;
+  protocolVersion: string;
 }
 
 export interface AgentProvider {
@@ -55,6 +62,7 @@ export interface SecurityScheme {
   in?: "header" | "query" | "cookie";
   // oauth2-specific
   flows?: OAuthFlows;
+  oauth2MetadataUrl?: string; // RFC 8414 authorization server metadata
   // openIdConnect-specific
   openIdConnectUrl?: string;
 }
@@ -62,12 +70,20 @@ export interface SecurityScheme {
 export interface OAuthFlows {
   authorizationCode?: OAuthFlow;
   clientCredentials?: OAuthFlow;
-  implicit?: OAuthFlow;
+  deviceCode?: DeviceCodeOAuthFlow;
+  implicit?: OAuthFlow; // deprecated in A2A 0.3.0
 }
 
 export interface OAuthFlow {
   authorizationUrl?: string;
   tokenUrl?: string;
+  refreshUrl?: string;
+  scopes?: Record<string, string>;
+}
+
+export interface DeviceCodeOAuthFlow {
+  deviceAuthorizationUrl: string;
+  tokenUrl: string;
   refreshUrl?: string;
   scopes?: Record<string, string>;
 }
@@ -113,7 +129,7 @@ export interface TextPart {
 }
 
 export interface FilePart {
-  file: { uri: string; mimeType?: string; name?: string } | string; // string for inline base64
+  file: { uri: string; mimeType?: string; mediaType?: string; name?: string } | string; // string for inline base64
   kind?: "file"; // Legacy
   type?: "file"; // Legacy
   metadata?: Record<string, unknown>;
