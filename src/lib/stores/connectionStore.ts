@@ -21,6 +21,7 @@ import {
   storeOAuthParams,
   getStoredOAuthParams,
   clearOAuthParams,
+  getDefaultOAuthRedirectUri,
 } from "@lib/utils/pkce";
 import { detectProtocolVersion, normalizeAgentCard } from "@lib/utils/a2a-compat";
 
@@ -617,8 +618,8 @@ export const useConnectionStore = create<ConnectionState>((set, get) => ({
     const codeChallenge = await generateCodeChallenge(codeVerifier);
     const oauthState = generateState();
 
-    // Use provided redirect URI or default to current origin
-    const finalRedirectUri = redirectUri || `${window.location.origin}/oauth/callback`;
+    // Use provided redirect URI or detect from deployment context
+    const finalRedirectUri = redirectUri || getDefaultOAuthRedirectUri();
 
     // Store parameters for callback
     storeOAuthParams({
