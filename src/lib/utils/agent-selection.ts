@@ -39,7 +39,13 @@ export async function selectPredefinedAgent(
       useUIStore.getState().closeSettingsPanel();
     }
   } else {
-    // Connection failed — clear stale card
-    useAgentCardStore.getState().reset();
+    // Connection failed — clear card but keep connection state (error + URL preserved)
+    // Don't use reset() which would wipe the URL and error from the connection store
+    useAgentCardStore.setState({
+      rawJson: "",
+      parsedCard: null,
+      parseError: null,
+      isDirty: false,
+    });
   }
 }
