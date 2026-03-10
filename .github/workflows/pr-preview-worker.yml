@@ -11,7 +11,7 @@ jobs:
       contents: read
       actions: read
 
-    runs-on: [self-hosted, solinas]
+    runs-on: ubuntu-latest
 
     steps:
       - name: PR preview (worker)
