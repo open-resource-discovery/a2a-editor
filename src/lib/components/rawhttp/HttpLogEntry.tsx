@@ -157,7 +157,7 @@ export function HttpLogEntry({ entry, isHighlighted }: HttpLogEntryProps) {
     <div
       ref={ref}
       className={cn(
-        "rounded-lg border bg-card overflow-hidden transition-colors",
+        "rounded-lg border bg-card overflow-hidden transition-colors cursor-pointer",
         isHighlighted && "ring-2 ring-primary"
       )}
     >

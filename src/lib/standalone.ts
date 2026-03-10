@@ -436,6 +436,7 @@ declare global {
   interface Window {
     A2APlayground: A2APlaygroundAPI;
     A2AEditor: A2APlaygroundAPI;
+    useConnectionStore: typeof useConnectionStore;
   }
 }
 
@@ -444,6 +445,7 @@ declare global {
   if (typeof window !== "undefined") {
     window.A2APlayground = A2APlayground;
     window.A2AEditor = A2APlayground;
+    window.useConnectionStore = useConnectionStore;
   }
 })();
 

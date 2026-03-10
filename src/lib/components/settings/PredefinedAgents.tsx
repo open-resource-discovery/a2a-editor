@@ -7,6 +7,7 @@ import { PasswordInput } from "@lib/components/ui/PasswordInput";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@lib/components/ui/select";
 import { cn } from "@lib/utils/cn";
 import { selectPredefinedAgent } from "@lib/utils/agent-selection";
+import { detectProtocolVersion, normalizeAgentCard } from "@lib/utils/a2a-compat";
 import { Search, Plus, X, Loader2 } from "lucide-react";
 import type { PredefinedAgent, AuthType, BasicCredentials, OAuth2Credentials, ApiKeyCredentials } from "@lib/types/connection";
 
@@ -29,7 +30,7 @@ function parseAgentUrl(input: string): { normalizedUrl: string; fetchUrl: string
   }
 
   const normalizedUrl = parsed.href.replace(/\/$/, "");
-  const fetchUrl = parsed.pathname.endsWith(".json") ? parsed.href : `${normalizedUrl}/.well-known/agent-card.json`;
+  const fetchUrl = parsed.pathname.endsWith(".json") ? parsed.href : `${normalizedUrl}/.well-known/agent.json`;
 
   return { normalizedUrl, fetchUrl };
 }
@@ -102,8 +103,10 @@ function buildPredefinedConnHeaders(
       return undefined;
     }
     case "apiKey": {
-      const { key, headerName } = config as ApiKeyCredentials;
-      if (key) return { [headerName || "Authorization"]: key };
+      const creds = config as ApiKeyCredentials;
+      // Query-param API keys are handled by connect() via state, not headers
+      if (creds.in === "query") return undefined;
+      if (creds.key) return { [creds.headerName || "Authorization"]: creds.key };
       return undefined;
     }
     default:
@@ -200,17 +203,20 @@ export function PredefinedAgents() {
       }
 
       const card = await res.json();
+      const protocolVersion = detectProtocolVersion(card);
+      const normalizedCard = normalizeAgentCard(card);
 
       // Create custom agent entry with auth credentials
       const { authType, authConfig } = mapAddAuth(addAuthType, addUsername, addPassword, addToken, addApiKey);
       const customAgent: PredefinedAgent = {
         id: `custom-${Date.now()}`,
-        name: card.name || "Custom Agent",
-        description: card.description,
-        url: normalizedUrl,
+        name: normalizedCard.name || "Custom Agent",
+        description: normalizedCard.description ?? "",
+        url: normalizedCard.url ?? normalizedUrl,
         authType,
         ...(authConfig ? { authConfig } : {}),
         tags: ["Custom"],
+        protocolVersion,
       };
 
       addCustomAgent(customAgent);

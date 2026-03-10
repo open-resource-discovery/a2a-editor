@@ -34,6 +34,18 @@ export default defineConfig({
           }
         }
 
+        // Copy OAuth callback page directory
+        const oauthSrcDir = resolve(standaloneDir, "oauth/callback");
+        const oauthDestDir = resolve(outDir, "oauth/callback");
+        const oauthFile = resolve(oauthSrcDir, "index.html");
+        if (existsSync(oauthFile)) {
+          if (!existsSync(oauthDestDir)) {
+            mkdirSync(oauthDestDir, { recursive: true });
+          }
+          copyFileSync(oauthFile, resolve(oauthDestDir, "index.html"));
+          console.log("Copied oauth/callback/index.html to dist-standalone/");
+        }
+
         // Copy predefined-agents.json from public/
         const publicFile = resolve(__dirname, "public/predefined-agents.json");
         if (existsSync(publicFile)) {

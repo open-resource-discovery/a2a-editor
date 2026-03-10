@@ -21,6 +21,26 @@ export interface OAuth2Credentials {
 export interface ApiKeyCredentials {
   key: string;
   headerName: string;
+  /** Where the API key is sent: header (default), query param, or cookie */
+  in?: "header" | "query" | "cookie";
+}
+
+export interface DeviceCodeState {
+  userCode: string;
+  verificationUri: string;
+  verificationUriComplete?: string;
+  expiresAt: number;
+  interval: number;
+  deviceCode: string;
+  isPolling: boolean;
+}
+
+export interface OidcDiscoveryDoc {
+  authorization_endpoint?: string;
+  token_endpoint?: string;
+  userinfo_endpoint?: string;
+  scopes_supported?: string[];
+  issuer?: string;
 }
 
 export type ConnectionStatus = "disconnected" | "connecting" | "connected" | "error";
@@ -37,4 +57,6 @@ export interface PredefinedAgent {
   connectionAuthType?: AuthType;
   connectionAuthConfig?: BasicCredentials | OAuth2Credentials | ApiKeyCredentials;
   tags?: string[];
+  /** A2A protocol version this agent uses ("0.3.0" or "1.0.0") */
+  protocolVersion?: string;
 }

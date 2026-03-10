@@ -5,15 +5,14 @@ import type { HttpLogEntry } from "@lib/types/httpLog";
 import { v4 as uuidv4 } from "uuid";
 import { isMockUrl, handleMockMessage } from "@lib/mock/agents";
 import { useHttpLogStore } from "./httpLogStore";
+import { useConnectionStore } from "./connectionStore";
+import { normalizeTaskResponse, getJsonRpcMethod, buildOutboundRole } from "@lib/utils/a2a-compat";
 import { validateResponse, isFullyCompliant } from "@lib/utils/a2a-compliance";
 
 const MAX_MESSAGES = 200;
 
 /** Append a message, capping the array */
-function appendMessage(
-  messages: ChatMessage[],
-  msg: ChatMessage,
-): ChatMessage[] {
+function appendMessage(messages: ChatMessage[], msg: ChatMessage): ChatMessage[] {
   const updated = [...messages, msg];
   return updated.length > MAX_MESSAGES ? updated.slice(-MAX_MESSAGES) : updated;
 }
@@ -38,9 +37,7 @@ function processJsonRpcResponse(data: unknown): {
 
   // Handle JSON-RPC error responses
   if (response.error) {
-    throw new Error(
-      response.error.message || `JSON-RPC error (code: ${response.error.code})`,
-    );
+    throw new Error(response.error.message || `JSON-RPC error (code: ${response.error.code})`);
   }
 
   if (!response.result) return null;
@@ -122,8 +119,7 @@ async function fetchWithLogging(
   } catch (fetchErr) {
     // Only log if not already logged (response was received but non-ok)
     if (!logEntry.response) {
-      logEntry.error =
-        fetchErr instanceof Error ? fetchErr.message : "Unknown error";
+      logEntry.error = fetchErr instanceof Error ? fetchErr.message : "Unknown error";
       logEntry.durationMs = Date.now() - startTime;
       useHttpLogStore.getState().addLog(logEntry);
     }
@@ -139,11 +135,7 @@ interface ChatState {
   inputText: string;
 
   setInputText: (text: string) => void;
-  sendMessage: (
-    parts: Part[],
-    agentUrl: string,
-    authHeaders: Record<string, string>,
-  ) => Promise<void>;
+  sendMessage: (parts: Part[], agentUrl: string, authHeaders: Record<string, string>) => Promise<void>;
   sendRawRequest: (
     body: string,
     agentUrl: string,
@@ -151,11 +143,7 @@ interface ChatState {
     derivedFromLogId?: string,
   ) => Promise<void>;
   clearChat: () => void;
-  retryMessage: (
-    messageId: string,
-    agentUrl: string,
-    authHeaders: Record<string, string>,
-  ) => Promise<void>;
+  retryMessage: (messageId: string, agentUrl: string, authHeaders: Record<string, string>) => Promise<void>;
 }
 
 export const useChatStore = create<ChatState>((set, get) => ({
@@ -225,13 +213,14 @@ export const useChatStore = create<ChatState>((set, get) => ({
         };
         useHttpLogStore.getState().addLog(syntheticLog);
       } else {
+        const version = useConnectionStore.getState().protocolVersion;
         const rpcRequest = {
           jsonrpc: "2.0",
           id: uuidv4(),
-          method: "message/send",
+          method: getJsonRpcMethod(version),
           params: {
             message: {
-              role: "user",
+              role: buildOutboundRole(version),
               parts,
               messageId,
               contextId: state.contextId,
@@ -244,13 +233,11 @@ export const useChatStore = create<ChatState>((set, get) => ({
           ...authHeaders,
         };
 
-        data = await fetchWithLogging(
-          agentUrl,
-          requestHeaders,
-          JSON.stringify(rpcRequest),
-          messageId,
-        );
+        data = await fetchWithLogging(agentUrl, requestHeaders, JSON.stringify(rpcRequest), messageId);
       }
+
+      // Normalize v1.0.0 responses to v0.3.0 format before processing
+      data = normalizeTaskResponse(data);
 
       const result = processJsonRpcResponse(data);
       if (result) {
@@ -355,19 +342,21 @@ export const useChatStore = create<ChatState>((set, get) => ({
     try {
       // Reuse parsed body, update messageId
       if (parsed.params?.message) {
-        (parsed.params.message as Record<string, unknown>).messageId =
-          messageId;
+        (parsed.params.message as Record<string, unknown>).messageId = messageId;
         parsed.id = uuidv4() as string; // New request ID
       }
       const requestBody = JSON.stringify(parsed);
 
-      const data = await fetchWithLogging(
+      let data: unknown = await fetchWithLogging(
         agentUrl,
         { ...customHeaders },
         requestBody,
         messageId,
         derivedFromLogId,
       );
+
+      // Check compliance before normalization, then normalize
+      data = normalizeTaskResponse(data);
 
       const result = processJsonRpcResponse(data);
       if (result) {

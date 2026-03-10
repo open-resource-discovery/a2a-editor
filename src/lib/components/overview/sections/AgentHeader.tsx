@@ -37,9 +37,13 @@ export function AgentHeader({ card }: AgentHeaderProps) {
               v{card.version}
             </Badge>
           </div>
-          {card.protocolVersions && card.protocolVersions.length > 0 && (
+          {card.supportedInterfaces && card.supportedInterfaces.length > 0 ? (
+            <span className="text-xs text-muted-foreground">
+              Protocol: {card.supportedInterfaces.map((i) => `${i.protocolVersion} (${i.protocolBinding})`).join(", ")}
+            </span>
+          ) : card.protocolVersions && card.protocolVersions.length > 0 ? (
             <span className="text-xs text-muted-foreground">Protocol: {card.protocolVersions.join(", ")}</span>
-          )}
+          ) : null}
         </div>
       </div>
 

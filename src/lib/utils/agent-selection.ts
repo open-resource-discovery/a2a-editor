@@ -27,6 +27,17 @@ export async function selectPredefinedAgent(
   usePredefinedAgentsStore.getState().select(agent.id);
   useConnectionStore.getState().setFromPredefined(agent);
 
+  // Auto-fetch OAuth2 token for connection if agent has client credentials but no access token
+  const connState = useConnectionStore.getState();
+  if (
+    connState.authType === "oauth2" &&
+    !connState.oauth2Credentials.accessToken &&
+    connState.oauth2Credentials.tokenUrl &&
+    connState.oauth2Credentials.clientId
+  ) {
+    await connState.fetchOAuth2Token();
+  }
+
   // Connect and process the card
   // Keep the old card visible while fetching; replace atomically on success
   const card = await useConnectionStore.getState().connect(connectHeaders);
@@ -39,8 +50,8 @@ export async function selectPredefinedAgent(
       useUIStore.getState().closeSettingsPanel();
     }
   } else {
-    // Connection failed — clear card but keep connection state (error + URL preserved)
-    // Don't use reset() which would wipe the URL and error from the connection store
+    // Connection failed — clear stale card but preserve connection URL + error state
+    // so the user can see ConnectionSection and fix auth
     useAgentCardStore.setState({
       rawJson: "",
       parsedCard: null,

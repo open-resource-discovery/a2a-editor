@@ -54,16 +54,9 @@ export const OAUTH_STORAGE_KEYS = {
 /**
  * Store PKCE and state parameters in sessionStorage
  */
-export function storeOAuthParams(params: {
-  codeVerifier: string;
-  state: string;
-  redirectUri: string;
-}): void {
+export function storeOAuthParams(params: { codeVerifier: string; state: string; redirectUri: string }): void {
   try {
-    sessionStorage.setItem(
-      OAUTH_STORAGE_KEYS.CODE_VERIFIER,
-      params.codeVerifier,
-    );
+    sessionStorage.setItem(OAUTH_STORAGE_KEYS.CODE_VERIFIER, params.codeVerifier);
     sessionStorage.setItem(OAUTH_STORAGE_KEYS.STATE, params.state);
     sessionStorage.setItem(OAUTH_STORAGE_KEYS.REDIRECT_URI, params.redirectUri);
   } catch {
@@ -101,4 +94,54 @@ export function clearOAuthParams(): void {
   } catch {
     // Silently handle storage errors
   }
+}
+
+/**
+ * Detect the default OAuth redirect URI based on the deployment context.
+ *
+ * On GitHub Pages (and similar sub-path deployments), `window.location.origin`
+ * does not include the base path, so we detect it by:
+ * 1. Looking at the `<script>` tag that loaded the standalone bundle — the
+ *    `oauth/callback/index.html` lives in the same directory.
+ * 2. Checking for a `<base>` tag (often set by SPA frameworks).
+ * 3. Falling back to `window.location.origin + '/oauth/callback'`.
+ */
+export function getDefaultOAuthRedirectUri(): string {
+  const origin = window.location.origin;
+
+  // Method 1: Detect from the standalone bundle script tag.
+  // The oauth/callback page is deployed alongside the script file.
+  try {
+    const scripts = document.querySelectorAll("script[src]");
+    for (const script of scripts) {
+      const src = (script as HTMLScriptElement).src;
+      if (src.includes("a2a-playground")) {
+        const scriptUrl = new URL(src);
+        // Only use same-origin scripts (ignore CDN-loaded bundles)
+        if (scriptUrl.origin === origin) {
+          const scriptDir = scriptUrl.pathname.substring(0, scriptUrl.pathname.lastIndexOf("/") + 1);
+          return `${origin}${scriptDir}oauth/callback`;
+        }
+      }
+    }
+  } catch {
+    // Ignore detection errors
+  }
+
+  // Method 2: Check <base> tag (set by some SPA frameworks)
+  try {
+    const baseTag = document.querySelector("base");
+    if (baseTag?.href) {
+      const base = new URL(baseTag.href);
+      if (base.origin === origin) {
+        const basePath = base.pathname.endsWith("/") ? base.pathname : base.pathname + "/";
+        return `${origin}${basePath}oauth/callback`;
+      }
+    }
+  } catch {
+    // Ignore detection errors
+  }
+
+  // Fallback: use origin root
+  return `${origin}/oauth/callback`;
 }
