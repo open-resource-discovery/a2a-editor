@@ -36,6 +36,9 @@ export type {
 
 export type { ChatMessage } from "./types/chat";
 
+export type { ComplianceResult } from "./utils/a2a-compliance";
+export { validateAgentCard, validateResponse, isFullyCompliant } from "./utils/a2a-compliance";
+
 export type {
   ValidationResult,
   ValidationSummary,

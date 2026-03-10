@@ -6,20 +6,13 @@ import { v4 as uuidv4 } from "uuid";
 import { isMockUrl, handleMockMessage } from "@lib/mock/agents";
 import { useHttpLogStore } from "./httpLogStore";
 import { useConnectionStore } from "./connectionStore";
-import {
-  normalizeTaskResponse,
-  getJsonRpcMethod,
-  buildOutboundRole,
-  ALL_VALID_STATES,
-} from "@lib/utils/a2a-compat";
+import { normalizeTaskResponse, getJsonRpcMethod, buildOutboundRole } from "@lib/utils/a2a-compat";
+import { validateResponse, isFullyCompliant } from "@lib/utils/a2a-compliance";
 
 const MAX_MESSAGES = 200;
 
 /** Append a message, capping the array */
-function appendMessage(
-  messages: ChatMessage[],
-  msg: ChatMessage,
-): ChatMessage[] {
+function appendMessage(messages: ChatMessage[], msg: ChatMessage): ChatMessage[] {
   const updated = [...messages, msg];
   return updated.length > MAX_MESSAGES ? updated.slice(-MAX_MESSAGES) : updated;
 }
@@ -44,9 +37,7 @@ function processJsonRpcResponse(data: unknown): {
 
   // Handle JSON-RPC error responses
   if (response.error) {
-    throw new Error(
-      response.error.message || `JSON-RPC error (code: ${response.error.code})`,
-    );
+    throw new Error(response.error.message || `JSON-RPC error (code: ${response.error.code})`);
   }
 
   if (!response.result) return null;
@@ -69,39 +60,6 @@ function processJsonRpcResponse(data: unknown): {
     status: task.status?.state,
     artifacts: task.artifacts,
   };
-}
-
-/** Check if a raw JSON-RPC response is A2A protocol compliant */
-function isA2ACompliant(data: unknown): boolean {
-  if (!data || typeof data !== "object") return false;
-  const response = data as Record<string, unknown>;
-
-  // Must have jsonrpc "2.0"
-  if (response.jsonrpc !== "2.0") return false;
-
-  // Must have either result or error
-  if (!response.result && !response.error) return false;
-
-  // If error, must have code and message
-  if (response.error) {
-    const error = response.error as Record<string, unknown>;
-    if (typeof error.code !== "number" || typeof error.message !== "string") return false;
-    return true;
-  }
-
-  // If result, must have id and status
-  if (response.result) {
-    const result = response.result as Record<string, unknown>;
-    if (typeof result.id !== "string") return false;
-    if (!result.status || typeof result.status !== "object") return false;
-
-    const status = result.status as Record<string, unknown>;
-    if (!ALL_VALID_STATES.has(status.state as string)) return false;
-
-    return true;
-  }
-
-  return false;
 }
 
 /** Execute a fetch with HTTP logging */
@@ -161,8 +119,7 @@ async function fetchWithLogging(
   } catch (fetchErr) {
     // Only log if not already logged (response was received but non-ok)
     if (!logEntry.response) {
-      logEntry.error =
-        fetchErr instanceof Error ? fetchErr.message : "Unknown error";
+      logEntry.error = fetchErr instanceof Error ? fetchErr.message : "Unknown error";
       logEntry.durationMs = Date.now() - startTime;
       useHttpLogStore.getState().addLog(logEntry);
     }
@@ -178,11 +135,7 @@ interface ChatState {
   inputText: string;
 
   setInputText: (text: string) => void;
-  sendMessage: (
-    parts: Part[],
-    agentUrl: string,
-    authHeaders: Record<string, string>,
-  ) => Promise<void>;
+  sendMessage: (parts: Part[], agentUrl: string, authHeaders: Record<string, string>) => Promise<void>;
   sendRawRequest: (
     body: string,
     agentUrl: string,
@@ -190,11 +143,7 @@ interface ChatState {
     derivedFromLogId?: string,
   ) => Promise<void>;
   clearChat: () => void;
-  retryMessage: (
-    messageId: string,
-    agentUrl: string,
-    authHeaders: Record<string, string>,
-  ) => Promise<void>;
+  retryMessage: (messageId: string, agentUrl: string, authHeaders: Record<string, string>) => Promise<void>;
 }
 
 export const useChatStore = create<ChatState>((set, get) => ({
@@ -284,20 +233,15 @@ export const useChatStore = create<ChatState>((set, get) => ({
           ...authHeaders,
         };
 
-        data = await fetchWithLogging(
-          agentUrl,
-          requestHeaders,
-          JSON.stringify(rpcRequest),
-          messageId,
-        );
+        data = await fetchWithLogging(agentUrl, requestHeaders, JSON.stringify(rpcRequest), messageId);
       }
 
       // Normalize v1.0.0 responses to v0.3.0 format before processing
-      const compliant = isA2ACompliant(data);
       data = normalizeTaskResponse(data);
 
       const result = processJsonRpcResponse(data);
       if (result) {
+        const complianceDetails = validateResponse(data);
         const agentMessage: ChatMessage = {
           id: uuidv4(),
           role: "agent",
@@ -307,7 +251,8 @@ export const useChatStore = create<ChatState>((set, get) => ({
           timestamp: new Date(),
           status: result.status,
           artifacts: result.artifacts,
-          compliant: compliant,
+          compliant: isFullyCompliant(complianceDetails),
+          complianceDetails,
           linkedChatMessageId: messageId,
         };
 
@@ -397,8 +342,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
     try {
       // Reuse parsed body, update messageId
       if (parsed.params?.message) {
-        (parsed.params.message as Record<string, unknown>).messageId =
-          messageId;
+        (parsed.params.message as Record<string, unknown>).messageId = messageId;
         parsed.id = uuidv4() as string; // New request ID
       }
       const requestBody = JSON.stringify(parsed);
@@ -412,11 +356,11 @@ export const useChatStore = create<ChatState>((set, get) => ({
       );
 
       // Check compliance before normalization, then normalize
-      const compliant = isA2ACompliant(data);
       data = normalizeTaskResponse(data);
 
       const result = processJsonRpcResponse(data);
       if (result) {
+        const complianceDetails = validateResponse(data);
         const agentMessage: ChatMessage = {
           id: uuidv4(),
           role: "agent",
@@ -426,7 +370,8 @@ export const useChatStore = create<ChatState>((set, get) => ({
           timestamp: new Date(),
           status: result.status,
           artifacts: result.artifacts,
-          compliant: compliant,
+          compliant: isFullyCompliant(complianceDetails),
+          complianceDetails,
           linkedChatMessageId: messageId,
         };
 
