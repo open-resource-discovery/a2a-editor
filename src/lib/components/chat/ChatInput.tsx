@@ -1,16 +1,17 @@
 import { useChatStore } from "@lib/stores/chatStore";
-import { useConnectionStore } from "@lib/stores/connectionStore";
+import { useConnectionStore, selectEffectiveUrl } from "@lib/stores/connectionStore";
 import { Button } from "@lib/components/ui/button";
 import { Input } from "@lib/components/ui/input";
-import { Send, Loader2 } from "lucide-react";
+import { Send, Square } from "lucide-react";
 
 interface ChatInputProps {
   disabled?: boolean;
 }
 
 export function ChatInput({ disabled }: ChatInputProps) {
-  const { inputText, setInputText, sendMessage, isStreaming } = useChatStore();
-  const { url, authHeaders } = useConnectionStore();
+  const { inputText, setInputText, sendMessage, cancelStream, isStreaming } = useChatStore();
+  const { authHeaders } = useConnectionStore();
+  const effectiveUrl = useConnectionStore(selectEffectiveUrl);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -25,7 +26,7 @@ export function ChatInput({ disabled }: ChatInputProps) {
       parts = [{ text: inputText }];
     }
 
-    sendMessage(parts, url, authHeaders);
+    sendMessage(parts, effectiveUrl, authHeaders);
   };
 
   return (
@@ -34,26 +35,19 @@ export function ChatInput({ disabled }: ChatInputProps) {
         data-testid="chat-input"
         value={inputText}
         onChange={(e) => setInputText(e.target.value)}
-        placeholder={
-          disabled
-            ? "Connect to an agent to chat..."
-            : "Type a message or JSON..."
-        }
+        placeholder={disabled ? "Connect to an agent to chat..." : "Type a message or JSON..."}
         disabled={disabled || isStreaming}
         className="flex-1"
       />
-      <Button
-        type="submit"
-        size="icon"
-        data-testid="chat-send"
-        disabled={disabled || isStreaming || !inputText.trim()}
-      >
-        {isStreaming ? (
-          <Loader2 className="h-4 w-4 animate-spin" />
-        ) : (
+      {isStreaming ? (
+        <Button type="button" size="icon" variant="destructive" onClick={cancelStream} title="Stop streaming">
+          <Square className="h-4 w-4" />
+        </Button>
+      ) : (
+        <Button type="submit" size="icon" disabled={disabled || !inputText.trim()} data-testid="chat-send">
           <Send className="h-4 w-4" />
-        )}
-      </Button>
+        </Button>
+      )}
     </form>
   );
 }

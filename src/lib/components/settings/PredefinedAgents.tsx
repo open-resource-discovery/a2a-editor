@@ -212,7 +212,7 @@ export function PredefinedAgents() {
         id: `custom-${Date.now()}`,
         name: normalizedCard.name || "Custom Agent",
         description: normalizedCard.description ?? "",
-        url: normalizedCard.url ?? normalizedUrl,
+        url: normalizedUrl,
         authType,
         ...(authConfig ? { authConfig } : {}),
         tags: ["Custom"],

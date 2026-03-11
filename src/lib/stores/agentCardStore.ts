@@ -68,9 +68,9 @@ export const useAgentCardStore = create<AgentCardState>((set, get) => ({
     // Auto-configure connection when a valid card is parsed
     if (card) {
       const connectionStore = useConnectionStore.getState();
-      // Set URL from card if not already set or if different
-      if (card.url && connectionStore.url !== card.url) {
-        connectionStore.setUrl(card.url);
+      // Set messaging URL from card if available
+      if (card.url) {
+        connectionStore.setMessagingUrl(card.url);
       }
       // Auto-configure auth from security schemes
       connectionStore.autoConfigureAuth(card);
@@ -113,8 +113,8 @@ export const useAgentCardStore = create<AgentCardState>((set, get) => ({
           parseError: null,
           isDirty: false,
         });
-        if (card.url && connectionStore.url !== card.url) {
-          connectionStore.setUrl(card.url);
+        if (card.url) {
+          connectionStore.setMessagingUrl(card.url);
         }
         connectionStore.autoConfigureAuth(card);
         return;
@@ -128,7 +128,9 @@ export const useAgentCardStore = create<AgentCardState>((set, get) => ({
       // Detect version and normalize
       const version = detectProtocolVersion(data);
       const card = normalizeAgentCard(data) as AgentCard;
-      connectionStore.setUrl(card.url ?? connectionStore.url);
+      if (card.url) {
+        connectionStore.setMessagingUrl(card.url);
+      }
       useConnectionStore.setState({ protocolVersion: version });
 
       set({
