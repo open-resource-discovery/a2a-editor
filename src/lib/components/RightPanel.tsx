@@ -69,20 +69,20 @@ export function RightPanel({
   }, []);
 
   return (
-    <div className="flex h-full flex-col overflow-hidden border-l bg-background">
+    <div className="flex h-full flex-col overflow-hidden border-l bg-background" data-testid="right-panel">
       <Tabs value={localTab} onValueChange={handleTabChange} className="flex h-full flex-col">
         <div className="border-b">
           <TabsList className="h-10 w-full justify-start rounded-none border-b-0 bg-background px-2">
-            <TabsTrigger value="overview" className="text-xs">
+            <TabsTrigger value="overview" className="text-xs" data-testid="tab-overview">
               Overview
             </TabsTrigger>
             {showChat && (
-              <TabsTrigger value="chat" className="text-xs">
+              <TabsTrigger value="chat" className="text-xs" data-testid="tab-chat">
                 Chat
               </TabsTrigger>
             )}
             {showValidation && (
-              <TabsTrigger value="validation" className="relative text-xs">
+              <TabsTrigger value="validation" className="relative text-xs" data-testid="tab-validation">
                 Validation
                 {summary.fail > 0 && (
                   <Badge variant="error" className="ml-1 h-5 min-w-5 justify-center p-0 px-1 text-xs">
@@ -97,7 +97,7 @@ export function RightPanel({
               </TabsTrigger>
             )}
             {showRawHttp && (
-              <TabsTrigger value="rawhttp" className="text-xs">
+              <TabsTrigger value="rawhttp" className="text-xs" data-testid="tab-rawhttp">
                 Raw HTTP
                 {logCount > 0 && (
                   <Badge variant="secondary" className="ml-1 h-5 min-w-5 justify-center p-0 px-1 text-xs">

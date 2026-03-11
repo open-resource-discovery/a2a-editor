@@ -57,7 +57,7 @@ export function ChatMessage({ message, onRetry }: ChatMessageProps) {
   };
 
   return (
-    <div className={cn("group flex mb-3 min-w-0", isUser ? "justify-end" : "justify-start")}>
+    <div className={cn("group flex mb-3 min-w-0", isUser ? "justify-end" : "justify-start")} data-testid={isUser ? "message-user" : "message-agent"}>
       <div className={cn("flex items-end gap-1 min-w-0 max-w-full", isUser ? "flex-row-reverse" : "flex-row")}>
         <div
           className={cn(

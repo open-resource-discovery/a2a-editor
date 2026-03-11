@@ -241,6 +241,7 @@ export function PredefinedAgents() {
     <div
       key={agent.id}
       role="listitem"
+      data-testid={`agent-card-${agent.id}`}
       tabIndex={0}
       className={cn(
         "rounded-lg border p-3 cursor-pointer transition-colors relative group",
@@ -280,7 +281,7 @@ export function PredefinedAgents() {
     <div className="space-y-3">
       <div className="flex items-center justify-between">
         <h3 className="text-sm font-medium">Agents</h3>
-        <Button variant="ghost" size="sm" className="h-7" onClick={() => setShowAddForm(!showAddForm)}>
+        <Button variant="ghost" size="sm" className="h-7" onClick={() => setShowAddForm(!showAddForm)} data-testid="add-agent-btn">
           <Plus className="h-3.5 w-3.5 mr-1" />
           Add
         </Button>
@@ -291,6 +292,7 @@ export function PredefinedAgents() {
         <div className="rounded-lg border p-3 space-y-2 bg-muted/50">
           <Input
             placeholder="Enter agent URL..."
+            data-testid="add-agent-url"
             value={newAgentUrl}
             onChange={(e) => {
               setNewAgentUrl(e.target.value);
@@ -369,10 +371,11 @@ export function PredefinedAgents() {
                 setShowAddForm(false);
                 setNewAgentUrl("");
                 setAddError("");
-              }}>
+              }}
+              data-testid="add-agent-cancel">
               Cancel
             </Button>
-            <Button size="sm" onClick={handleAddAgent} disabled={isAdding || !isValidNewAgentUrl}>
+            <Button size="sm" onClick={handleAddAgent} disabled={isAdding || !isValidNewAgentUrl} data-testid="add-agent-submit">
               {isAdding ? (
                 <>
                   <Loader2 className="h-3 w-3 mr-1 animate-spin" />
@@ -391,6 +394,7 @@ export function PredefinedAgents() {
         <Search className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
         <Input
           placeholder="Search agents..."
+          data-testid="agent-search"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="h-8 pl-8 text-sm"

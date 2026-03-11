@@ -31,6 +31,7 @@ export function ChatInput({ disabled }: ChatInputProps) {
   return (
     <form onSubmit={handleSubmit} className="flex gap-2 border-t p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
       <Input
+        data-testid="chat-input"
         value={inputText}
         onChange={(e) => setInputText(e.target.value)}
         placeholder={
@@ -44,6 +45,7 @@ export function ChatInput({ disabled }: ChatInputProps) {
       <Button
         type="submit"
         size="icon"
+        data-testid="chat-send"
         disabled={disabled || isStreaming || !inputText.trim()}
       >
         {isStreaming ? (

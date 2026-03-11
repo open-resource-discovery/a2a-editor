@@ -3,7 +3,7 @@ import { PredefinedAgents } from "./PredefinedAgents";
 
 export function SettingsPanel() {
   return (
-    <div className="flex h-full flex-col bg-sidebar">
+    <div className="flex h-full flex-col bg-sidebar" data-testid="settings-panel">
       <ScrollArea className="flex-1">
         <div className="p-4">
           <PredefinedAgents />

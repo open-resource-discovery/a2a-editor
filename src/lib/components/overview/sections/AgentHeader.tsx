@@ -27,13 +27,13 @@ export function AgentHeader({ card }: AgentHeaderProps) {
     descriptionTooLong && !expanded ? card.description!.slice(0, 150) + "..." : card.description;
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-3" data-testid="agent-header">
       <div className="flex items-start gap-3">
         {card.iconUrl && <img src={card.iconUrl} alt={card.name} className="h-12 w-12 rounded-lg object-cover" />}
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
-            <span className="text-xl font-bold truncate leading-none">{card.name}</span>
-            <Badge variant="outline" className="shrink-0 translate-y-px">
+            <span className="text-xl font-bold truncate leading-none" data-testid="agent-name">{card.name}</span>
+            <Badge variant="outline" className="shrink-0 translate-y-px" data-testid="agent-version">
               v{card.version}
             </Badge>
           </div>
