@@ -9,19 +9,14 @@ import { AgentCardEditor } from "@lib/components/editor/AgentCardEditor";
 import { RightPanel } from "@lib/components/RightPanel";
 import { AgentSelector } from "@lib/components/AgentSelector";
 import { MobileBottomBar } from "@lib/components/MobileBottomBar";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-} from "@lib/components/ui/sheet";
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@lib/components/ui/sheet";
 import { cn } from "@lib/utils/cn";
 
 // Lazy load full SettingsPanel (with PredefinedAgents) — only loaded when showSettings=true
 const SettingsPanel = lazy(() =>
   import("@lib/components/settings/SettingsPanel").then((m) => ({
     default: m.SettingsPanel,
-  }))
+  })),
 );
 
 function SettingsPanelFallback() {
@@ -40,6 +35,7 @@ interface PlaygroundLayoutProps {
   showEditor?: boolean;
   showToolbar?: boolean;
   readOnly?: boolean;
+  showConnection?: boolean;
   defaultTab?: "overview" | "chat" | "validation" | "rawhttp";
   maxExamplePrompts?: number;
   disableExamplePrompts?: boolean;
@@ -65,6 +61,7 @@ export function PlaygroundLayout({
   showEditor = true,
   showToolbar = true,
   readOnly = false,
+  showConnection = true,
   defaultTab = "overview",
   maxExamplePrompts = 2,
   disableExamplePrompts = false,
@@ -90,6 +87,8 @@ export function PlaygroundLayout({
           defaultTab={defaultTab}
           maxExamplePrompts={maxExamplePrompts}
           disableExamplePrompts={disableExamplePrompts}
+          readOnly={readOnly}
+          showConnection={showConnection}
         />
       </div>
     );
@@ -101,12 +100,7 @@ export function PlaygroundLayout({
         <PanelGroup orientation="horizontal" className="h-full">
           {showSettings && (
             <>
-              <Panel
-                defaultSize={20}
-                minSize={15}
-                collapsible
-                collapsedSize={0}
-              >
+              <Panel defaultSize={20} minSize={15} collapsible collapsedSize={0}>
                 <Suspense fallback={<SettingsPanelFallback />}>
                   <SettingsPanel />
                 </Suspense>
@@ -126,6 +120,8 @@ export function PlaygroundLayout({
               defaultTab={defaultTab}
               maxExamplePrompts={maxExamplePrompts}
               disableExamplePrompts={disableExamplePrompts}
+              readOnly={readOnly}
+              showConnection={showConnection}
             />
           </Panel>
         </PanelGroup>
@@ -150,6 +146,8 @@ export function PlaygroundLayout({
             defaultTab={defaultTab}
             maxExamplePrompts={maxExamplePrompts}
             disableExamplePrompts={disableExamplePrompts}
+            readOnly={readOnly}
+            showConnection={showConnection}
           />
         );
       case "json":
@@ -162,9 +160,7 @@ export function PlaygroundLayout({
 
   return (
     <div className={cn("flex h-full flex-col", className)}>
-      <div className="min-h-0 flex-1 overflow-hidden">
-        {renderMobileContent()}
-      </div>
+      <div className="min-h-0 flex-1 overflow-hidden">{renderMobileContent()}</div>
       <MobileBottomBar showSettings={showSettings} />
 
       {/* Settings Sheet (from left) - only sheet remaining */}
