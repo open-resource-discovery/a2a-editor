@@ -95,13 +95,26 @@ export function normalizeRole(role: string): "user" | "agent" {
 // Part normalization (inbound)
 // ---------------------------------------------------------------------------
 
-/** Normalize a part: map mediaType → mimeType on file parts. */
+/** Normalize a part: convert v1.0.0-rc top-level url/mediaType/filename to v0.3.0 file part. */
 export function normalizePart(part: unknown): Part {
   if (!part || typeof part !== "object") return part as Part;
 
   const p = part as Record<string, unknown>;
 
-  // File part: map mediaType → mimeType
+  // v1.0.0-rc file part: has top-level `url` (and optionally `mediaType`, `filename`)
+  // Convert to v0.3.0 format: { file: { uri, mimeType, name } }
+  if (typeof p.url === "string" && !("file" in p) && !("text" in p) && !("data" in p)) {
+    return {
+      file: {
+        uri: p.url as string,
+        ...(p.mediaType ? { mimeType: p.mediaType as string } : {}),
+        ...(p.filename ? { name: p.filename as string } : {}),
+      },
+      ...(p.metadata ? { metadata: p.metadata as Record<string, unknown> } : {}),
+    } as Part;
+  }
+
+  // v0.3.0 file part: map mediaType → mimeType within file object
   if (p.file && typeof p.file === "object") {
     const file = p.file as Record<string, unknown>;
     if (file.mediaType && !file.mimeType) {

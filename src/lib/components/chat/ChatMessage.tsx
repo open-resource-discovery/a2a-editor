@@ -3,15 +3,81 @@ import ReactMarkdown from "react-markdown";
 import type { ChatMessage as ChatMessageType } from "@lib/types/chat";
 import { isTextPart, isDataPart, isFilePart } from "@lib/types/a2a";
 import { cn } from "@lib/utils/cn";
-import { Copy, Check, RotateCcw, FileText, CheckCircle, AlertCircle, ChevronDown, ChevronUp } from "lucide-react";
+import { Copy, Check, RotateCcw, FileText, CheckCircle, AlertCircle, ChevronDown, ChevronUp, Database } from "lucide-react";
 import { Badge } from "@lib/components/ui/badge";
 import { Button } from "@lib/components/ui/button";
+import { JsonHighlight } from "@lib/components/ui/JsonHighlight";
 import { useUIStore } from "@lib/stores/uiStore";
 import { useHttpLogStore } from "@lib/stores/httpLogStore";
 
 interface ChatMessageProps {
   message: ChatMessageType;
   onRetry?: () => void;
+}
+
+function DataPartView({ data }: { data: Record<string, unknown> }) {
+  const [expanded, setExpanded] = useState(false);
+  const jsonStr = JSON.stringify(data, null, 2);
+  return (
+    <div className="mt-2 rounded bg-background/50 text-xs">
+      <button
+        type="button"
+        onClick={() => setExpanded(!expanded)}
+        className="flex items-center gap-1 w-full px-2 py-1.5 hover:bg-background/80 rounded cursor-pointer"
+      >
+        {expanded ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
+        <Database className="h-3 w-3" />
+        <span className="font-medium">Data</span>
+      </button>
+      {expanded && (
+        <JsonHighlight code={jsonStr} className="rounded-none rounded-b bg-transparent p-2 text-[11px]" />
+      )}
+    </div>
+  );
+}
+
+function FilePartView({ file: filePart }: { file: { uri: string; mimeType?: string; mediaType?: string; name?: string } }) {
+  const mime = (filePart.mimeType || filePart.mediaType || "").toLowerCase();
+
+  if (mime.startsWith("image/")) {
+    return (
+      <img
+        src={filePart.uri}
+        alt={filePart.name || "Image"}
+        className="mt-2 max-w-full rounded max-h-80 object-contain"
+      />
+    );
+  }
+
+  if (mime.startsWith("audio/")) {
+    return (
+      <audio controls src={filePart.uri} className="mt-2 max-w-full">
+        <a href={filePart.uri} target="_blank" rel="noopener noreferrer">
+          {filePart.name || "Audio file"}
+        </a>
+      </audio>
+    );
+  }
+
+  if (mime.startsWith("video/")) {
+    return (
+      <video controls src={filePart.uri} className="mt-2 max-w-full rounded max-h-80">
+        <a href={filePart.uri} target="_blank" rel="noopener noreferrer">
+          {filePart.name || "Video file"}
+        </a>
+      </video>
+    );
+  }
+
+  return (
+    <div className="mt-2 flex items-center gap-2 text-xs">
+      <FileText className="h-4 w-4 shrink-0" />
+      <a href={filePart.uri} target="_blank" rel="noopener noreferrer" className="underline truncate">
+        {filePart.name || "File attachment"}
+      </a>
+      {mime && <span className="text-muted-foreground">({mime})</span>}
+    </div>
+  );
 }
 
 export function ChatMessage({ message, onRetry }: ChatMessageProps) {
@@ -133,21 +199,13 @@ export function ChatMessage({ message, onRetry }: ChatMessageProps) {
 
           {/* Data parts */}
           {dataParts.map((part, index) => (
-            <pre key={`data-${index}`} className="mt-2 overflow-x-auto rounded bg-background/50 p-2 text-xs">
-              {JSON.stringify(part.data, null, 2)}
-            </pre>
+            <DataPartView key={`data-${index}`} data={part.data} />
           ))}
 
           {/* File parts */}
           {fileParts.map((part, index) => {
             const file = typeof part.file === "string" ? { uri: part.file } : part.file;
-            return (
-              <div key={`file-${index}`} className="mt-2">
-                <a href={file.uri} target="_blank" rel="noopener noreferrer" className="text-xs underline">
-                  {file.name || "File attachment"}
-                </a>
-              </div>
-            );
+            return <FilePartView key={`file-${index}`} file={file} />;
           })}
 
           <time className="mt-1 block text-[10px] opacity-50">{message.timestamp.toLocaleTimeString()}</time>
