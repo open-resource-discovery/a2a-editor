@@ -1,6 +1,6 @@
 {
   "name": "@open-resource-discovery/a2a-editor",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "React components for editing and viewing A2A (Agent-to-Agent) protocol Agent Cards",
   "license": "Apache-2.0",
   "author": "SAP SE",
@@ -107,7 +107,7 @@
     "highlight.js": "^11.11.1",
     "lucide-react": "^0.577.0",
     "react-markdown": "^10.1.0",
-    "react-resizable-panels": "^4.7.1",
+    "react-resizable-panels": "^4.7.2",
     "sonner": "^2.0.7",
     "tailwind-merge": "^3.5.0",
     "uuid": "^13.0.0",
@@ -132,7 +132,7 @@
     "tailwindcss": "^4.2.1",
     "prettier": "^3.8.1",
     "typescript": "~5.9.3",
-    "typescript-eslint": "^8.56.1",
+    "typescript-eslint": "^8.57.0",
     "vite": "^7.3.1",
     "vite-plugin-dts": "^4.5.4"
   }
