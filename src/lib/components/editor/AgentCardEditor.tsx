@@ -11,7 +11,7 @@ export function AgentCardEditor({ readOnly = false, showToolbar = true }: AgentC
   const { rawJson, setRawJson, parseError } = useAgentCardStore();
 
   return (
-    <div className="flex h-full flex-col overflow-hidden bg-background">
+    <div className="flex h-full flex-col overflow-hidden bg-background" data-testid="editor-panel">
       {showToolbar && <JsonToolbar />}
       <div className="flex-1 overflow-hidden">
         <MonacoEditor
@@ -22,7 +22,7 @@ export function AgentCardEditor({ readOnly = false, showToolbar = true }: AgentC
         />
       </div>
       {parseError && (
-        <div className="border-t bg-destructive/10 px-3 py-2 text-sm text-destructive">
+        <div className="border-t bg-destructive/10 px-3 py-2 text-sm text-destructive" data-testid="editor-parse-error">
           {parseError}
         </div>
       )}

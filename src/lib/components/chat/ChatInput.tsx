@@ -31,32 +31,19 @@ export function ChatInput({ disabled }: ChatInputProps) {
   return (
     <form onSubmit={handleSubmit} className="flex gap-2 border-t p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
       <Input
+        data-testid="chat-input"
         value={inputText}
         onChange={(e) => setInputText(e.target.value)}
-        placeholder={
-          disabled
-            ? "Connect to an agent to chat..."
-            : "Type a message or JSON..."
-        }
+        placeholder={disabled ? "Connect to an agent to chat..." : "Type a message or JSON..."}
         disabled={disabled || isStreaming}
         className="flex-1"
       />
       {isStreaming ? (
-        <Button
-          type="button"
-          size="icon"
-          variant="destructive"
-          onClick={cancelStream}
-          title="Stop streaming"
-        >
+        <Button type="button" size="icon" variant="destructive" onClick={cancelStream} title="Stop streaming">
           <Square className="h-4 w-4" />
         </Button>
       ) : (
-        <Button
-          type="submit"
-          size="icon"
-          disabled={disabled || !inputText.trim()}
-        >
+        <Button type="submit" size="icon" disabled={disabled || !inputText.trim()}>
           <Send className="h-4 w-4" />
         </Button>
       )}
