@@ -103,7 +103,7 @@ export function ChatContainer({ maxExamplePrompts = 2, disableExamplePrompts = f
                   onRetry={message.role === "user" ? () => handleRetry(message.id) : undefined}
                 />
               ))}
-              {isStreaming && <TypingIndicator />}
+              {isStreaming && !messages[messages.length - 1]?.isStreaming && <TypingIndicator />}
             </>
           )}
         </div>

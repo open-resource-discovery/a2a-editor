@@ -2,14 +2,14 @@ import { useChatStore } from "@lib/stores/chatStore";
 import { useConnectionStore } from "@lib/stores/connectionStore";
 import { Button } from "@lib/components/ui/button";
 import { Input } from "@lib/components/ui/input";
-import { Send, Loader2 } from "lucide-react";
+import { Send, Square } from "lucide-react";
 
 interface ChatInputProps {
   disabled?: boolean;
 }
 
 export function ChatInput({ disabled }: ChatInputProps) {
-  const { inputText, setInputText, sendMessage, isStreaming } = useChatStore();
+  const { inputText, setInputText, sendMessage, cancelStream, isStreaming } = useChatStore();
   const { url, authHeaders } = useConnectionStore();
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -41,17 +41,25 @@ export function ChatInput({ disabled }: ChatInputProps) {
         disabled={disabled || isStreaming}
         className="flex-1"
       />
-      <Button
-        type="submit"
-        size="icon"
-        disabled={disabled || isStreaming || !inputText.trim()}
-      >
-        {isStreaming ? (
-          <Loader2 className="h-4 w-4 animate-spin" />
-        ) : (
+      {isStreaming ? (
+        <Button
+          type="button"
+          size="icon"
+          variant="destructive"
+          onClick={cancelStream}
+          title="Stop streaming"
+        >
+          <Square className="h-4 w-4" />
+        </Button>
+      ) : (
+        <Button
+          type="submit"
+          size="icon"
+          disabled={disabled || !inputText.trim()}
+        >
           <Send className="h-4 w-4" />
-        )}
-      </Button>
+        </Button>
+      )}
     </form>
   );
 }

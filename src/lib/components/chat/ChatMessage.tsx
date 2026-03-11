@@ -3,7 +3,7 @@ import ReactMarkdown from "react-markdown";
 import type { ChatMessage as ChatMessageType } from "@lib/types/chat";
 import { isTextPart, isDataPart, isFilePart } from "@lib/types/a2a";
 import { cn } from "@lib/utils/cn";
-import { Copy, Check, RotateCcw, FileText, CheckCircle, AlertCircle, ChevronDown, ChevronUp, Database } from "lucide-react";
+import { Copy, Check, RotateCcw, FileText, CheckCircle, AlertCircle, ChevronDown, ChevronUp, Database, Loader2 } from "lucide-react";
 import { Badge } from "@lib/components/ui/badge";
 import { Button } from "@lib/components/ui/button";
 import { JsonHighlight } from "@lib/components/ui/JsonHighlight";
@@ -44,14 +44,14 @@ function FilePartView({ file: filePart }: { file: { uri: string; mimeType?: stri
       <img
         src={filePart.uri}
         alt={filePart.name || "Image"}
-        className="mt-2 max-w-full rounded max-h-80 object-contain"
+        className="mt-2 max-w-full rounded max-h-80 min-w-12 min-h-12 object-contain"
       />
     );
   }
 
   if (mime.startsWith("audio/")) {
     return (
-      <audio controls src={filePart.uri} className="mt-2 max-w-full">
+      <audio controls src={filePart.uri} className="mt-2 w-full min-w-[200px]">
         <a href={filePart.uri} target="_blank" rel="noopener noreferrer">
           {filePart.name || "Audio file"}
         </a>
@@ -61,7 +61,7 @@ function FilePartView({ file: filePart }: { file: { uri: string; mimeType?: stri
 
   if (mime.startsWith("video/")) {
     return (
-      <video controls src={filePart.uri} className="mt-2 max-w-full rounded max-h-80">
+      <video controls src={filePart.uri} className="mt-2 max-w-full rounded max-h-80 min-w-[120px] min-h-[68px]">
         <a href={filePart.uri} target="_blank" rel="noopener noreferrer">
           {filePart.name || "Video file"}
         </a>
@@ -208,32 +208,42 @@ export function ChatMessage({ message, onRetry }: ChatMessageProps) {
             return <FilePartView key={`file-${index}`} file={file} />;
           })}
 
+          {/* Streaming indicator */}
+          {message.isStreaming && (
+            <div className="flex items-center gap-1 mt-1">
+              <Loader2 className="h-3 w-3 animate-spin text-muted-foreground" />
+              <span className="text-xs text-muted-foreground">Streaming...</span>
+            </div>
+          )}
+
           <time className="mt-1 block text-[10px] opacity-50">{message.timestamp.toLocaleTimeString()}</time>
         </div>
 
-        {/* Action buttons - on the side, always visible on mobile */}
-        <div className="flex flex-col gap-0.5 opacity-100 sm:opacity-0 transition-opacity sm:group-hover:opacity-100">
-          {fullText && (
-            <Button variant="ghost" size="icon" className="h-6 w-6" onClick={handleCopy} title="Copy message">
-              {copied ? <Check className="h-3 w-3 text-success" /> : <Copy className="h-3 w-3" />}
-            </Button>
-          )}
-          {httpLog && (
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-6 w-6"
-              onClick={handleViewHttp}
-              title="Go to HTTP Raw request">
-              <FileText className="h-3 w-3" />
-            </Button>
-          )}
-          {isUser && onRetry && (
-            <Button variant="ghost" size="icon" className="h-6 w-6" onClick={onRetry} title="Retry message">
-              <RotateCcw className="h-3 w-3" />
-            </Button>
-          )}
-        </div>
+        {/* Action buttons - hidden while streaming, always visible on mobile */}
+        {!message.isStreaming && (
+          <div className="flex flex-col gap-0.5 opacity-100 sm:opacity-0 transition-opacity sm:group-hover:opacity-100">
+            {fullText && (
+              <Button variant="ghost" size="icon" className="h-6 w-6" onClick={handleCopy} title="Copy message">
+                {copied ? <Check className="h-3 w-3 text-success" /> : <Copy className="h-3 w-3" />}
+              </Button>
+            )}
+            {httpLog && (
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-6 w-6"
+                onClick={handleViewHttp}
+                title="Go to HTTP Raw request">
+                <FileText className="h-3 w-3" />
+              </Button>
+            )}
+            {isUser && onRetry && (
+              <Button variant="ghost" size="icon" className="h-6 w-6" onClick={onRetry} title="Retry message">
+                <RotateCcw className="h-3 w-3" />
+              </Button>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );
