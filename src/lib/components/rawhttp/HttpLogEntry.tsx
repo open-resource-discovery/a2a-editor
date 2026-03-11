@@ -22,7 +22,7 @@ import { JsonHighlight } from "@lib/components/ui/JsonHighlight";
 import { cn } from "@lib/utils/cn";
 import type { HttpLogEntry as HttpLogEntryType } from "@lib/types/httpLog";
 import { useChatStore } from "@lib/stores/chatStore";
-import { useConnectionStore } from "@lib/stores/connectionStore";
+import { useConnectionStore, selectEffectiveUrl } from "@lib/stores/connectionStore";
 import { useUIStore } from "@lib/stores/uiStore";
 
 interface HttpLogEntryProps {
@@ -61,7 +61,7 @@ export function HttpLogEntry({ entry, isHighlighted }: HttpLogEntryProps) {
   const ref = useRef<HTMLDivElement>(null);
 
   const { sendRawRequest } = useChatStore();
-  const { url } = useConnectionStore();
+  const effectiveUrl = useConnectionStore(selectEffectiveUrl);
   const { switchToChat } = useUIStore();
 
   useEffect(() => {
@@ -153,7 +153,7 @@ export function HttpLogEntry({ entry, isHighlighted }: HttpLogEntryProps) {
     setEditError(null);
 
     try {
-      await sendRawRequest(editedBody, url, parsedHeaders, entry.id);
+      await sendRawRequest(editedBody, effectiveUrl, parsedHeaders, entry.id);
       setIsEditing(false);
       setEditedBody("");
       setEditedHeaders("");
@@ -245,7 +245,7 @@ export function HttpLogEntry({ entry, isHighlighted }: HttpLogEntryProps) {
                     variant="outline"
                     size="sm"
                     onClick={handleStartEdit}
-                    disabled={!url}
+                    disabled={!effectiveUrl}
                   >
                     <Play className="h-3 w-3 mr-1" />
                     Edit & Resend

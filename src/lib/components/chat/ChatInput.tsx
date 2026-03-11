@@ -1,5 +1,5 @@
 import { useChatStore } from "@lib/stores/chatStore";
-import { useConnectionStore } from "@lib/stores/connectionStore";
+import { useConnectionStore, selectEffectiveUrl } from "@lib/stores/connectionStore";
 import { Button } from "@lib/components/ui/button";
 import { Input } from "@lib/components/ui/input";
 import { Send, Square } from "lucide-react";
@@ -10,7 +10,8 @@ interface ChatInputProps {
 
 export function ChatInput({ disabled }: ChatInputProps) {
   const { inputText, setInputText, sendMessage, cancelStream, isStreaming } = useChatStore();
-  const { url, authHeaders } = useConnectionStore();
+  const { authHeaders } = useConnectionStore();
+  const effectiveUrl = useConnectionStore(selectEffectiveUrl);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -25,7 +26,7 @@ export function ChatInput({ disabled }: ChatInputProps) {
       parts = [{ text: inputText }];
     }
 
-    sendMessage(parts, url, authHeaders);
+    sendMessage(parts, effectiveUrl, authHeaders);
   };
 
   return (

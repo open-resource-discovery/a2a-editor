@@ -384,7 +384,7 @@ export const useChatStore = create<ChatState>((set, get) => {
 
         onTaskComplete(task) {
           // Wrap as a JSON-RPC response shape for processJsonRpcResponse / compliance
-          const wrapped = { result: task };
+          const wrapped = { jsonrpc: "2.0" as const, result: task };
           const normalized = normalizeTaskResponse(wrapped);
           const result = processJsonRpcResponse(normalized);
           const complianceDetails = validateResponse(normalized);
@@ -433,10 +433,25 @@ export const useChatStore = create<ChatState>((set, get) => {
       // (onTaskComplete may not have been called if the stream ended without a final "task" event)
       const finalMsg = get().messages.find((m) => m.id === agentMsgId);
       if (finalMsg?.isStreaming) {
+        const finalStatus = finalMsg.status === "working" ? "completed" : finalMsg.status;
+
+        // Build synthetic JSON-RPC response for compliance checking
+        const syntheticResponse = {
+          jsonrpc: "2.0" as const,
+          result: {
+            id: finalMsg.taskId ?? "",
+            contextId: finalMsg.contextId ?? "",
+            status: { state: finalStatus },
+          },
+        };
+        const complianceDetails = validateResponse(syntheticResponse);
+
         updateMessage(agentMsgId, (msg) => ({
           ...msg,
           isStreaming: false,
-          status: msg.status === "working" ? "completed" : msg.status,
+          status: finalStatus,
+          compliant: isFullyCompliant(complianceDetails),
+          complianceDetails,
         }));
       }
 
@@ -511,6 +526,8 @@ export const useChatStore = create<ChatState>((set, get) => {
     setInputText: (text) => set({ inputText: text }),
 
     sendMessage: async (parts, agentUrl, authHeaders) => {
+      if (get().isStreaming) return; // prevent concurrent sends
+
       const state = get();
       const messageId = uuidv4();
 

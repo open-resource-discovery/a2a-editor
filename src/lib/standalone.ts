@@ -289,6 +289,7 @@ function createInstance(element: HTMLElement, options: A2APlaygroundOptions): A2
         httpLog: { logs, highlightedLogId },
         connection: {
           url: connState.url,
+          messagingUrl: connState.messagingUrl,
           authType: connState.authType,
           connectionAuthType: connState.connectionAuthType,
           basicCredentials: connState.basicCredentials,
