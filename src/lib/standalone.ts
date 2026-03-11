@@ -139,6 +139,12 @@ export interface A2APlaygroundInstance {
 
   /** Destroy the playground instance */
   destroy(): void;
+
+  /** Snapshot all store state (agent card, chat, HTTP logs, connection) */
+  saveState(): Record<string, unknown>;
+
+  /** Restore a previously saved snapshot */
+  restoreState(snapshot: Record<string, unknown>): void;
 }
 
 export interface A2APlaygroundAPI {
@@ -267,6 +273,40 @@ function createInstance(element: HTMLElement, options: A2APlaygroundOptions): A2
 
     destroy() {
       A2APlayground.destroy(element);
+    },
+
+    saveState() {
+      const { rawJson, parsedCard, parseError, isDirty, isLoading } = useAgentCardStore.getState();
+      const { messages, isStreaming, currentTaskId, contextId, inputText } = useChatStore.getState();
+      const { logs, highlightedLogId } = useHttpLogStore.getState();
+      const connState = useConnectionStore.getState();
+      return {
+        agentCard: { rawJson, parsedCard, parseError, isDirty, isLoading },
+        chat: { messages, isStreaming, currentTaskId, contextId, inputText },
+        httpLog: { logs, highlightedLogId },
+        connection: {
+          url: connState.url,
+          authType: connState.authType,
+          connectionAuthType: connState.connectionAuthType,
+          basicCredentials: connState.basicCredentials,
+          oauth2Credentials: connState.oauth2Credentials,
+          apiKeyCredentials: connState.apiKeyCredentials,
+          authHeaders: connState.authHeaders,
+          connectionStatus: connState.connectionStatus,
+          errorMessage: connState.errorMessage,
+          requiredAuth: connState.requiredAuth,
+          protocolVersion: connState.protocolVersion,
+        },
+      };
+    },
+
+    restoreState(snapshot: Record<string, unknown>) {
+      if (!snapshot) return;
+      const s = snapshot as Record<string, Record<string, unknown>>;
+      if (s.agentCard) useAgentCardStore.setState(s.agentCard);
+      if (s.chat) useChatStore.setState(s.chat);
+      if (s.httpLog) useHttpLogStore.setState(s.httpLog);
+      if (s.connection) useConnectionStore.setState(s.connection);
     },
   };
 
