@@ -7,7 +7,12 @@ import { isMockUrl, handleMockMessage } from "@lib/mock/agents";
 import { useHttpLogStore } from "./httpLogStore";
 import { useConnectionStore } from "./connectionStore";
 import { useAgentCardStore } from "./agentCardStore";
-import { normalizeTaskResponse, getJsonRpcMethod, getStreamingJsonRpcMethod, buildOutboundRole } from "@lib/utils/a2a-compat";
+import {
+  normalizeTaskResponse,
+  getJsonRpcMethod,
+  getStreamingJsonRpcMethod,
+  buildOutboundRole,
+} from "@lib/utils/a2a-compat";
 import { validateResponse, isFullyCompliant } from "@lib/utils/a2a-compliance";
 import { streamMessage } from "@lib/utils/a2a-stream";
 
@@ -302,7 +307,7 @@ export const useChatStore = create<ChatState>((set, get) => {
     const rpcRequest = {
       jsonrpc: "2.0",
       id: uuidv4(),
-      method: getStreamingJsonRpcMethod(version),
+      method: getStreamingJsonRpcMethod(),
       params: {
         message: {
           role: buildOutboundRole(version),
@@ -338,75 +343,66 @@ export const useChatStore = create<ChatState>((set, get) => {
     useHttpLogStore.getState().addLog(logEntry);
 
     try {
-      const streamResult = await streamMessage(
-        agentUrl,
-        requestBody,
-        requestHeaders,
-        abortController.signal,
-        {
-          onStatusUpdate(taskId, contextId, status) {
-            updateMessage(agentMsgId, (msg) => {
-              const updated: ChatMessage = { ...msg, status: status.state, taskId, contextId };
-              // If the status update includes message parts, update them
-              if (status.message?.parts?.length) {
-                updated.parts = [...msg.parts, ...status.message.parts];
-              }
-              return updated;
-            });
-            set({ currentTaskId: taskId, contextId });
-          },
-
-          onArtifactUpdate(taskId, contextId, artifact) {
-            updateMessage(agentMsgId, (msg) => {
-              const mergedArtifacts = mergeArtifact(msg.artifacts ?? [], artifact);
-              return {
-                ...msg,
-                taskId,
-                contextId,
-                artifacts: mergedArtifacts,
-                parts: mergedArtifacts.flatMap((a) => a.parts),
-              };
-            });
-            set({ currentTaskId: taskId, contextId });
-          },
-
-          onTaskComplete(task) {
-            // Wrap as a JSON-RPC response shape for processJsonRpcResponse / compliance
-            const wrapped = { result: task };
-            const normalized = normalizeTaskResponse(wrapped);
-            const result = processJsonRpcResponse(normalized);
-            const complianceDetails = validateResponse(normalized);
-
-            updateMessage(agentMsgId, (msg) => ({
-              ...msg,
-              parts: result?.parts ?? msg.parts,
-              taskId: result?.taskId ?? msg.taskId,
-              contextId: result?.contextId ?? msg.contextId,
-              status: result?.status ?? msg.status,
-              artifacts: result?.artifacts ?? msg.artifacts,
-              isStreaming: false,
-              compliant: isFullyCompliant(complianceDetails),
-              complianceDetails,
-            }));
-
-            if (result) {
-              set({ currentTaskId: result.taskId, contextId: result.contextId });
+      const streamResult = await streamMessage(agentUrl, requestBody, requestHeaders, abortController.signal, {
+        onStatusUpdate(taskId, contextId, status) {
+          updateMessage(agentMsgId, (msg) => {
+            const updated: ChatMessage = { ...msg, status: status.state, taskId, contextId };
+            // If the status update includes message parts, update them
+            if (status.message?.parts?.length) {
+              updated.parts = [...msg.parts, ...status.message.parts];
             }
-          },
-
-          onError(error) {
-            updateMessage(agentMsgId, (msg) => ({
-              ...msg,
-              status: "failed" as TaskState,
-              isStreaming: false,
-              parts: [
-                ...msg.parts,
-                { text: error.message },
-              ],
-            }));
-          },
+            return updated;
+          });
+          set({ currentTaskId: taskId, contextId });
         },
-      );
+
+        onArtifactUpdate(taskId, contextId, artifact) {
+          updateMessage(agentMsgId, (msg) => {
+            const mergedArtifacts = mergeArtifact(msg.artifacts ?? [], artifact);
+            return {
+              ...msg,
+              taskId,
+              contextId,
+              artifacts: mergedArtifacts,
+              parts: mergedArtifacts.flatMap((a) => a.parts),
+            };
+          });
+          set({ currentTaskId: taskId, contextId });
+        },
+
+        onTaskComplete(task) {
+          // Wrap as a JSON-RPC response shape for processJsonRpcResponse / compliance
+          const wrapped = { result: task };
+          const normalized = normalizeTaskResponse(wrapped);
+          const result = processJsonRpcResponse(normalized);
+          const complianceDetails = validateResponse(normalized);
+
+          updateMessage(agentMsgId, (msg) => ({
+            ...msg,
+            parts: result?.parts ?? msg.parts,
+            taskId: result?.taskId ?? msg.taskId,
+            contextId: result?.contextId ?? msg.contextId,
+            status: result?.status ?? msg.status,
+            artifacts: result?.artifacts ?? msg.artifacts,
+            isStreaming: false,
+            compliant: isFullyCompliant(complianceDetails),
+            complianceDetails,
+          }));
+
+          if (result) {
+            set({ currentTaskId: result.taskId, contextId: result.contextId });
+          }
+        },
+
+        onError(error) {
+          updateMessage(agentMsgId, (msg) => ({
+            ...msg,
+            status: "failed" as TaskState,
+            isStreaming: false,
+            parts: [...msg.parts, { text: error.message }],
+          }));
+        },
+      });
 
       // Finalize the placeholder message if it's still streaming
       // (onTaskComplete may not have been called if the stream ended without a final "task" event)
@@ -467,10 +463,7 @@ export const useChatStore = create<ChatState>((set, get) => {
         ...msg,
         isStreaming: false,
         status: "failed" as TaskState,
-        parts: [
-          ...msg.parts,
-          { text: `Stream interrupted: ${err instanceof Error ? err.message : "Unknown error"}` },
-        ],
+        parts: [...msg.parts, { text: `Stream interrupted: ${err instanceof Error ? err.message : "Unknown error"}` }],
       }));
       useHttpLogStore.getState().updateLog(logId, {
         error: err instanceof Error ? err.message : "Unknown error",

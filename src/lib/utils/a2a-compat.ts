@@ -48,9 +48,7 @@ export function normalizeAgentCard(raw: unknown): AgentCard {
 
     // Populate protocolVersions from interfaces if missing
     if (!card.protocolVersions) {
-      card.protocolVersions = (
-        card.supportedInterfaces as Array<{ protocolVersion?: string }>
-      )
+      card.protocolVersions = (card.supportedInterfaces as Array<{ protocolVersion?: string }>)
         .map((i) => i.protocolVersion)
         .filter(Boolean);
     }
@@ -195,8 +193,7 @@ export function getJsonRpcMethod(version: string): string {
 }
 
 /** Get the correct streaming JSON-RPC method name (always message/stream per spec). */
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export function getStreamingJsonRpcMethod(version: string): string {
+export function getStreamingJsonRpcMethod(): string {
   return "message/stream";
 }
 
@@ -210,16 +207,21 @@ export function buildOutboundRole(version: string): string {
 // ---------------------------------------------------------------------------
 
 export type NormalizedStreamEvent =
-  | { kind: "status-update"; taskId: string; contextId: string; status: { state: TaskState; message?: { role: string; parts: Part[] } } }
+  | {
+      kind: "status-update";
+      taskId: string;
+      contextId: string;
+      status: { state: TaskState; message?: { role: string; parts: Part[] } };
+    }
   | { kind: "artifact-update"; taskId: string; contextId: string; artifact: Artifact }
   | { kind: "task"; task: Record<string, unknown> }
   | { kind: "error"; error: { code: number; message: string } };
 
 /** Map v1.0.0 SSE event kind to v0.3.0. */
 const V1_EVENT_KIND_MAP: Record<string, string> = {
-  "STATUS_UPDATE": "status-update",
-  "ARTIFACT_UPDATE": "artifact-update",
-  "TASK": "task",
+  STATUS_UPDATE: "status-update",
+  ARTIFACT_UPDATE: "artifact-update",
+  TASK: "task",
 };
 
 /**
@@ -326,9 +328,22 @@ export function normalizeStreamEvent(event: unknown): NormalizedStreamEvent | nu
 
 export const ALL_VALID_STATES = new Set([
   // v0.3.0
-  "submitted", "working", "input-required", "completed", "canceled", "failed", "rejected", "unknown",
+  "submitted",
+  "working",
+  "input-required",
+  "completed",
+  "canceled",
+  "failed",
+  "rejected",
+  "unknown",
   // v1.0.0
-  "TASK_STATE_SUBMITTED", "TASK_STATE_WORKING", "TASK_STATE_INPUT_REQUIRED",
-  "TASK_STATE_COMPLETED", "TASK_STATE_CANCELED", "TASK_STATE_FAILED",
-  "TASK_STATE_REJECTED", "TASK_STATE_AUTH_REQUIRED", "TASK_STATE_UNSPECIFIED",
+  "TASK_STATE_SUBMITTED",
+  "TASK_STATE_WORKING",
+  "TASK_STATE_INPUT_REQUIRED",
+  "TASK_STATE_COMPLETED",
+  "TASK_STATE_CANCELED",
+  "TASK_STATE_FAILED",
+  "TASK_STATE_REJECTED",
+  "TASK_STATE_AUTH_REQUIRED",
+  "TASK_STATE_UNSPECIFIED",
 ]);

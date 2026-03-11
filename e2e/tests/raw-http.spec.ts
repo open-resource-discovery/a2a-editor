@@ -27,7 +27,7 @@ test.describe("Raw HTTP Logs", () => {
     await playground.httpLogEntries.first().click();
     // Should show request/response details
     await expect(playground.page.getByText("Request")).toBeVisible();
-    await expect(playground.page.getByText("Response")).toBeVisible();
+    await expect(playground.page.getByRole("heading", { name: "Response" })).toBeVisible();
   });
 
   test("should show JSON-RPC method in request body", async ({ playground }) => {

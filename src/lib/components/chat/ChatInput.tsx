@@ -43,7 +43,7 @@ export function ChatInput({ disabled }: ChatInputProps) {
           <Square className="h-4 w-4" />
         </Button>
       ) : (
-        <Button type="submit" size="icon" disabled={disabled || !inputText.trim()}>
+        <Button type="submit" size="icon" disabled={disabled || !inputText.trim()} data-testid="chat-send">
           <Send className="h-4 w-4" />
         </Button>
       )}
