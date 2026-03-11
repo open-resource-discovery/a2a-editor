@@ -210,10 +210,7 @@ export function ChatMessage({ message, onRetry }: ChatMessageProps) {
 
           {/* Streaming indicator */}
           {message.isStreaming && (
-            <div className="flex items-center gap-1 mt-1">
-              <Loader2 className="h-3 w-3 animate-spin text-muted-foreground" />
-              <span className="text-xs text-muted-foreground">Streaming...</span>
-            </div>
+            <Loader2 className="h-3 w-3 mt-1 animate-spin text-muted-foreground" />
           )}
 
           <time className="mt-1 block text-[10px] opacity-50">{message.timestamp.toLocaleTimeString()}</time>

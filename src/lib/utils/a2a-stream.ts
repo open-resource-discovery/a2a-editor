@@ -13,6 +13,10 @@ export interface StreamCallbacks {
   onArtifactUpdate(taskId: string, contextId: string, artifact: Artifact): void;
   onTaskComplete(task: Record<string, unknown>): void;
   onError(error: Error): void;
+  /** Called once after initial fetch succeeds, before any SSE events. */
+  onResponseStart?(status: number, statusText: string, headers: Record<string, string>): void;
+  /** Called after each SSE event with the accumulated raw body so far. */
+  onRawEvent?(accumulatedBody: string): void;
 }
 
 export interface StreamResult {
@@ -63,6 +67,8 @@ export async function streamMessage(
     throw new Error("Response body is null — streaming not supported");
   }
 
+  callbacks.onResponseStart?.(res.status, res.statusText, responseHeaders);
+
   let rawResponseBody = "";
   let receivedFirstEvent = false;
 
@@ -75,6 +81,8 @@ export async function streamMessage(
         rawResponseBody += `event: ${sseEvent.event}\n`;
       }
       rawResponseBody += `data: ${sseEvent.data}\n\n`;
+
+      callbacks.onRawEvent?.(rawResponseBody);
 
       // Parse JSON payload
       let payload: unknown;

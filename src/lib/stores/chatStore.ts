@@ -80,9 +80,10 @@ async function fetchWithLogging(
   chatMessageId: string,
   derivedFromLogId?: string,
 ): Promise<unknown> {
+  const logId = uuidv4();
   const startTime = Date.now();
   const logEntry: HttpLogEntry = {
-    id: uuidv4(),
+    id: logId,
     chatMessageId,
     timestamp: new Date(),
     request: {
@@ -95,6 +96,9 @@ async function fetchWithLogging(
     derivedFromLogId,
   };
 
+  // Add immediately so the UI shows a loading spinner
+  useHttpLogStore.getState().addLog(logEntry);
+
   try {
     const res = await fetch(url, {
       method: "POST",
@@ -103,17 +107,17 @@ async function fetchWithLogging(
     });
 
     const responseBody = await res.text();
-    logEntry.response = {
-      status: res.status,
-      statusText: res.statusText,
-      headers: Object.fromEntries(res.headers.entries()),
-      body: responseBody,
-    };
-    logEntry.durationMs = Date.now() - startTime;
-    useHttpLogStore.getState().addLog(logEntry);
+    useHttpLogStore.getState().updateLog(logId, {
+      response: {
+        status: res.status,
+        statusText: res.statusText,
+        headers: Object.fromEntries(res.headers.entries()),
+        body: responseBody,
+      },
+      durationMs: Date.now() - startTime,
+    });
 
     if (!res.ok) {
-      // Try to extract a more meaningful error from the response body
       let errorDetail = `${res.status} ${res.statusText}`.trim();
       try {
         const parsed = JSON.parse(responseBody);
@@ -127,11 +131,13 @@ async function fetchWithLogging(
     }
     return JSON.parse(responseBody);
   } catch (fetchErr) {
-    // Only log if not already logged (response was received but non-ok)
-    if (!logEntry.response) {
-      logEntry.error = fetchErr instanceof Error ? fetchErr.message : "Unknown error";
-      logEntry.durationMs = Date.now() - startTime;
-      useHttpLogStore.getState().addLog(logEntry);
+    // Update existing entry with error if response wasn't received
+    const currentLog = useHttpLogStore.getState().logs.find((l) => l.id === logId);
+    if (!currentLog?.response) {
+      useHttpLogStore.getState().updateLog(logId, {
+        error: fetchErr instanceof Error ? fetchErr.message : "Unknown error",
+        durationMs: Date.now() - startTime,
+      });
     }
     throw fetchErr;
   }
@@ -282,6 +288,7 @@ export const useChatStore = create<ChatState>((set, get) => {
     agentUrl: string,
     authHeaders: Record<string, string>,
     messageId: string,
+    derivedFromLogId?: string,
   ) {
     const version = useConnectionStore.getState().protocolVersion;
     const abortController = new AbortController();
@@ -339,17 +346,22 @@ export const useChatStore = create<ChatState>((set, get) => {
       },
       response: null,
       isSSE: true,
+      derivedFromLogId,
     };
     useHttpLogStore.getState().addLog(logEntry);
+
+    let sseResponseMeta = { status: 200, statusText: "OK", headers: {} as Record<string, string> };
 
     try {
       const streamResult = await streamMessage(agentUrl, requestBody, requestHeaders, abortController.signal, {
         onStatusUpdate(taskId, contextId, status) {
           updateMessage(agentMsgId, (msg) => {
             const updated: ChatMessage = { ...msg, status: status.state, taskId, contextId };
-            // If the status update includes message parts, update them
             if (status.message?.parts?.length) {
-              updated.parts = [...msg.parts, ...status.message.parts];
+              const isTerminal = status.state === "completed" || status.state === "failed";
+              // Terminal status with parts = final full message; replace to avoid duplication
+              // with parts already accumulated from artifact-update events
+              updated.parts = isTerminal ? status.message.parts : [...msg.parts, ...status.message.parts];
             }
             return updated;
           });
@@ -401,6 +413,19 @@ export const useChatStore = create<ChatState>((set, get) => {
             isStreaming: false,
             parts: [...msg.parts, { text: error.message }],
           }));
+        },
+
+        onResponseStart(status, statusText, headers) {
+          sseResponseMeta = { status, statusText, headers };
+        },
+
+        onRawEvent(accumulatedBody) {
+          useHttpLogStore.getState().updateLog(logId, {
+            response: {
+              ...sseResponseMeta,
+              body: accumulatedBody,
+            },
+          });
         },
       });
 
@@ -591,46 +616,54 @@ export const useChatStore = create<ChatState>((set, get) => {
       }));
 
       try {
-        // Reuse parsed body, update messageId
-        if (parsed.params?.message) {
-          (parsed.params.message as Record<string, unknown>).messageId = messageId;
-          parsed.id = uuidv4() as string; // New request ID
-        }
-        const requestBody = JSON.stringify(parsed);
+        // Check if agent supports streaming
+        const parsedCard = useAgentCardStore.getState().parsedCard;
+        const supportsStreaming = parsedCard?.capabilities?.streaming === true && !isMockUrl(agentUrl);
 
-        let data: unknown = await fetchWithLogging(
-          agentUrl,
-          { ...customHeaders },
-          requestBody,
-          messageId,
-          derivedFromLogId,
-        );
+        if (supportsStreaming) {
+          await sendStreaming(parts, agentUrl, { ...customHeaders }, messageId, derivedFromLogId);
+        } else {
+          // Reuse parsed body, update messageId
+          if (parsed.params?.message) {
+            (parsed.params.message as Record<string, unknown>).messageId = messageId;
+            parsed.id = uuidv4() as string; // New request ID
+          }
+          const requestBody = JSON.stringify(parsed);
 
-        // Check compliance before normalization, then normalize
-        data = normalizeTaskResponse(data);
+          let data: unknown = await fetchWithLogging(
+            agentUrl,
+            { ...customHeaders },
+            requestBody,
+            messageId,
+            derivedFromLogId,
+          );
 
-        const result = processJsonRpcResponse(data);
-        if (result) {
-          const complianceDetails = validateResponse(data);
-          const agentMessage: ChatMessage = {
-            id: uuidv4(),
-            role: "agent",
-            parts: result.parts,
-            taskId: result.taskId,
-            contextId: result.contextId,
-            timestamp: new Date(),
-            status: result.status,
-            artifacts: result.artifacts,
-            compliant: isFullyCompliant(complianceDetails),
-            complianceDetails,
-            linkedChatMessageId: messageId,
-          };
+          // Check compliance before normalization, then normalize
+          data = normalizeTaskResponse(data);
 
-          set((s) => ({
-            messages: appendMessage(s.messages, agentMessage),
-            currentTaskId: result.taskId,
-            contextId: result.contextId,
-          }));
+          const result = processJsonRpcResponse(data);
+          if (result) {
+            const complianceDetails = validateResponse(data);
+            const agentMessage: ChatMessage = {
+              id: uuidv4(),
+              role: "agent",
+              parts: result.parts,
+              taskId: result.taskId,
+              contextId: result.contextId,
+              timestamp: new Date(),
+              status: result.status,
+              artifacts: result.artifacts,
+              compliant: isFullyCompliant(complianceDetails),
+              complianceDetails,
+              linkedChatMessageId: messageId,
+            };
+
+            set((s) => ({
+              messages: appendMessage(s.messages, agentMessage),
+              currentTaskId: result.taskId,
+              contextId: result.contextId,
+            }));
+          }
         }
       } catch (err) {
         const errorMessage: ChatMessage = {

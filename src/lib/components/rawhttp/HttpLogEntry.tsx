@@ -9,6 +9,7 @@ import {
   Play,
   X,
   GitBranch,
+  Loader2,
 } from "lucide-react";
 import { Badge } from "@lib/components/ui/badge";
 import { Button } from "@lib/components/ui/button";
@@ -27,6 +28,26 @@ import { useUIStore } from "@lib/stores/uiStore";
 interface HttpLogEntryProps {
   entry: HttpLogEntryType;
   isHighlighted: boolean;
+}
+
+function CopyIconButton({ text }: { text: string }) {
+  const [copied, setCopied] = useState(false);
+  const handleCopy = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    await navigator.clipboard.writeText(text);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+  return (
+    <button
+      type="button"
+      onClick={handleCopy}
+      className="inline-flex items-center text-muted-foreground hover:text-foreground ml-1 cursor-pointer"
+      title="Copy"
+    >
+      {copied ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
+    </button>
+  );
 }
 
 export function HttpLogEntry({ entry, isHighlighted }: HttpLogEntryProps) {
@@ -66,15 +87,6 @@ export function HttpLogEntry({ entry, isHighlighted }: HttpLogEntryProps) {
 
     if (entry.request.body) {
       curl += ` \\\n  -d '${entry.request.body}'`;
-    }
-
-    if (entry.response) {
-      curl += `\n\n# Response: ${entry.response.status} ${entry.response.statusText}`;
-      curl += `\n# Body:\n${entry.response.body}`;
-    }
-
-    if (entry.error) {
-      curl += `\n\n# Error: ${entry.error}`;
     }
 
     return curl;
@@ -173,7 +185,9 @@ export function HttpLogEntry({ entry, isHighlighted }: HttpLogEntryProps) {
               <AlertCircle className="h-4 w-4 text-destructive shrink-0" />
             )}
             {!isSuccess && !isError && (
-              <div className="h-4 w-4 shrink-0" />
+              entry.response === null && !entry.error
+                ? <Loader2 className="h-4 w-4 shrink-0 animate-spin text-muted-foreground" />
+                : <div className="h-4 w-4 shrink-0" />
             )}
 
             <Badge variant="outline" className="text-xs font-mono shrink-0">
@@ -182,7 +196,7 @@ export function HttpLogEntry({ entry, isHighlighted }: HttpLogEntryProps) {
 
             {entry.response && (
               <Badge
-                variant={isSuccess ? "default" : "destructive"}
+                variant={isSuccess ? "success" : "destructive"}
                 className="text-xs shrink-0"
               >
                 {entry.response.status}
@@ -304,6 +318,7 @@ export function HttpLogEntry({ entry, isHighlighted }: HttpLogEntryProps) {
                     <details className="text-xs">
                       <summary className="cursor-pointer text-muted-foreground hover:text-foreground">
                         Headers ({Object.keys(entry.request.headers).length})
+                        <CopyIconButton text={JSON.stringify(entry.request.headers, null, 2)} />
                       </summary>
                       <JsonHighlight
                         code={JSON.stringify(entry.request.headers, null, 2)}
@@ -313,6 +328,7 @@ export function HttpLogEntry({ entry, isHighlighted }: HttpLogEntryProps) {
                     <details open className="text-xs">
                       <summary className="cursor-pointer text-muted-foreground hover:text-foreground">
                         Body
+                        <CopyIconButton text={formatJson(entry.request.body)} />
                       </summary>
                       <JsonHighlight
                         code={formatJson(entry.request.body)}
@@ -337,6 +353,7 @@ export function HttpLogEntry({ entry, isHighlighted }: HttpLogEntryProps) {
                       <details className="text-xs">
                         <summary className="cursor-pointer text-muted-foreground hover:text-foreground">
                           Headers ({Object.keys(entry.response.headers).length})
+                          <CopyIconButton text={JSON.stringify(entry.response.headers, null, 2)} />
                         </summary>
                         <JsonHighlight
                           code={JSON.stringify(entry.response.headers, null, 2)}
@@ -346,6 +363,7 @@ export function HttpLogEntry({ entry, isHighlighted }: HttpLogEntryProps) {
                       <details open className="text-xs">
                         <summary className="cursor-pointer text-muted-foreground hover:text-foreground">
                           Body
+                          <CopyIconButton text={formatJson(entry.response.body)} />
                         </summary>
                         <JsonHighlight
                           code={formatJson(entry.response.body)}
