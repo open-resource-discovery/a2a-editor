@@ -18,6 +18,12 @@ export interface AgentCardViewProps {
   /** Default tab to show (default: "overview") */
   defaultTab?: "overview" | "validation";
 
+  /** Read-only mode — hides connection/auth forms and disables interactive elements (default: false) */
+  readOnly?: boolean;
+
+  /** Show the connection card in the overview (default: true) */
+  showConnection?: boolean;
+
   /** Callback when agent card JSON changes */
   onAgentCardChange?: (json: string, parsed: AgentCard | null) => void;
   /** Callback when validation completes */
@@ -59,6 +65,8 @@ export function AgentCardView({
   initialAgentUrl,
   showValidation = false,
   defaultTab = "overview",
+  readOnly = false,
+  showConnection = true,
   onAgentCardChange,
   onValidationComplete,
   className,
@@ -93,6 +101,8 @@ export function AgentCardView({
       <CardViewLayout
         showValidation={showValidation}
         defaultTab={defaultTab}
+        readOnly={readOnly}
+        showConnection={showConnection}
         className="h-full"
       />
     </ThemeRoot>

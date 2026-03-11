@@ -8,6 +8,8 @@ import { cn } from "@lib/utils/cn";
 interface CardViewLayoutProps {
   showValidation?: boolean;
   defaultTab?: "overview" | "validation";
+  readOnly?: boolean;
+  showConnection?: boolean;
   className?: string;
 }
 
@@ -18,6 +20,8 @@ interface CardViewLayoutProps {
 export function CardViewLayout({
   showValidation = false,
   defaultTab = "overview",
+  readOnly = false,
+  showConnection = true,
   className,
 }: CardViewLayoutProps) {
   useAutoValidate();
@@ -25,7 +29,7 @@ export function CardViewLayout({
   if (!showValidation) {
     return (
       <ScrollArea className={cn("h-full", className)}>
-        <AgentOverview />
+        <AgentOverview readOnly={readOnly} showConnection={showConnection} />
       </ScrollArea>
     );
   }
@@ -41,7 +45,7 @@ export function CardViewLayout({
         </div>
         <TabsContent value="overview" className="flex-1 overflow-hidden m-0">
           <ScrollArea className="h-full">
-            <AgentOverview />
+            <AgentOverview readOnly={readOnly} showConnection={showConnection} />
           </ScrollArea>
         </TabsContent>
         <TabsContent value="validation" className="flex-1 overflow-hidden m-0">

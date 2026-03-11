@@ -65,6 +65,9 @@ export interface A2APlaygroundOptions {
   /** Make the editor read-only (default: false) */
   readOnly?: boolean;
 
+  /** Show the connection card in the overview (default: true) */
+  showConnection?: boolean;
+
   /** Default active tab (default: "overview") */
   defaultTab?: "overview" | "chat" | "validation" | "rawhttp";
 
@@ -379,6 +382,7 @@ const A2APlayground: A2APlaygroundAPI = {
       showSettings: options.showSettings ?? true,
       showEditor: options.showEditor ?? true,
       readOnly: options.readOnly ?? false,
+      showConnection: options.showConnection ?? true,
       defaultTab: options.defaultTab ?? "overview",
       forceDesktop: options.forceDesktop ?? false,
       disableExamplePrompts: options.disableExamplePrompts ?? false,
