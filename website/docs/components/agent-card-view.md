@@ -33,33 +33,31 @@ Pass `readOnly` to hide all interactive elements (connection forms, authenticati
 function AgentDetail({ agentCardJson }: { agentCardJson: string }) {
   return (
     <div style={{ height: "400px" }}>
-      <AgentCardView
-        initialAgentCard={agentCardJson}
-        readOnly
-      />
+      <AgentCardView initialAgentCard={agentCardJson} readOnly />
     </div>
   );
 }
 ```
 
 In read-only mode:
+
 - The **Connection** section is hidden entirely
 - The **Authentication** section shows scheme information (type, flows, configuration) without credential inputs or sign-in buttons
 - **Skill examples** are displayed as plain text instead of clickable "Try it" buttons
 
 ## Props
 
-| Prop                   | Type                                                | Default      | Description                                                                 |
-| ---------------------- | --------------------------------------------------- | ------------ | --------------------------------------------------------------------------- |
-| `initialAgentCard`     | `string`                                            | -            | Initial agent card JSON string                                              |
-| `initialAgentUrl`      | `string`                                            | -            | Initial agent URL                                                           |
-| `defaultTab`           | `"overview"`                                        | `"overview"` | Default tab to show                                                         |
-| `readOnly`             | `boolean`                                           | `false`      | Hides connection/auth forms and disables interactive elements                |
-| `showConnection`       | `boolean`                                           | `true`       | Show or hide the connection card in the overview                            |
-| `showValidation`       | `boolean`                                           | `false`      | Show the validation tab                                                     |
-| `onAgentCardChange`    | `(json: string, parsed: AgentCard \| null) => void` | -            | Callback when agent card changes                                            |
-| `onValidationComplete` | `(results: ValidationResult[]) => void`             | -            | Callback when validation completes                                          |
-| `className`            | `string`                                            | -            | Additional CSS class                                                        |
+| Prop                   | Type                                                | Default      | Description                                                   |
+| ---------------------- | --------------------------------------------------- | ------------ | ------------------------------------------------------------- |
+| `initialAgentCard`     | `string`                                            | -            | Initial agent card JSON string                                |
+| `initialAgentUrl`      | `string`                                            | -            | Initial agent URL                                             |
+| `defaultTab`           | `"overview"`                                        | `"overview"` | Default tab to show                                           |
+| `readOnly`             | `boolean`                                           | `false`      | Hides connection/auth forms and disables interactive elements |
+| `showConnection`       | `boolean`                                           | `true`       | Show or hide the connection card in the overview              |
+| `showValidation`       | `boolean`                                           | `false`      | Show the validation tab                                       |
+| `onAgentCardChange`    | `(json: string, parsed: AgentCard \| null) => void` | -            | Callback when agent card changes                              |
+| `onValidationComplete` | `(results: ValidationResult[]) => void`             | -            | Callback when validation completes                            |
+| `className`            | `string`                                            | -            | Additional CSS class                                          |
 
 ## When to Use
 

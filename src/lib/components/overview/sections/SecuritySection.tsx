@@ -618,19 +618,16 @@ export function SecuritySection({ schemes, readOnly = false }: SecuritySectionPr
                   </div>
                 )}
                 {scheme.type === "openIdConnect" && scheme.openIdConnectUrl && (
-                  <p className="text-xs text-muted-foreground pl-6">
-                    Discovery: {scheme.openIdConnectUrl}
-                  </p>
+                  <p className="text-xs text-muted-foreground pl-6">Discovery: {scheme.openIdConnectUrl}</p>
                 )}
                 {scheme.type === "apiKey" && (
                   <p className="text-xs text-muted-foreground pl-6">
-                    Sent via {scheme.in ?? "header"}{scheme.name ? ` (${scheme.name})` : ""}
+                    Sent via {scheme.in ?? "header"}
+                    {scheme.name ? ` (${scheme.name})` : ""}
                   </p>
                 )}
                 {scheme.type === "http" && (
-                  <p className="text-xs text-muted-foreground pl-6">
-                    Scheme: {scheme.scheme ?? "bearer"}
-                  </p>
+                  <p className="text-xs text-muted-foreground pl-6">Scheme: {scheme.scheme ?? "bearer"}</p>
                 )}
               </div>
             );

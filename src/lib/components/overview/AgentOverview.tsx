@@ -13,7 +13,11 @@ interface AgentOverviewProps {
   showConnection?: boolean;
 }
 
-export function AgentOverview({ disableExamplePrompts = false, readOnly = false, showConnection = true }: AgentOverviewProps) {
+export function AgentOverview({
+  disableExamplePrompts = false,
+  readOnly = false,
+  showConnection = true,
+}: AgentOverviewProps) {
   const card = useAgentCardStore((state) => state.parsedCard);
   const { url, connectionStatus } = useConnectionStore();
 
@@ -36,9 +40,7 @@ export function AgentOverview({ disableExamplePrompts = false, readOnly = false,
         <div className="space-y-4 p-4">
           <ConnectionSection />
           <div className="text-center text-muted-foreground">
-            <p className="text-sm">
-              Could not load agent card. The endpoint may require authentication.
-            </p>
+            <p className="text-sm">Could not load agent card. The endpoint may require authentication.</p>
           </div>
         </div>
       );
@@ -48,9 +50,7 @@ export function AgentOverview({ disableExamplePrompts = false, readOnly = false,
       <div className="flex h-full items-center justify-center p-8 text-center text-muted-foreground">
         <div>
           <p className="text-lg font-medium">No Agent Card</p>
-          <p className="text-sm">
-            Enter valid JSON in the editor or connect to an agent to see the overview.
-          </p>
+          <p className="text-sm">Enter valid JSON in the editor or connect to an agent to see the overview.</p>
         </div>
       </div>
     );
@@ -61,10 +61,7 @@ export function AgentOverview({ disableExamplePrompts = false, readOnly = false,
       <AgentHeader card={card} />
       {!readOnly && showConnection && <ConnectionSection />}
       {card.securitySchemes && Object.keys(card.securitySchemes).length > 0 && (
-        <SecuritySection
-          schemes={card.securitySchemes}
-          readOnly={readOnly}
-        />
+        <SecuritySection schemes={card.securitySchemes} readOnly={readOnly} />
       )}
       <CapabilitiesSection capabilities={card.capabilities} />
       <ModesSection card={card} />

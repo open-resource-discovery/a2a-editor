@@ -17,10 +17,7 @@ interface ViewerRightPanelProps {
 /**
  * Right panel for AgentViewer - no chat tab
  */
-export function ViewerRightPanel({
-  showValidation = false,
-  defaultTab = "overview",
-}: ViewerRightPanelProps) {
+export function ViewerRightPanel({ showValidation = false, defaultTab = "overview" }: ViewerRightPanelProps) {
   const [localTab, setLocalTab] = useState<TabValue>(defaultTab);
   const summary = useValidationStore((state) => state.summary);
 
@@ -49,11 +46,7 @@ export function ViewerRightPanel({
 
   return (
     <div className="flex h-full flex-col overflow-hidden border-l bg-background">
-      <Tabs
-        value={localTab}
-        onValueChange={handleTabChange}
-        className="flex h-full flex-col"
-      >
+      <Tabs value={localTab} onValueChange={handleTabChange} className="flex h-full flex-col">
         <div className="border-b">
           <TabsList className="h-10 w-full justify-start rounded-none border-b-0 bg-background px-2">
             <TabsTrigger value="overview" className="text-xs">
@@ -63,18 +56,12 @@ export function ViewerRightPanel({
               <TabsTrigger value="validation" className="relative text-xs">
                 Validation
                 {summary.fail > 0 && (
-                  <Badge
-                    variant="error"
-                    className="ml-1 h-5 min-w-5 justify-center p-0 px-1 text-xs"
-                  >
+                  <Badge variant="error" className="ml-1 h-5 min-w-5 justify-center p-0 px-1 text-xs">
                     {summary.fail}
                   </Badge>
                 )}
                 {summary.fail === 0 && summary.warning > 0 && (
-                  <Badge
-                    variant="warning"
-                    className="ml-1 h-5 min-w-5 justify-center p-0 px-1 text-xs"
-                  >
+                  <Badge variant="warning" className="ml-1 h-5 min-w-5 justify-center p-0 px-1 text-xs">
                     {summary.warning}
                   </Badge>
                 )}

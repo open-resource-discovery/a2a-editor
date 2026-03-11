@@ -1,10 +1,5 @@
 import { useEffect, useRef, useState, useCallback } from "react";
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@lib/components/ui/tabs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@lib/components/ui/tabs";
 import { ScrollArea } from "@lib/components/ui/scroll-area";
 import { useUIStore } from "@lib/stores/uiStore";
 import { useValidationStore } from "@lib/stores/validationStore";
@@ -75,11 +70,7 @@ export function RightPanel({
 
   return (
     <div className="flex h-full flex-col overflow-hidden border-l bg-background">
-      <Tabs
-        value={localTab}
-        onValueChange={handleTabChange}
-        className="flex h-full flex-col"
-      >
+      <Tabs value={localTab} onValueChange={handleTabChange} className="flex h-full flex-col">
         <div className="border-b">
           <TabsList className="h-10 w-full justify-start rounded-none border-b-0 bg-background px-2">
             <TabsTrigger value="overview" className="text-xs">
@@ -94,18 +85,12 @@ export function RightPanel({
               <TabsTrigger value="validation" className="relative text-xs">
                 Validation
                 {summary.fail > 0 && (
-                  <Badge
-                    variant="error"
-                    className="ml-1 h-5 min-w-5 justify-center p-0 px-1 text-xs"
-                  >
+                  <Badge variant="error" className="ml-1 h-5 min-w-5 justify-center p-0 px-1 text-xs">
                     {summary.fail}
                   </Badge>
                 )}
                 {summary.fail === 0 && summary.warning > 0 && (
-                  <Badge
-                    variant="warning"
-                    className="ml-1 h-5 min-w-5 justify-center p-0 px-1 text-xs"
-                  >
+                  <Badge variant="warning" className="ml-1 h-5 min-w-5 justify-center p-0 px-1 text-xs">
                     {summary.warning}
                   </Badge>
                 )}
@@ -115,10 +100,7 @@ export function RightPanel({
               <TabsTrigger value="rawhttp" className="text-xs">
                 Raw HTTP
                 {logCount > 0 && (
-                  <Badge
-                    variant="secondary"
-                    className="ml-1 h-5 min-w-5 justify-center p-0 px-1 text-xs"
-                  >
+                  <Badge variant="secondary" className="ml-1 h-5 min-w-5 justify-center p-0 px-1 text-xs">
                     {logCount}
                   </Badge>
                 )}
@@ -129,7 +111,11 @@ export function RightPanel({
 
         <TabsContent value="overview" className="flex-1 overflow-hidden mt-0">
           <ScrollArea className="h-full">
-            <AgentOverview disableExamplePrompts={disableExamplePrompts} readOnly={readOnly} showConnection={showConnection} />
+            <AgentOverview
+              disableExamplePrompts={disableExamplePrompts}
+              readOnly={readOnly}
+              showConnection={showConnection}
+            />
           </ScrollArea>
         </TabsContent>
 
@@ -140,10 +126,7 @@ export function RightPanel({
         )}
 
         {showValidation && (
-          <TabsContent
-            value="validation"
-            className="flex-1 overflow-hidden mt-0"
-          >
+          <TabsContent value="validation" className="flex-1 overflow-hidden mt-0">
             <ScrollArea className="h-full">
               <ValidationPanel />
             </ScrollArea>
