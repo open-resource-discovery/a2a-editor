@@ -156,6 +156,7 @@ export function HttpLogEntry({ entry, isHighlighted }: HttpLogEntryProps) {
   return (
     <div
       ref={ref}
+      data-testid="http-log-entry"
       className={cn(
         "rounded-lg border bg-card overflow-hidden transition-colors cursor-pointer",
         isHighlighted && "ring-2 ring-primary"

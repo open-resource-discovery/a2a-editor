@@ -7,8 +7,8 @@ on:
     branches: [main]
 
 jobs:
-  test:
-    name: Tests
+  linting:
+    name: Static linting
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -17,14 +17,58 @@ jobs:
         with:
           node-version: "24"
 
-      - name: Install dependencies
+      - name: Install NPM dependencies
+        run: npm ci
+
+      - name: ESLint
+        run: npm run eslint:ci
+
+      - name: Prettier
+        run: npm run prettier:ci
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+
+      - name: Install NPM dependencies
         run: npm ci
 
       - name: Build
         run: npm run build
 
-      - name: Run ESLint
-        run: npm run eslint:ci
+  e2e-tests:
+    name: E2E Tests
+    runs-on: ubuntu-latest
+    container:
+      image: mcr.microsoft.com/playwright:v1.58.2-noble
+    steps:
+      - uses: actions/checkout@v4
 
-      - name: Run Prettier
-        run: npm run prettier:ci
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+
+      - name: Install NPM dependencies
+        run: npm ci
+
+      - name: Install website NPM dependencies
+        run: npm --prefix website ci
+
+      - name: Build standalone bundle for website
+        run: npm run prepare:website-assets
+
+      - name: Run Playwright E2E Tests
+        run: npx playwright test
+
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 14

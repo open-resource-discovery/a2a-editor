@@ -63,7 +63,7 @@ export function ChatContainer({ maxExamplePrompts = 2, disableExamplePrompts = f
       {/* Clear button when there are messages */}
       {messages.length > 0 && (
         <div className="flex items-center justify-end border-b px-4 pb-1.5">
-          <Button variant="ghost" size="sm" onClick={clearChat}>
+          <Button variant="ghost" size="sm" onClick={clearChat} data-testid="chat-clear">
             <Trash2 className="mr-1 h-3.5 w-3.5" />
             Clear
           </Button>
@@ -71,7 +71,7 @@ export function ChatContainer({ maxExamplePrompts = 2, disableExamplePrompts = f
       )}
 
       <ScrollArea className="min-h-0 flex-1" viewportRef={scrollViewportRef}>
-        <div className="p-4">
+        <div className="p-4" data-testid="chat-messages">
           {messages.length === 0 ? (
             <div className="flex h-full flex-col items-center justify-center gap-4 text-center">
               <p className="text-sm text-muted-foreground">
@@ -84,6 +84,7 @@ export function ChatContainer({ maxExamplePrompts = 2, disableExamplePrompts = f
                   {examplePrompts.map((example, index) => (
                     <button
                       key={index}
+                      data-testid={`example-prompt-${index}`}
                       onClick={() => handleExampleClick(example)}
                       disabled={!isConnected || disableExamplePrompts}
                       className="group inline-flex items-center gap-1.5 rounded-full border bg-background px-3 py-1.5 text-xs text-foreground cursor-pointer transition-colors hover:bg-accent hover:text-accent-foreground active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed">
