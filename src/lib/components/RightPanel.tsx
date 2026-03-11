@@ -46,7 +46,7 @@ export function RightPanel({
   }, [defaultTab, setActiveTab]);
 
   return (
-    <div className="flex h-full flex-col overflow-hidden border-l bg-background">
+    <div className="flex h-full flex-col overflow-hidden border-l bg-background" data-testid="right-panel">
       <Tabs
         value={activeTab}
         onValueChange={(v) => setActiveTab(v as typeof activeTab)}
@@ -54,16 +54,16 @@ export function RightPanel({
       >
         <div className="border-b">
           <TabsList className="h-10 w-full justify-start rounded-none border-b-0 bg-background px-2">
-            <TabsTrigger value="overview" className="text-xs">
+            <TabsTrigger value="overview" className="text-xs" data-testid="tab-overview">
               Overview
             </TabsTrigger>
             {showChat && (
-              <TabsTrigger value="chat" className="text-xs">
+              <TabsTrigger value="chat" className="text-xs" data-testid="tab-chat">
                 Chat
               </TabsTrigger>
             )}
             {showValidation && (
-              <TabsTrigger value="validation" className="relative text-xs">
+              <TabsTrigger value="validation" className="relative text-xs" data-testid="tab-validation">
                 Validation
                 {summary.fail > 0 && (
                   <Badge
@@ -84,7 +84,7 @@ export function RightPanel({
               </TabsTrigger>
             )}
             {showRawHttp && (
-              <TabsTrigger value="rawhttp" className="text-xs">
+              <TabsTrigger value="rawhttp" className="text-xs" data-testid="tab-rawhttp">
                 Raw HTTP
                 {logCount > 0 && (
                   <Badge
