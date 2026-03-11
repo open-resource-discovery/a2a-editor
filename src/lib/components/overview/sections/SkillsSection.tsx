@@ -8,9 +8,10 @@ import { Search } from "lucide-react";
 interface SkillsSectionProps {
   skills: AgentSkill[];
   disableExamplePrompts?: boolean;
+  readOnly?: boolean;
 }
 
-export function SkillsSection({ skills, disableExamplePrompts = false }: SkillsSectionProps) {
+export function SkillsSection({ skills, disableExamplePrompts = false, readOnly = false }: SkillsSectionProps) {
   const [filter, setFilter] = useState("");
 
   const filteredSkills = skills.filter((skill) => {
@@ -45,7 +46,7 @@ export function SkillsSection({ skills, disableExamplePrompts = false }: SkillsS
       </CardHeader>
       <CardContent className="pt-0 space-y-2">
         {filteredSkills.map((skill) => (
-          <SkillCard key={skill.id} skill={skill} disableExamplePrompts={disableExamplePrompts} />
+          <SkillCard key={skill.id} skill={skill} disableExamplePrompts={disableExamplePrompts} readOnly={readOnly} />
         ))}
         {filteredSkills.length === 0 && (
           <p className="text-sm text-muted-foreground text-center py-4">

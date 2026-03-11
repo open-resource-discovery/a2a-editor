@@ -11,9 +11,10 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@lib/compon
 interface SkillCardProps {
   skill: AgentSkill;
   disableExamplePrompts?: boolean;
+  readOnly?: boolean;
 }
 
-export function SkillCard({ skill, disableExamplePrompts = false }: SkillCardProps) {
+export function SkillCard({ skill, disableExamplePrompts = false, readOnly = false }: SkillCardProps) {
   const [open, setOpen] = useState(false);
   const { sendMessage } = useChatStore();
   const { url, authHeaders } = useConnectionStore();
@@ -66,20 +67,31 @@ export function SkillCard({ skill, disableExamplePrompts = false }: SkillCardPro
             ) : null}
             {skill.examples && skill.examples.length > 0 && (
               <div className="space-y-1">
-                <span className="text-xs text-muted-foreground">Try it:</span>
+                <span className="text-xs text-muted-foreground">{readOnly ? "Examples:" : "Try it:"}</span>
                 <div className="flex flex-wrap gap-1">
-                  {skill.examples.map((example, i) => (
-                    <Button
-                      key={i}
-                      variant="outline"
-                      size="sm"
-                      className="h-7 text-xs max-w-full shadow-none"
-                      onClick={() => handleTryExample(example)}
-                      disabled={!url || disableExamplePrompts}>
-                      <Play className="h-3 w-3 mr-1 shrink-0" />
-                      <span className="truncate">{example.length > 30 ? example.slice(0, 30) + "..." : example}</span>
-                    </Button>
-                  ))}
+                  {readOnly ? (
+                    skill.examples.map((example, i) => (
+                      <span
+                        key={i}
+                        className="inline-flex items-center rounded-md border px-2 py-1 text-xs text-muted-foreground max-w-full"
+                      >
+                        <span className="truncate">{example.length > 50 ? example.slice(0, 50) + "..." : example}</span>
+                      </span>
+                    ))
+                  ) : (
+                    skill.examples.map((example, i) => (
+                      <Button
+                        key={i}
+                        variant="outline"
+                        size="sm"
+                        className="h-7 text-xs max-w-full shadow-none"
+                        onClick={() => handleTryExample(example)}
+                        disabled={!url || disableExamplePrompts}>
+                        <Play className="h-3 w-3 mr-1 shrink-0" />
+                        <span className="truncate">{example.length > 30 ? example.slice(0, 30) + "..." : example}</span>
+                      </Button>
+                    ))
+                  )}
                 </div>
               </div>
             )}

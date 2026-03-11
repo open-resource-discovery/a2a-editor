@@ -40,6 +40,7 @@ interface PlaygroundLayoutProps {
   showEditor?: boolean;
   showToolbar?: boolean;
   readOnly?: boolean;
+  showConnection?: boolean;
   defaultTab?: "overview" | "chat" | "validation" | "rawhttp";
   maxExamplePrompts?: number;
   disableExamplePrompts?: boolean;
@@ -65,6 +66,7 @@ export function PlaygroundLayout({
   showEditor = true,
   showToolbar = true,
   readOnly = false,
+  showConnection = true,
   defaultTab = "overview",
   maxExamplePrompts = 2,
   disableExamplePrompts = false,
@@ -90,6 +92,8 @@ export function PlaygroundLayout({
           defaultTab={defaultTab}
           maxExamplePrompts={maxExamplePrompts}
           disableExamplePrompts={disableExamplePrompts}
+          readOnly={readOnly}
+          showConnection={showConnection}
         />
       </div>
     );
@@ -126,6 +130,8 @@ export function PlaygroundLayout({
               defaultTab={defaultTab}
               maxExamplePrompts={maxExamplePrompts}
               disableExamplePrompts={disableExamplePrompts}
+              readOnly={readOnly}
+              showConnection={showConnection}
             />
           </Panel>
         </PanelGroup>
@@ -150,6 +156,8 @@ export function PlaygroundLayout({
             defaultTab={defaultTab}
             maxExamplePrompts={maxExamplePrompts}
             disableExamplePrompts={disableExamplePrompts}
+            readOnly={readOnly}
+            showConnection={showConnection}
           />
         );
       case "json":

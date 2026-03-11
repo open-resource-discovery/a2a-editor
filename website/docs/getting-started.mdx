@@ -64,11 +64,11 @@ function App() {
 ```
 
   </TabItem>
-  <TabItem value="card" label="Agent Card">
+  <TabItem value="card" label="Read-Only Card">
 
 <ComponentDemo type="card" height="550px" />
 
-Agent card overview without Monaco editor:
+Read-only agent card overview — displays capabilities, skills, and authentication info without any interactive controls:
 
 ```tsx
 import { AgentCardView } from "@open-resource-discovery/a2a-editor/card-view";
@@ -85,7 +85,7 @@ const agentCard = {
 };
 
 function App() {
-  return <AgentCardView initialAgentCard={JSON.stringify(agentCard, null, 2)} />;
+  return <AgentCardView initialAgentCard={JSON.stringify(agentCard, null, 2)} readOnly />;
 }
 ```
 

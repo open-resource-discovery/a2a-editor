@@ -26,6 +26,7 @@ import {
 
 interface SecuritySectionProps {
   schemes: Record<string, SecurityScheme>;
+  readOnly?: boolean;
 }
 
 const schemeIcons: Record<string, typeof Shield> = {
@@ -53,7 +54,7 @@ function schemeLabel(name: string, scheme: SecurityScheme): string {
   }
 }
 
-export function SecuritySection({ schemes }: SecuritySectionProps) {
+export function SecuritySection({ schemes, readOnly = false }: SecuritySectionProps) {
   const {
     basicCredentials,
     setBasicCredentials,
@@ -587,6 +588,57 @@ export function SecuritySection({ schemes }: SecuritySectionProps) {
       </div>
     );
   };
+
+  if (readOnly) {
+    return (
+      <Card>
+        <CardHeader className="py-3">
+          <CardTitle className="text-sm">Authentication</CardTitle>
+        </CardHeader>
+        <CardContent className="pt-0 space-y-3">
+          {schemeEntries.map(([name, scheme]) => {
+            const Icon = schemeIcons[scheme.type] || Shield;
+            return (
+              <div key={name} className="space-y-1">
+                <div className="flex items-center gap-2">
+                  <Icon className="h-4 w-4 text-muted-foreground" />
+                  <span className="font-medium text-sm">{name}</span>
+                  <Badge variant="outline" className="text-xs">
+                    {scheme.type}
+                  </Badge>
+                </div>
+                {scheme.description && <p className="text-xs text-muted-foreground pl-6">{scheme.description}</p>}
+                {scheme.type === "oauth2" && scheme.flows && (
+                  <div className="pl-6 flex flex-wrap gap-1">
+                    {Object.keys(scheme.flows).map((flow) => (
+                      <Badge key={flow} variant="secondary" className="text-xs">
+                        {flow}
+                      </Badge>
+                    ))}
+                  </div>
+                )}
+                {scheme.type === "openIdConnect" && scheme.openIdConnectUrl && (
+                  <p className="text-xs text-muted-foreground pl-6">
+                    Discovery: {scheme.openIdConnectUrl}
+                  </p>
+                )}
+                {scheme.type === "apiKey" && (
+                  <p className="text-xs text-muted-foreground pl-6">
+                    Sent via {scheme.in ?? "header"}{scheme.name ? ` (${scheme.name})` : ""}
+                  </p>
+                )}
+                {scheme.type === "http" && (
+                  <p className="text-xs text-muted-foreground pl-6">
+                    Scheme: {scheme.scheme ?? "bearer"}
+                  </p>
+                )}
+              </div>
+            );
+          })}
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card>
