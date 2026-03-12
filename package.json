@@ -75,6 +75,7 @@
     "**/*.css"
   ],
   "scripts": {
+    "prepack": "npm run build",
     "dev": "vite",
     "start": "npm run website:start",
     "build": "npm run build:lib && npm run build:standalone",

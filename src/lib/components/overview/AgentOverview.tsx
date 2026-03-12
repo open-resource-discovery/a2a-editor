@@ -5,7 +5,9 @@ import { ConnectionSection } from "./sections/ConnectionSection";
 import { CapabilitiesSection } from "./sections/CapabilitiesSection";
 import { SkillsSection } from "./sections/SkillsSection";
 import { SecuritySection } from "./sections/SecuritySection";
+import { SecurityRequirementsSection } from "./sections/SecurityRequirementsSection";
 import { ModesSection } from "./sections/ModesSection";
+import { ExtensionsSection } from "./sections/ExtensionsSection";
 
 interface AgentOverviewProps {
   disableExamplePrompts?: boolean;
@@ -67,6 +69,12 @@ export function AgentOverview({
       <ModesSection card={card} />
       {card.skills && card.skills.length > 0 && (
         <SkillsSection skills={card.skills} disableExamplePrompts={disableExamplePrompts} readOnly={readOnly} />
+      )}
+      {card.security && card.security.length > 0 && (
+        <SecurityRequirementsSection requirements={card.security} />
+      )}
+      {card.extensions && card.extensions.length > 0 && (
+        <ExtensionsSection extensions={card.extensions} />
       )}
     </div>
   );
