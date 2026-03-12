@@ -7,6 +7,8 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [unreleased]
 
+## [[0.2.0](https://github.com/open-resource-discovery/a2a-editor/releases/tag/v0.2.0)] - 2026-03-12
+
 ### Added
 
 - SSE streaming support for agent communication with real-time message updates
