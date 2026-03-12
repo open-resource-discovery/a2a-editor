@@ -23,6 +23,13 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 - Expanded `a2a-compat` normalization layer to handle streaming event types (`status-update`, `artifact-update`, `task`, `error`)
 - Chat action buttons (copy, view HTTP, retry) are now hidden while a message is still streaming
 - `httpLogStore` extended with a new field to track streaming responses
+- Standalone bundle now exposes `cardView()`, `viewer()`, and `editor()` methods for rendering individual components via CDN
+
+### Fixed
+
+- CSS file (`index.css`) was missing from npm package due to a filename mismatch in the Vite build output
+- Standalone bundle (`dist-standalone/`) is now included in the npm package for CDN usage via unpkg/jsdelivr
+- Added `unpkg` fields to `package.json` for automatic CDN resolution
 
 ## [0.1.0]
 
