@@ -54,7 +54,7 @@ export type {
 
 // Store exports (for advanced usage)
 export { useAgentCardStore, selectParsedCard, selectParseError } from "./stores/agentCardStore";
-export { useConnectionStore, useAuthHeaders, selectAuthHeaders } from "./stores/connectionStore";
+export { useConnectionStore, useAuthHeaders, selectAuthHeaders, selectEffectiveUrl } from "./stores/connectionStore";
 export { useChatStore } from "./stores/chatStore";
 export { useValidationStore, selectValidationSummary } from "./stores/validationStore";
 export { usePredefinedAgentsStore, selectSelectedAgent } from "./stores/predefinedAgentsStore";

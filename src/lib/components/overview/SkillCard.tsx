@@ -3,7 +3,7 @@ import type { AgentSkill } from "@lib/types/a2a";
 import { Badge } from "@lib/components/ui/badge";
 import { Button } from "@lib/components/ui/button";
 import { useChatStore } from "@lib/stores/chatStore";
-import { useConnectionStore } from "@lib/stores/connectionStore";
+import { useConnectionStore, selectEffectiveUrl } from "@lib/stores/connectionStore";
 import { useUIStore } from "@lib/stores/uiStore";
 import { Play, ChevronDown } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@lib/components/ui/collapsible";
@@ -16,12 +16,13 @@ interface SkillCardProps {
 
 export function SkillCard({ skill, disableExamplePrompts = false, readOnly = false }: SkillCardProps) {
   const [open, setOpen] = useState(false);
-  const { sendMessage } = useChatStore();
-  const { url, authHeaders } = useConnectionStore();
+  const { sendMessage, isStreaming } = useChatStore();
+  const { authHeaders } = useConnectionStore();
+  const effectiveUrl = useConnectionStore(selectEffectiveUrl);
   const { switchToChat } = useUIStore();
 
   const handleTryExample = (example: string) => {
-    sendMessage([{ text: example }], url, authHeaders);
+    sendMessage([{ text: example }], effectiveUrl, authHeaders);
     switchToChat();
   };
 
@@ -86,7 +87,7 @@ export function SkillCard({ skill, disableExamplePrompts = false, readOnly = fal
                           size="sm"
                           className="h-7 text-xs max-w-full shadow-none"
                           onClick={() => handleTryExample(example)}
-                          disabled={!url || disableExamplePrompts}>
+                          disabled={!effectiveUrl || isStreaming || disableExamplePrompts}>
                           <Play className="h-3 w-3 mr-1 shrink-0" />
                           <span className="truncate">
                             {example.length > 30 ? example.slice(0, 30) + "..." : example}

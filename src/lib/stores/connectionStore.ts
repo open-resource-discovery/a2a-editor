@@ -65,6 +65,7 @@ function computeAuthHeaders(
 
 interface ConnectionState {
   url: string;
+  messagingUrl: string;
   authType: AuthType;
   connectionAuthType: AuthType | null;
   basicCredentials: BasicCredentials;
@@ -83,6 +84,7 @@ interface ConnectionState {
   protocolVersion: string;
 
   setUrl: (url: string) => void;
+  setMessagingUrl: (messagingUrl: string) => void;
   setAuthType: (type: AuthType) => void;
   setBasicCredentials: (creds: Partial<BasicCredentials>) => void;
   setOAuth2Credentials: (creds: Partial<OAuth2Credentials>) => void;
@@ -112,6 +114,7 @@ let deviceCodePollTimer: ReturnType<typeof setTimeout> | null = null;
 
 export const useConnectionStore = create<ConnectionState>((set, get) => ({
   url: "",
+  messagingUrl: "",
   authType: "none",
   connectionAuthType: null,
   basicCredentials: { username: "", password: "" },
@@ -135,6 +138,7 @@ export const useConnectionStore = create<ConnectionState>((set, get) => ({
   protocolVersion: "0.3.0",
 
   setUrl: (url) => set({ url }),
+  setMessagingUrl: (messagingUrl) => set({ messagingUrl }),
 
   setAuthType: (authType) => {
     const state = get();
@@ -248,9 +252,9 @@ export const useConnectionStore = create<ConnectionState>((set, get) => ({
       const version = detectProtocolVersion(data);
       const card = normalizeAgentCard(data);
 
-      // Update connection URL from normalized card (e.g. supportedInterfaces[0].url)
-      if (card.url && card.url !== state.url) {
-        set({ url: card.url });
+      // Store messaging URL from card (don't overwrite discovery URL)
+      if (card.url) {
+        set({ messagingUrl: card.url });
       }
 
       set({ connectionStatus: "connected", protocolVersion: version });
@@ -271,6 +275,7 @@ export const useConnectionStore = create<ConnectionState>((set, get) => ({
       authHeaders: EMPTY_AUTH_HEADERS,
       isTokenLoading: false,
       tokenError: "",
+      messagingUrl: "",
     }),
 
   reset: () => {
@@ -280,6 +285,7 @@ export const useConnectionStore = create<ConnectionState>((set, get) => ({
     }
     set({
       url: "",
+      messagingUrl: "",
       authType: "none",
       connectionAuthType: null,
       basicCredentials: { username: "", password: "" },
@@ -1242,6 +1248,9 @@ export const useConnectionStore = create<ConnectionState>((set, get) => ({
 
 // Selector for auth headers - now just returns stored state
 export const selectAuthHeaders = (state: ConnectionState): Record<string, string> => state.authHeaders;
+
+// Selector for effective messaging URL (messagingUrl from card, falling back to user-entered url)
+export const selectEffectiveUrl = (state: ConnectionState): string => state.messagingUrl || state.url;
 
 // Hook to get auth headers
 export const useAuthHeaders = () => {

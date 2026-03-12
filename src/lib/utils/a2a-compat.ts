@@ -5,7 +5,7 @@
  * and convert outbound messages to v1.0.0 format when talking to v1.0.0 agents.
  * Internal types (ChatMessage.role, TaskState, Part) stay v0.3.0.
  */
-import type { AgentCard, TaskState, Part } from "@lib/types/a2a";
+import type { AgentCard, TaskState, Part, Artifact } from "@lib/types/a2a";
 
 // ---------------------------------------------------------------------------
 // Version detection
@@ -48,9 +48,7 @@ export function normalizeAgentCard(raw: unknown): AgentCard {
 
     // Populate protocolVersions from interfaces if missing
     if (!card.protocolVersions) {
-      card.protocolVersions = (
-        card.supportedInterfaces as Array<{ protocolVersion?: string }>
-      )
+      card.protocolVersions = (card.supportedInterfaces as Array<{ protocolVersion?: string }>)
         .map((i) => i.protocolVersion)
         .filter(Boolean);
     }
@@ -95,13 +93,26 @@ export function normalizeRole(role: string): "user" | "agent" {
 // Part normalization (inbound)
 // ---------------------------------------------------------------------------
 
-/** Normalize a part: map mediaType → mimeType on file parts. */
+/** Normalize a part: convert v1.0.0-rc top-level url/mediaType/filename to v0.3.0 file part. */
 export function normalizePart(part: unknown): Part {
   if (!part || typeof part !== "object") return part as Part;
 
   const p = part as Record<string, unknown>;
 
-  // File part: map mediaType → mimeType
+  // v1.0.0-rc file part: has top-level `url` (and optionally `mediaType`, `filename`)
+  // Convert to v0.3.0 format: { file: { uri, mimeType, name } }
+  if (typeof p.url === "string" && !("file" in p) && !("text" in p) && !("data" in p)) {
+    return {
+      file: {
+        uri: p.url as string,
+        ...(p.mediaType ? { mimeType: p.mediaType as string } : {}),
+        ...(p.filename ? { name: p.filename as string } : {}),
+      },
+      ...(p.metadata ? { metadata: p.metadata as Record<string, unknown> } : {}),
+    } as Part;
+  }
+
+  // v0.3.0 file part: map mediaType → mimeType within file object
   if (p.file && typeof p.file === "object") {
     const file = p.file as Record<string, unknown>;
     if (file.mediaType && !file.mimeType) {
@@ -181,9 +192,134 @@ export function getJsonRpcMethod(version: string): string {
   return version === "1.0.0" ? "SendMessage" : "message/send";
 }
 
+/** Get the correct streaming JSON-RPC method name (always message/stream per spec). */
+export function getStreamingJsonRpcMethod(): string {
+  return "message/stream";
+}
+
 /** Get the correct outbound role string for the agent's protocol version. */
 export function buildOutboundRole(version: string): string {
   return version === "1.0.0" ? "ROLE_USER" : "user";
+}
+
+// ---------------------------------------------------------------------------
+// Streaming event normalization (inbound)
+// ---------------------------------------------------------------------------
+
+export type NormalizedStreamEvent =
+  | {
+      kind: "status-update";
+      taskId: string;
+      contextId: string;
+      status: { state: TaskState; message?: { role: string; parts: Part[] } };
+    }
+  | { kind: "artifact-update"; taskId: string; contextId: string; artifact: Artifact }
+  | { kind: "task"; task: Record<string, unknown> }
+  | { kind: "error"; error: { code: number; message: string } };
+
+/** Map v1.0.0 SSE event kind to v0.3.0. */
+const V1_EVENT_KIND_MAP: Record<string, string> = {
+  STATUS_UPDATE: "status-update",
+  ARTIFACT_UPDATE: "artifact-update",
+  TASK: "task",
+};
+
+/**
+ * Normalize an SSE stream event payload to v0.3.0 format.
+ * Handles both the spec-compliant JSON-RPC response format
+ * ({ jsonrpc, id, result: { statusUpdate|artifactUpdate|... } })
+ * and the older notification/flat format for backwards compat.
+ */
+export function normalizeStreamEvent(event: unknown): NormalizedStreamEvent | null {
+  if (!event || typeof event !== "object") return null;
+
+  const e = event as Record<string, unknown>;
+
+  // Handle JSON-RPC error events
+  if (e.error && typeof e.error === "object") {
+    const err = e.error as Record<string, unknown>;
+    return {
+      kind: "error",
+      error: {
+        code: (err.code as number) ?? -1,
+        message: (err.message as string) ?? "Unknown error",
+      },
+    };
+  }
+
+  // Unwrap JSON-RPC response: { jsonrpc, id, result: { ... } }
+  // Falls back to `params` (old notification format) or the event itself
+  const inner = (e.result ?? e.params ?? e) as Record<string, unknown>;
+
+  // Determine the event kind from `kind` field (v0.3.0 includes it in the result)
+  let kind = (inner.kind ?? inner.type ?? "") as string;
+  kind = V1_EVENT_KIND_MAP[kind] ?? kind;
+
+  // If no explicit kind, infer from which fields are present
+  if (!kind) {
+    if (inner.status && typeof inner.status === "object") kind = "status-update";
+    else if (inner.artifact && typeof inner.artifact === "object") kind = "artifact-update";
+    else if (inner.task && typeof inner.task === "object") kind = "task";
+  }
+
+  const taskId = (inner.taskId ?? inner.id ?? "") as string;
+  const contextId = (inner.contextId ?? "") as string;
+
+  if (kind === "status-update") {
+    const rawStatus = (inner.status ?? {}) as Record<string, unknown>;
+    const state = typeof rawStatus.state === "string" ? normalizeTaskState(rawStatus.state) : "working";
+
+    let message: { role: string; parts: Part[] } | undefined;
+    if (rawStatus.message && typeof rawStatus.message === "object") {
+      const msg = rawStatus.message as Record<string, unknown>;
+      message = {
+        role: typeof msg.role === "string" ? normalizeRole(msg.role) : "agent",
+        parts: Array.isArray(msg.parts) ? msg.parts.map(normalizePart) : [],
+      };
+    }
+
+    return { kind: "status-update", taskId, contextId, status: { state, message } };
+  }
+
+  if (kind === "artifact-update") {
+    const rawArtifact = (inner.artifact ?? {}) as Record<string, unknown>;
+    const artifact: Artifact = {
+      artifactId: (rawArtifact.artifactId ?? rawArtifact.id ?? "") as string,
+      name: rawArtifact.name as string | undefined,
+      parts: Array.isArray(rawArtifact.parts) ? rawArtifact.parts.map(normalizePart) : [],
+      append: rawArtifact.append as boolean | undefined,
+      lastChunk: rawArtifact.lastChunk as boolean | undefined,
+    };
+    return { kind: "artifact-update", taskId, contextId, artifact };
+  }
+
+  if (kind === "task") {
+    // The full task object — normalize it as a task response result
+    const result = inner.task ?? inner;
+    if (result && typeof result === "object") {
+      const r = result as Record<string, unknown>;
+      if (r.status && typeof r.status === "object") {
+        const status = r.status as Record<string, unknown>;
+        if (typeof status.state === "string") {
+          status.state = normalizeTaskState(status.state);
+        }
+        if (status.message && typeof status.message === "object") {
+          normalizeMessageInPlace(status.message as Record<string, unknown>);
+        }
+      }
+      if (Array.isArray(r.artifacts)) {
+        for (const artifact of r.artifacts) {
+          if (artifact && typeof artifact === "object" && Array.isArray(artifact.parts)) {
+            artifact.parts = artifact.parts.map(normalizePart);
+          }
+        }
+      }
+    }
+    return { kind: "task", task: (result ?? inner) as Record<string, unknown> };
+  }
+
+  // Unknown event kind — skip
+  return null;
 }
 
 // ---------------------------------------------------------------------------
@@ -192,9 +328,22 @@ export function buildOutboundRole(version: string): string {
 
 export const ALL_VALID_STATES = new Set([
   // v0.3.0
-  "submitted", "working", "input-required", "completed", "canceled", "failed", "rejected", "unknown",
+  "submitted",
+  "working",
+  "input-required",
+  "completed",
+  "canceled",
+  "failed",
+  "rejected",
+  "unknown",
   // v1.0.0
-  "TASK_STATE_SUBMITTED", "TASK_STATE_WORKING", "TASK_STATE_INPUT_REQUIRED",
-  "TASK_STATE_COMPLETED", "TASK_STATE_CANCELED", "TASK_STATE_FAILED",
-  "TASK_STATE_REJECTED", "TASK_STATE_AUTH_REQUIRED", "TASK_STATE_UNSPECIFIED",
+  "TASK_STATE_SUBMITTED",
+  "TASK_STATE_WORKING",
+  "TASK_STATE_INPUT_REQUIRED",
+  "TASK_STATE_COMPLETED",
+  "TASK_STATE_CANCELED",
+  "TASK_STATE_FAILED",
+  "TASK_STATE_REJECTED",
+  "TASK_STATE_AUTH_REQUIRED",
+  "TASK_STATE_UNSPECIFIED",
 ]);
