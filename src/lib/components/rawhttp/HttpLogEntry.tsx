@@ -1,23 +1,8 @@
 import { useState, useEffect, useRef } from "react";
-import {
-  ChevronDown,
-  Copy,
-  Check,
-  Clock,
-  AlertCircle,
-  CheckCircle,
-  Play,
-  X,
-  GitBranch,
-  Loader2,
-} from "lucide-react";
+import { ChevronDown, Copy, Check, Clock, AlertCircle, CheckCircle, Play, X, GitBranch, Loader2 } from "lucide-react";
 import { Badge } from "@lib/components/ui/badge";
 import { Button } from "@lib/components/ui/button";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@lib/components/ui/collapsible";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@lib/components/ui/collapsible";
 import { JsonHighlight } from "@lib/components/ui/JsonHighlight";
 import { cn } from "@lib/utils/cn";
 import type { HttpLogEntry as HttpLogEntryType } from "@lib/types/httpLog";
@@ -42,9 +27,8 @@ function CopyIconButton({ text }: { text: string }) {
     <button
       type="button"
       onClick={handleCopy}
-      className="inline-flex items-center text-muted-foreground hover:text-foreground ml-1 cursor-pointer"
-      title="Copy"
-    >
+      className="absolute top-1.5 right-1.5 inline-flex items-center text-muted-foreground hover:text-foreground cursor-pointer z-10 rounded p-0.5 hover:bg-accent/50"
+      title="Copy">
       {copied ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
     </button>
   );
@@ -71,12 +55,8 @@ export function HttpLogEntry({ entry, isHighlighted }: HttpLogEntryProps) {
     }
   }, [isHighlighted]);
 
-  const isSuccess =
-    entry.response &&
-    entry.response.status >= 200 &&
-    entry.response.status < 300;
-  const isError =
-    entry.error || (entry.response && entry.response.status >= 400);
+  const isSuccess = entry.response && entry.response.status >= 200 && entry.response.status < 300;
+  const isError = entry.error || (entry.response && entry.response.status >= 400);
 
   const generateCurlFormat = () => {
     const headers = Object.entries(entry.request.headers)
@@ -171,47 +151,39 @@ export function HttpLogEntry({ entry, isHighlighted }: HttpLogEntryProps) {
       data-testid="http-log-entry"
       className={cn(
         "rounded-lg border bg-card overflow-hidden transition-colors cursor-pointer",
-        isHighlighted && "ring-2 ring-primary"
-      )}
-    >
+        isHighlighted && "ring-2 ring-primary",
+      )}>
       <Collapsible open={open} onOpenChange={setOpen}>
         <CollapsibleTrigger className="flex w-full items-center justify-between p-3 text-left hover:bg-accent/50">
           <div className="flex flex-wrap items-center gap-2 flex-1 min-w-0">
             <div className="flex items-center gap-2 min-w-0 flex-1">
-            {isSuccess && (
-              <CheckCircle className="h-4 w-4 text-success shrink-0" />
-            )}
-            {isError && (
-              <AlertCircle className="h-4 w-4 text-destructive shrink-0" />
-            )}
-            {!isSuccess && !isError && (
-              entry.response === null && !entry.error
-                ? <Loader2 className="h-4 w-4 shrink-0 animate-spin text-muted-foreground" />
-                : <div className="h-4 w-4 shrink-0" />
-            )}
+              {isSuccess && <CheckCircle className="h-4 w-4 text-success shrink-0" />}
+              {isError && <AlertCircle className="h-4 w-4 text-destructive shrink-0" />}
+              {!isSuccess &&
+                !isError &&
+                (entry.response === null && !entry.error ? (
+                  <Loader2 className="h-4 w-4 shrink-0 animate-spin text-muted-foreground" />
+                ) : (
+                  <div className="h-4 w-4 shrink-0" />
+                ))}
 
-            <Badge variant="outline" className="text-xs font-mono shrink-0">
-              {entry.request.method}
-            </Badge>
-
-            {entry.response && (
-              <Badge
-                variant={isSuccess ? "success" : "destructive"}
-                className="text-xs shrink-0"
-              >
-                {entry.response.status}
+              <Badge variant="outline" className="text-xs font-mono shrink-0">
+                {entry.request.method}
               </Badge>
-            )}
 
-            {entry.derivedFromLogId && (
-              <span title="Modified from previous request">
-                <GitBranch className="h-3 w-3 text-muted-foreground shrink-0" />
-              </span>
-            )}
+              {entry.response && (
+                <Badge variant={isSuccess ? "success" : "destructive"} className="text-xs shrink-0">
+                  {entry.response.status}
+                </Badge>
+              )}
 
-            <span className="text-xs text-muted-foreground truncate">
-              {urlPath}
-            </span>
+              {entry.derivedFromLogId && (
+                <span title="Modified from previous request">
+                  <GitBranch className="h-3 w-3 text-muted-foreground shrink-0" />
+                </span>
+              )}
+
+              <span className="text-xs text-muted-foreground truncate">{urlPath}</span>
             </div>
           </div>
 
@@ -223,16 +195,9 @@ export function HttpLogEntry({ entry, isHighlighted }: HttpLogEntryProps) {
                   {entry.durationMs}ms
                 </span>
               )}
-              <span className="text-[10px]">
-                {entry.timestamp.toLocaleTimeString()}
-              </span>
+              <span className="text-[10px]">{entry.timestamp.toLocaleTimeString()}</span>
             </div>
-            <ChevronDown
-              className={cn(
-                "h-4 w-4 transition-transform",
-                open && "rotate-180"
-              )}
-            />
+            <ChevronDown className={cn("h-4 w-4 transition-transform", open && "rotate-180")} />
           </div>
         </CollapsibleTrigger>
 
@@ -241,21 +206,12 @@ export function HttpLogEntry({ entry, isHighlighted }: HttpLogEntryProps) {
             <div className="flex justify-end gap-2">
               {!isEditing && (
                 <>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={handleStartEdit}
-                    disabled={!effectiveUrl}
-                  >
+                  <Button variant="outline" size="sm" onClick={handleStartEdit} disabled={!effectiveUrl}>
                     <Play className="h-3 w-3 mr-1" />
                     Edit & Resend
                   </Button>
                   <Button variant="outline" size="sm" onClick={handleCopy}>
-                    {copied ? (
-                      <Check className="h-3 w-3 mr-1" />
-                    ) : (
-                      <Copy className="h-3 w-3 mr-1" />
-                    )}
+                    {copied ? <Check className="h-3 w-3 mr-1" /> : <Copy className="h-3 w-3 mr-1" />}
                     {copied ? "Copied" : "Copy as cURL"}
                   </Button>
                 </>
@@ -283,25 +239,13 @@ export function HttpLogEntry({ entry, isHighlighted }: HttpLogEntryProps) {
                     spellCheck={false}
                   />
                 </div>
-                {editError && (
-                  <p className="text-xs text-destructive">{editError}</p>
-                )}
+                {editError && <p className="text-xs text-destructive">{editError}</p>}
                 <div className="flex justify-end gap-2">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={handleCancelEdit}
-                    disabled={isSending}
-                  >
+                  <Button variant="ghost" size="sm" onClick={handleCancelEdit} disabled={isSending}>
                     <X className="h-3 w-3 mr-1" />
                     Cancel
                   </Button>
-                  <Button
-                    variant="default"
-                    size="sm"
-                    onClick={handleSendEdited}
-                    disabled={isSending}
-                  >
+                  <Button variant="default" size="sm" onClick={handleSendEdited} disabled={isSending}>
                     <Play className="h-3 w-3 mr-1" />
                     {isSending ? "Sending..." : "Send"}
                   </Button>
@@ -318,22 +262,18 @@ export function HttpLogEntry({ entry, isHighlighted }: HttpLogEntryProps) {
                     <details className="text-xs">
                       <summary className="cursor-pointer text-muted-foreground hover:text-foreground">
                         Headers ({Object.keys(entry.request.headers).length})
-                        <CopyIconButton text={JSON.stringify(entry.request.headers, null, 2)} />
                       </summary>
-                      <JsonHighlight
-                        code={JSON.stringify(entry.request.headers, null, 2)}
-                        className="mt-1"
-                      />
+                      <div className="relative mt-1">
+                        <CopyIconButton text={JSON.stringify(entry.request.headers, null, 2)} />
+                        <JsonHighlight code={JSON.stringify(entry.request.headers, null, 2)} />
+                      </div>
                     </details>
                     <details open className="text-xs">
-                      <summary className="cursor-pointer text-muted-foreground hover:text-foreground">
-                        Body
+                      <summary className="cursor-pointer text-muted-foreground hover:text-foreground">Body</summary>
+                      <div className="relative mt-1">
                         <CopyIconButton text={formatJson(entry.request.body)} />
-                      </summary>
-                      <JsonHighlight
-                        code={formatJson(entry.request.body)}
-                        className="mt-1"
-                      />
+                        <JsonHighlight code={formatJson(entry.request.body)} />
+                      </div>
                     </details>
                   </div>
                 </div>
@@ -345,39 +285,32 @@ export function HttpLogEntry({ entry, isHighlighted }: HttpLogEntryProps) {
                       <div
                         className={cn(
                           "text-xs font-mono p-2 rounded",
-                          isSuccess ? "bg-success/10" : "bg-destructive/10"
-                        )}
-                      >
+                          isSuccess ? "bg-success/10" : "bg-destructive/10",
+                        )}>
                         {entry.response.status} {entry.response.statusText}
                       </div>
                       <details className="text-xs">
                         <summary className="cursor-pointer text-muted-foreground hover:text-foreground">
                           Headers ({Object.keys(entry.response.headers).length})
-                          <CopyIconButton text={JSON.stringify(entry.response.headers, null, 2)} />
                         </summary>
-                        <JsonHighlight
-                          code={JSON.stringify(entry.response.headers, null, 2)}
-                          className="mt-1"
-                        />
+                        <div className="relative mt-1">
+                          <CopyIconButton text={JSON.stringify(entry.response.headers, null, 2)} />
+                          <JsonHighlight code={JSON.stringify(entry.response.headers, null, 2)} />
+                        </div>
                       </details>
                       <details open className="text-xs">
-                        <summary className="cursor-pointer text-muted-foreground hover:text-foreground">
-                          Body
+                        <summary className="cursor-pointer text-muted-foreground hover:text-foreground">Body</summary>
+                        <div className="relative mt-1">
                           <CopyIconButton text={formatJson(entry.response.body)} />
-                        </summary>
-                        <JsonHighlight
-                          code={formatJson(entry.response.body)}
-                          className="mt-1"
-                        />
+                          <JsonHighlight code={formatJson(entry.response.body)} />
+                        </div>
                       </details>
                     </div>
                   </div>
                 )}
 
                 {entry.error && (
-                  <div className="text-xs text-destructive bg-destructive/10 p-2 rounded">
-                    Error: {entry.error}
-                  </div>
+                  <div className="text-xs text-destructive bg-destructive/10 p-2 rounded">Error: {entry.error}</div>
                 )}
               </>
             )}

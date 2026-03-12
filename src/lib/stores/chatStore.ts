@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import type { ChatMessage } from "@lib/types/chat";
-import type { Part, TaskState, Artifact } from "@lib/types/a2a";
+import { isTextPart, type Part, type TaskState, type Artifact } from "@lib/types/a2a";
 import type { HttpLogEntry } from "@lib/types/httpLog";
 import { v4 as uuidv4 } from "uuid";
 import { isMockUrl, handleMockMessage } from "@lib/mock/agents";
@@ -141,19 +141,6 @@ async function fetchWithLogging(
     }
     throw fetchErr;
   }
-}
-
-/** Merge an artifact update into an existing artifacts array (handles append flag). */
-function mergeArtifact(existing: Artifact[], incoming: Artifact): Artifact[] {
-  const idx = existing.findIndex((a) => a.artifactId === incoming.artifactId);
-  if (idx === -1) {
-    return [...existing, incoming];
-  }
-  const current = existing[idx];
-  const merged = incoming.append
-    ? { ...current, parts: [...current.parts, ...incoming.parts], lastChunk: incoming.lastChunk }
-    : { ...current, ...incoming };
-  return existing.map((a, i) => (i === idx ? merged : a));
 }
 
 interface ChatState {
@@ -370,13 +357,35 @@ export const useChatStore = create<ChatState>((set, get) => {
 
         onArtifactUpdate(taskId, contextId, artifact) {
           updateMessage(agentMsgId, (msg) => {
-            const mergedArtifacts = mergeArtifact(msg.artifacts ?? [], artifact);
+            const existingArtifacts = msg.artifacts ?? [];
+            const idx = existingArtifacts.findIndex((a) => a.artifactId === artifact.artifactId);
+
+            let updatedArtifacts: Artifact[];
+            if (idx === -1) {
+              updatedArtifacts = [...existingArtifacts, artifact];
+            } else {
+              // Concatenate text from incoming chunk onto existing artifact
+              const current = existingArtifacts[idx];
+              const currentText = current.parts.filter(isTextPart).map((p) => p.text).join("");
+              const incomingText = artifact.parts.filter(isTextPart).map((p) => p.text).join("");
+              const nonTextParts = [
+                ...current.parts.filter((p) => !isTextPart(p)),
+                ...artifact.parts.filter((p) => !isTextPart(p)),
+              ];
+              const mergedParts: Part[] = [
+                ...(currentText || incomingText ? [{ text: currentText + incomingText }] : []),
+                ...nonTextParts,
+              ];
+              const merged = { ...current, ...artifact, parts: mergedParts };
+              updatedArtifacts = existingArtifacts.map((a, i) => (i === idx ? merged : a));
+            }
+
             return {
               ...msg,
               taskId,
               contextId,
-              artifacts: mergedArtifacts,
-              parts: mergedArtifacts.flatMap((a) => a.parts),
+              artifacts: updatedArtifacts,
+              parts: updatedArtifacts.flatMap((a) => a.parts),
             };
           });
           set({ currentTaskId: taskId, contextId });
