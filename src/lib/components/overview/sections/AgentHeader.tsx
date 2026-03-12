@@ -2,7 +2,7 @@ import { useState } from "react";
 import type { AgentCard } from "@lib/types/a2a";
 import { Badge } from "@lib/components/ui/badge";
 import { Button } from "@lib/components/ui/button";
-import { ExternalLink, User, Building, ChevronDown, ChevronUp } from "lucide-react";
+import { ExternalLink, User, Building, ChevronDown, ChevronUp, Globe } from "lucide-react";
 
 interface AgentHeaderProps {
   card: AgentCard;
@@ -101,7 +101,17 @@ export function AgentHeader({ card }: AgentHeaderProps) {
         </div>
       )}
 
-      <div className="flex flex-wrap items-center gap-2">
+      <div className="flex flex-wrap items-center gap-3">
+        {card.url && (
+          <a
+            href={card.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-primary truncate">
+            <Globe className="h-3 w-3 shrink-0" />
+            {card.url}
+          </a>
+        )}
         {card.documentationUrl && (
           <a
             href={card.documentationUrl}
