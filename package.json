@@ -8,6 +8,7 @@
   "main": "./dist/index.js",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
+  "unpkg": "./dist-standalone/a2a-playground.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/open-resource-discovery/a2a-editor.git"
@@ -45,7 +46,9 @@
       "import": "./dist/card-view.js",
       "types": "./dist/card-view.d.ts"
     },
-    "./styles": "./dist/index.css"
+    "./styles": "./dist/index.css",
+    "./standalone": "./dist-standalone/a2a-playground.js",
+    "./standalone/css": "./dist-standalone/a2a-playground.css"
   },
   "files": [
     "dist/index.js",
@@ -60,6 +63,12 @@
     "dist/card-view.js",
     "dist/card-view.d.ts",
     "dist/chunks",
+    "dist-standalone/a2a-playground.js",
+    "dist-standalone/a2a-playground.css",
+    "dist-standalone/a2a-initializer.js",
+    "dist-standalone/index.html",
+    "dist-standalone/standalone.html",
+    "dist-standalone/index.cjs",
     "README.md"
   ],
   "sideEffects": [

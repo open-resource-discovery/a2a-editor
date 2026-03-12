@@ -17,6 +17,9 @@
 import React from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { AgentPlayground, type AgentPlaygroundProps } from "./components/AgentPlayground";
+import { AgentCardView, type AgentCardViewProps } from "./components/AgentCardView";
+import { AgentViewer, type AgentViewerProps } from "./components/AgentViewer";
+import { AgentEditor, type AgentEditorProps } from "./components/AgentEditor";
 import { useAgentCardStore } from "./stores/agentCardStore";
 import { useConnectionStore } from "./stores/connectionStore";
 import { useValidationStore } from "./stores/validationStore";
@@ -144,13 +147,88 @@ export interface A2APlaygroundInstance {
   destroy(): void;
 }
 
+/** Options for standalone component rendering (cardView, viewer, editor) */
+export interface A2AComponentOptions {
+  /** Target element - CSS selector string or HTMLElement (required) */
+  el: string | HTMLElement;
+
+  /** Agent URL to fetch the agent card from */
+  agentUrl?: string;
+
+  /** Initial agent card JSON string */
+  agentCard?: string;
+
+  /** Color theme (default: "system") */
+  theme?: "light" | "dark" | "system";
+
+  /** Show validation tab (default: false) */
+  showValidation?: boolean;
+
+  /** Default tab (default: "overview") */
+  defaultTab?: "overview" | "validation";
+
+  /** Read-only mode (default: false) */
+  readOnly?: boolean;
+
+  /** Show the connection card in the overview — cardView only (default: true) */
+  showConnection?: boolean;
+
+  /** Show settings/agents panel — editor only (default: true) */
+  showSettings?: boolean;
+
+  /** Callback when agent card JSON changes */
+  onAgentCardChange?: (json: string, parsed: AgentCard | null) => void;
+
+  /** Callback when validation completes */
+  onValidationComplete?: (results: ValidationResult[]) => void;
+}
+
+/** Lightweight handle returned by cardView / viewer / editor */
+export interface A2AComponentInstance {
+  /** Set the agent card JSON */
+  setAgentCard(json: string): void;
+  /** Get the current agent card JSON */
+  getAgentCard(): string;
+  /** Get the parsed agent card (or null if invalid) */
+  getParsedCard(): AgentCard | null;
+  /** Run validation */
+  validate(): Promise<ValidationResult[]>;
+  /** Update the color theme */
+  setTheme(theme: "light" | "dark" | "system"): void;
+  /** Destroy the component */
+  destroy(): void;
+}
+
 export interface A2APlaygroundAPI {
   /**
-   * Initialize the A2A Playground.
+   * Initialize the full A2A Playground (editor + chat + connection).
    * @param options - Configuration options
    * @returns Playground instance with control methods
    */
   init: (options: A2APlaygroundOptions) => A2APlaygroundInstance;
+
+  /**
+   * Render just the Agent Card overview (no editor, no chat).
+   *
+   * @example
+   * ```js
+   * A2APlayground.cardView({
+   *   el: '#card',
+   *   agentUrl: 'https://my-agent.example.com/.well-known/agent.json'
+   * });
+   * ```
+   */
+  cardView: (options: A2AComponentOptions) => A2AComponentInstance;
+
+  /**
+   * Render the lightweight viewer (textarea editor + overview, no Monaco).
+   */
+  viewer: (options: A2AComponentOptions) => A2AComponentInstance;
+
+  /**
+   * Render the Monaco editor (editor + overview, no chat).
+   */
+  editor: (options: A2AComponentOptions) => A2AComponentInstance;
 
   /**
    * Legacy render method (alias for init).
@@ -159,7 +237,7 @@ export interface A2APlaygroundAPI {
   render: (container: HTMLElement | string, props?: AgentPlaygroundProps) => { destroy: () => void };
 
   /**
-   * Destroy a previously rendered playground instance.
+   * Destroy a previously rendered component/playground instance.
    * @param container - CSS selector string or HTMLElement
    */
   destroy: (container: HTMLElement | string) => void;
@@ -180,7 +258,7 @@ export interface A2APlaygroundAPI {
 
 // Store references to roots and instances for cleanup
 const roots = new Map<HTMLElement, Root>();
-const instances = new Map<HTMLElement, A2APlaygroundInstance>();
+const instances = new Map<HTMLElement, A2APlaygroundInstance | A2AComponentInstance>();
 
 function getElement(container: HTMLElement | string): HTMLElement {
   if (typeof container === "string") {
@@ -205,6 +283,79 @@ function applyThemeToContainer(element: HTMLElement, theme: "light" | "dark" | "
     element.classList.toggle("dark", prefersDark);
   } else {
     element.classList.toggle("dark", theme === "dark");
+  }
+}
+
+/**
+ * Shared helper: resolve element, clean up previous root, apply theme & sizing.
+ * Returns the resolved HTMLElement and the new React Root.
+ */
+function mountContainer(
+  el: string | HTMLElement,
+  theme: "light" | "dark" | "system" = "system",
+): { element: HTMLElement; root: Root } {
+  const element = getElement(el);
+
+  // Clean up existing instance if any
+  if (roots.has(element)) {
+    roots.get(element)!.unmount();
+    roots.delete(element);
+    instances.delete(element);
+  }
+
+  applyThemeToContainer(element, theme);
+  if (!element.style.width) element.style.width = "100%";
+  if (!element.style.height) element.style.height = "100%";
+  useThemeStore.getState().setTheme(theme);
+
+  const root = createRoot(element);
+  roots.set(element, root);
+
+  return { element, root };
+}
+
+/** Create a lightweight instance handle for cardView / viewer / editor */
+function createComponentInstance(
+  element: HTMLElement,
+  options: A2AComponentOptions,
+): A2AComponentInstance {
+  const inst: A2AComponentInstance = {
+    setAgentCard(json: string) {
+      useAgentCardStore.getState().setRawJson(json);
+    },
+    getAgentCard() {
+      return useAgentCardStore.getState().rawJson;
+    },
+    getParsedCard() {
+      return useAgentCardStore.getState().parsedCard;
+    },
+    async validate() {
+      const json = useAgentCardStore.getState().rawJson;
+      await useValidationStore.getState().validate(json);
+      const results = useValidationStore.getState().results;
+      options.onValidationComplete?.(results);
+      return results;
+    },
+    setTheme(theme) {
+      applyThemeToContainer(element, theme);
+      useThemeStore.getState().setTheme(theme);
+    },
+    destroy() {
+      destroyContainer(element);
+    },
+  };
+  instances.set(element, inst);
+  return inst;
+}
+
+function destroyContainer(container: HTMLElement | string) {
+  const element = getElement(container);
+  if (roots.has(element)) {
+    roots.get(element)!.unmount();
+    roots.delete(element);
+    instances.delete(element);
+    element.classList.remove("a2a-root", "dark");
+    element.replaceChildren();
   }
 }
 
@@ -281,25 +432,7 @@ const A2APlayground: A2APlaygroundAPI = {
   version: "__VERSION__", // Replaced at build time
 
   init(options) {
-    const element = getElement(options.el);
-
-    // Clean up existing instance if any
-    if (roots.has(element)) {
-      roots.get(element)!.unmount();
-      roots.delete(element);
-      instances.delete(element);
-    }
-
-    // Apply theme to container element (never touches document.documentElement)
-    const resolvedTheme = options.theme ?? "system";
-    applyThemeToContainer(element, resolvedTheme);
-
-    // Set default sizing so the component fills its container
-    if (!element.style.width) element.style.width = "100%";
-    if (!element.style.height) element.style.height = "100%";
-
-    // Sync the Zustand store so React's ThemeRoot renders the matching theme
-    useThemeStore.getState().setTheme(resolvedTheme);
+    const { element, root } = mountContainer(options.el, options.theme);
 
     // Set up authentication if provided
     if (options.auth) {
@@ -330,10 +463,6 @@ const A2APlayground: A2APlaygroundAPI = {
     if (options.agentCard) {
       useAgentCardStore.getState().setRawJson(options.agentCard);
     }
-
-    // Create the React root and render
-    const root = createRoot(element);
-    roots.set(element, root);
 
     const props: AgentPlaygroundProps = {
       showChat: options.showChat ?? true,
@@ -411,6 +540,72 @@ const A2APlayground: A2APlaygroundAPI = {
     return instance;
   },
 
+  // ---- Lightweight component renderers --------------------------------
+
+  cardView(options) {
+    const { element, root } = mountContainer(options.el, options.theme);
+
+    if (options.agentCard) {
+      useAgentCardStore.getState().setRawJson(options.agentCard);
+    }
+
+    const props: AgentCardViewProps = {
+      initialAgentCard: options.agentCard,
+      initialAgentUrl: options.agentUrl,
+      showValidation: options.showValidation ?? false,
+      defaultTab: options.defaultTab ?? "overview",
+      readOnly: options.readOnly ?? false,
+      showConnection: options.showConnection ?? true,
+      onAgentCardChange: options.onAgentCardChange,
+      onValidationComplete: options.onValidationComplete,
+    };
+
+    root.render(React.createElement(AgentCardView, props));
+    return createComponentInstance(element, options);
+  },
+
+  viewer(options) {
+    const { element, root } = mountContainer(options.el, options.theme);
+
+    if (options.agentCard) {
+      useAgentCardStore.getState().setRawJson(options.agentCard);
+    }
+
+    const props: AgentViewerProps = {
+      initialAgentCard: options.agentCard,
+      initialAgentUrl: options.agentUrl,
+      showValidation: options.showValidation ?? false,
+      defaultTab: options.defaultTab ?? "overview",
+      onAgentCardChange: options.onAgentCardChange,
+      onValidationComplete: options.onValidationComplete,
+    };
+
+    root.render(React.createElement(AgentViewer, props));
+    return createComponentInstance(element, options);
+  },
+
+  editor(options) {
+    const { element, root } = mountContainer(options.el, options.theme);
+
+    if (options.agentCard) {
+      useAgentCardStore.getState().setRawJson(options.agentCard);
+    }
+
+    const props: AgentEditorProps = {
+      initialAgentCard: options.agentCard,
+      initialAgentUrl: options.agentUrl,
+      showSettings: options.showSettings ?? true,
+      showValidation: options.showValidation ?? false,
+      readOnly: options.readOnly ?? false,
+      defaultTab: options.defaultTab ?? "overview",
+      onAgentCardChange: options.onAgentCardChange,
+      onValidationComplete: options.onValidationComplete,
+    };
+
+    root.render(React.createElement(AgentEditor, props));
+    return createComponentInstance(element, options);
+  },
+
   // Legacy render method for backwards compatibility
   render(container, props = {}) {
     const element = getElement(container);
@@ -421,14 +616,7 @@ const A2APlayground: A2APlaygroundAPI = {
   },
 
   destroy(container) {
-    const element = getElement(container);
-    if (roots.has(element)) {
-      roots.get(element)!.unmount();
-      roots.delete(element);
-      instances.delete(element);
-      element.classList.remove("a2a-root", "dark");
-      element.replaceChildren();
-    }
+    destroyContainer(container);
   },
 
   AgentPlayground,

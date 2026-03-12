@@ -39,13 +39,10 @@ export default defineConfig(({ mode }) => {
           lib: {
             // Multiple entry points for tree-shaking
             entry: {
-              index: resolve(__dirname, "src/lib/index.ts"),
-              "playground-lite": resolve(
-                __dirname,
-                "src/lib/playground-lite.ts",
-              ),
-              viewer: resolve(__dirname, "src/lib/viewer.ts"),
-              editor: resolve(__dirname, "src/lib/editor.ts"),
+              "index": resolve(__dirname, "src/lib/index.ts"),
+              "playground-lite": resolve(__dirname, "src/lib/playground-lite.ts"),
+              "viewer": resolve(__dirname, "src/lib/viewer.ts"),
+              "editor": resolve(__dirname, "src/lib/editor.ts"),
               "card-view": resolve(__dirname, "src/lib/card-view.ts"),
             },
             formats: ["es"],
@@ -54,12 +51,18 @@ export default defineConfig(({ mode }) => {
             external: ["react", "react-dom", "react/jsx-runtime"],
             output: {
               globals: {
-                react: "React",
+                "react": "React",
                 "react-dom": "ReactDOM",
               },
               // Separate chunk files per entry
               chunkFileNames: "chunks/[name]-[hash].js",
-              assetFileNames: "[name][extname]",
+              assetFileNames: (assetInfo) => {
+                // Rename styles.css → index.css to match package.json exports
+                if (assetInfo.name?.endsWith(".css")) {
+                  return "index.css";
+                }
+                return "[name][extname]";
+              },
             },
           },
           // Enable CSS splitting to get separate CSS file
