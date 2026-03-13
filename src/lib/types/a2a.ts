@@ -1,5 +1,13 @@
-// A2A Protocol Type Definitions
-// Based on the Agent-to-Agent (A2A) protocol specification by Google
+/**
+ * A2A Protocol internal type definitions.
+ *
+ * These types are protocol-agnostic, human-readable representations used throughout
+ * the application. Wire format conversion is handled by the protocol boundary layer
+ * (a2a-protocol.ts). States use lowercase kebab-case, roles are simple strings,
+ * and file parts use nested objects.
+ */
+
+// Based on the Agent-to-Agent (A2A) protocol specification
 
 export interface AgentCard {
   name: string;
@@ -129,7 +137,7 @@ export interface TextPart {
 }
 
 export interface FilePart {
-  file: { uri: string; mimeType?: string; mediaType?: string; name?: string } | string; // string for inline base64
+  file: { uri: string; mimeType?: string; mediaType?: string; name?: string; bytes?: string } | string; // string for inline base64
   kind?: "file"; // Legacy
   type?: "file"; // Legacy
   metadata?: Record<string, unknown>;
@@ -172,6 +180,7 @@ export type TaskState =
   | "submitted"
   | "working"
   | "input-required"
+  | "auth-required"
   | "completed"
   | "failed"
   | "canceled"

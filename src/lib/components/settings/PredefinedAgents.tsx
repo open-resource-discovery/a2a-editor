@@ -7,7 +7,7 @@ import { PasswordInput } from "@lib/components/ui/PasswordInput";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@lib/components/ui/select";
 import { cn } from "@lib/utils/cn";
 import { selectPredefinedAgent } from "@lib/utils/agent-selection";
-import { detectProtocolVersion, normalizeAgentCard } from "@lib/utils/a2a-compat";
+import { detectProtocolVersion, normalizeAgentCard } from "@lib/utils/a2a-protocol";
 import { Search, Plus, X, Loader2 } from "lucide-react";
 import type { PredefinedAgent, AuthType, BasicCredentials, OAuth2Credentials, ApiKeyCredentials } from "@lib/types/connection";
 

@@ -134,7 +134,7 @@ export function ChatMessage({ message, onRetry }: ChatMessageProps) {
             <div className="flex items-center gap-1.5 mb-2">
               <Badge
                 variant={
-                  message.status === "completed" ? "default" : message.status === "failed" ? "error" : "secondary"
+                  message.status === "completed" ? "default" : message.status === "failed" ? "error" : message.status === "auth-required" ? "error" : "secondary"
                 }>
                 {message.status}
               </Badge>
