@@ -19,7 +19,7 @@ export function validateAgentCard(
   const results: ComplianceResult[] = [];
 
   // Required string fields
-  for (const field of ["name", "description", "url", "version"]) {
+  for (const field of ["name", "description", "version"]) {
     const value = card[field];
     results.push({
       rule: `agentCard.${field}`,
@@ -30,6 +30,21 @@ export function validateAgentCard(
           : `"${field}" is required`,
     });
   }
+
+  // url: required in v0.3.0, derived from supportedInterfaces in v1.0.0
+  const hasUrl = typeof card.url === "string" && (card.url as string).length > 0;
+  const hasSupportedInterfaces =
+    Array.isArray(card.supportedInterfaces) && (card.supportedInterfaces as unknown[]).length > 0;
+  results.push({
+    rule: "agentCard.url",
+    passed: hasUrl || hasSupportedInterfaces,
+    message:
+      hasUrl
+        ? '"url" is present'
+        : hasSupportedInterfaces
+          ? '"url" derived from supportedInterfaces'
+          : '"url" or "supportedInterfaces" is required',
+  });
 
   // url must be a valid HTTP(S) URL
   if (typeof card.url === "string") {
@@ -188,11 +203,22 @@ export function validateResponse(data: unknown): ComplianceResult[] {
         "submitted",
         "working",
         "input-required",
+        "auth-required",
         "completed",
         "canceled",
         "failed",
         "rejected",
         "unknown",
+        // v1.0.0 SCREAMING_SNAKE_CASE (safety net if normalization is bypassed)
+        "TASK_STATE_SUBMITTED",
+        "TASK_STATE_WORKING",
+        "TASK_STATE_INPUT_REQUIRED",
+        "TASK_STATE_COMPLETED",
+        "TASK_STATE_CANCELED",
+        "TASK_STATE_FAILED",
+        "TASK_STATE_REJECTED",
+        "TASK_STATE_AUTH_REQUIRED",
+        "TASK_STATE_UNSPECIFIED",
       ];
       const stateValid = validStates.includes(status.state as string);
       results.push({
@@ -297,13 +323,13 @@ export function validateMessageKind(
           : "Message must have non-empty parts",
       });
 
-      const hasRole = data.role === "agent";
+      const hasRole = data.role === "agent" || data.role === "ROLE_AGENT";
       results.push({
         rule: "a2a.message.role",
         passed: hasRole,
         message: hasRole
-          ? 'Message role is "agent"'
-          : 'Message role should be "agent"',
+          ? `Message role is "${data.role}"`
+          : 'Message role should be "agent" or "ROLE_AGENT"',
       });
       break;
     }

@@ -6,7 +6,7 @@
  */
 import type { Artifact, TaskState, Part } from "@lib/types/a2a";
 import { parseSSEStream } from "./sse-parser";
-import { normalizeStreamEvent, type NormalizedStreamEvent } from "./a2a-compat";
+import { normalizeStreamEvent, type NormalizedStreamEvent } from "./a2a-protocol";
 
 export interface StreamCallbacks {
   onStatusUpdate(taskId: string, contextId: string, status: { state: TaskState; message?: { role: string; parts: Part[] } }): void;

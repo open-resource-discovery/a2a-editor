@@ -4,7 +4,7 @@ import { isMockUrl, getMockAgentCard } from "@lib/mock/agents";
 import { usePredefinedAgentsStore } from "./predefinedAgentsStore";
 import { useConnectionStore } from "./connectionStore";
 import { useHttpLogStore } from "./httpLogStore";
-import { normalizeAgentCard, detectProtocolVersion } from "@lib/utils/a2a-compat";
+import { normalizeAgentCard, detectProtocolVersion } from "@lib/utils/a2a-protocol";
 
 // Helper to parse JSON, normalize for version compat, and extract card/error
 function parseAgentCard(json: string): {
