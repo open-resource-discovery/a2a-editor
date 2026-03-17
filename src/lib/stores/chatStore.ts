@@ -11,8 +11,10 @@ import {
   normalizeTaskResponse,
   getJsonRpcMethod,
   getStreamingJsonRpcMethod,
-  buildOutboundRole,
-} from "@lib/utils/a2a-compat";
+  buildOutboundMessage,
+  buildOutboundHeaders,
+  buildOutboundConfiguration,
+} from "@lib/utils/a2a-protocol";
 import { validateResponse, isFullyCompliant } from "@lib/utils/a2a-compliance";
 import { streamMessage } from "@lib/utils/a2a-stream";
 
@@ -219,29 +221,32 @@ export const useChatStore = create<ChatState>((set, get) => {
       useHttpLogStore.getState().addLog(syntheticLog);
     } else {
       const version = useConnectionStore.getState().protocolVersion;
-      const rpcRequest = {
+      const outboundMessage = buildOutboundMessage(parts, version);
+      const configuration = buildOutboundConfiguration(version);
+      const rpcRequest: Record<string, unknown> = {
         jsonrpc: "2.0",
         id: uuidv4(),
         method: getJsonRpcMethod(version),
         params: {
           message: {
-            role: buildOutboundRole(version),
-            parts,
+            ...outboundMessage,
             messageId,
             contextId: get().contextId,
           },
+          ...(configuration ? { configuration } : {}),
         },
       };
 
-      const requestHeaders = {
+      const requestHeaders: Record<string, string> = {
         "Content-Type": "application/json",
+        ...buildOutboundHeaders(version),
         ...authHeaders,
       };
 
       data = await fetchWithLogging(agentUrl, requestHeaders, JSON.stringify(rpcRequest), messageId);
     }
 
-    // Normalize v1.0.0 responses to v0.3.0 format before processing
+    // Normalize wire response to internal format before processing
     data = normalizeTaskResponse(data);
 
     const result = processJsonRpcResponse(data);
@@ -298,22 +303,25 @@ export const useChatStore = create<ChatState>((set, get) => {
     }));
 
     // Build JSON-RPC request
-    const rpcRequest = {
+    const outboundMessage = buildOutboundMessage(parts, version);
+    const configuration = buildOutboundConfiguration(version);
+    const rpcRequest: Record<string, unknown> = {
       jsonrpc: "2.0",
       id: uuidv4(),
-      method: getStreamingJsonRpcMethod(),
+      method: getStreamingJsonRpcMethod(version),
       params: {
         message: {
-          role: buildOutboundRole(version),
-          parts,
+          ...outboundMessage,
           messageId,
           contextId: get().contextId,
         },
+        ...(configuration ? { configuration } : {}),
       },
     };
 
-    const requestHeaders = {
+    const requestHeaders: Record<string, string> = {
       "Content-Type": "application/json",
+      ...buildOutboundHeaders(version),
       ...authHeaders,
     };
     const requestBody = JSON.stringify(rpcRequest);

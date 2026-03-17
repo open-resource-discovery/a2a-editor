@@ -23,7 +23,7 @@ import {
   clearOAuthParams,
   getDefaultOAuthRedirectUri,
 } from "@lib/utils/pkce";
-import { detectProtocolVersion, normalizeAgentCard } from "@lib/utils/a2a-compat";
+import { detectProtocolVersion, normalizeAgentCard, PROTOCOL_VERSIONS } from "@lib/utils/a2a-protocol";
 
 // Compute auth headers from current state
 function computeAuthHeaders(
@@ -135,7 +135,7 @@ export const useConnectionStore = create<ConnectionState>((set, get) => ({
   deviceCodeState: null,
   oidcDiscovery: null,
   isOidcDiscovering: false,
-  protocolVersion: "0.3.0",
+  protocolVersion: PROTOCOL_VERSIONS.V0_3,
 
   setUrl: (url) => set({ url }),
   setMessagingUrl: (messagingUrl) => set({ messagingUrl }),
@@ -198,7 +198,7 @@ export const useConnectionStore = create<ConnectionState>((set, get) => ({
       if (isMockUrl(state.url)) {
         const card = getMockAgentCard(state.url);
         if (!card) throw new Error("Mock agent not found");
-        set({ connectionStatus: "connected", protocolVersion: "0.3.0" });
+        set({ connectionStatus: "connected", protocolVersion: PROTOCOL_VERSIONS.V0_3 });
         return card;
       }
 
@@ -306,7 +306,7 @@ export const useConnectionStore = create<ConnectionState>((set, get) => ({
       deviceCodeState: null,
       oidcDiscovery: null,
       isOidcDiscovering: false,
-      protocolVersion: "0.3.0",
+      protocolVersion: PROTOCOL_VERSIONS.V0_3,
     });
     oauthPopup = null;
   },
@@ -356,7 +356,7 @@ export const useConnectionStore = create<ConnectionState>((set, get) => ({
       oauth2Credentials,
       apiKeyCredentials,
       authHeaders,
-      protocolVersion: agent.protocolVersion ?? "0.3.0",
+      protocolVersion: agent.protocolVersion ?? PROTOCOL_VERSIONS.V0_3,
     });
   },
 

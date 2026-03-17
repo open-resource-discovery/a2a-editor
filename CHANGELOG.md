@@ -13,9 +13,25 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 - Open Graph / Twitter Card social card image with generation script (`npm run generate:og-image`)
 - "Mocked LLM" badge on predefined agents (shown by default, opt-out via `"mocked": false`)
 - Demo GIF in README
+- Full A2A protocol v1.0 compatibility layer in `a2a-protocol.ts`
+  - `isV1()` helper for flexible version matching (`"1.0"`, `"1.0.0"`, etc.)
+  - `buildOutboundParts()` converts internal parts to v1.0 unified Part format (including `bytes` → `raw`)
+  - `SendMessageConfiguration` with `acceptedOutputModes` sent to v1.0 agents
+  - `A2A-Version: 1.0` header on all outbound requests to v1.0 agents
+- Inbound normalization for v1.0 response formats
+  - `SendMessageResponse` `oneof` unwrapping (`result.task` / `result.message` wrapper keys)
+  - Stream event `oneof` payload handling (`statusUpdate`, `artifactUpdate`, `task`, `message` wrapper keys, plus `taskStatusUpdate`/`taskArtifactUpdate` aliases)
+  - `raw` (base64 inline bytes) and `data`-only part normalization
+  - `auth-required` task state with UI badge support
+- Compliance checker updated for dual v0.3.0/v1.0 format validation
 
 ### Changed
 
+- Renamed `a2a-compat.ts` → `a2a-protocol.ts` and restructured as v1.0-first protocol boundary layer with human-readable internal types
+- Added composite outbound helpers (`buildOutboundMessage`, `buildOutboundHeaders`, `buildOutboundConfiguration`) to consolidate protocol logic
+- Added `PROTOCOL_VERSIONS` typed constants replacing scattered version string literals
+- Version-aware outbound methods: `SendMessage`/`SendStreamingMessage` for v1.0, `message/send`/`message/stream` for v0.3.0
+- `detectProtocolVersion()` now reads `supportedInterfaces[0].protocolVersion` for accurate version string
 - Removed "Validate" button from the editor toolbar (validation still runs automatically)
 
 ## [[0.2.0](https://github.com/open-resource-discovery/a2a-editor/releases/tag/v0.2.0)] - 2026-03-12
