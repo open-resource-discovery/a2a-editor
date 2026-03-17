@@ -4,6 +4,8 @@ UI components for editing, viewing, and testing agents that implement the [Agent
 
 👉 **LIVE DEMO:** https://open-resource-discovery.github.io/a2a-editor/playground
 
+![A2A Editor](a2a-editor.gif)
+
 ## Getting Started
 
 ### npm

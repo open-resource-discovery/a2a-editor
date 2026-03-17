@@ -279,16 +279,17 @@ export function PredefinedAgents() {
 
   return (
     <div className="space-y-3">
-      <div className="flex items-center justify-between">
-        <h3 className="text-sm font-medium">Agents</h3>
-        <Button variant="ghost" size="sm" className="h-7" onClick={() => setShowAddForm(!showAddForm)} data-testid="add-agent-btn">
-          <Plus className="h-3.5 w-3.5 mr-1" />
-          Add
-        </Button>
-      </div>
+      <div className="sticky top-0 z-10 bg-sidebar pb-3 space-y-3">
+        <div className="flex items-center justify-between">
+          <h3 className="text-sm font-medium">Agents</h3>
+          <Button variant="ghost" size="sm" className="h-7" onClick={() => setShowAddForm(!showAddForm)} data-testid="add-agent-btn">
+            <Plus className="h-3.5 w-3.5 mr-1" />
+            Add
+          </Button>
+        </div>
 
-      {/* Add agent form */}
-      {showAddForm && (
+        {/* Add agent form */}
+        {showAddForm && (
         <div className="rounded-lg border p-3 space-y-2 bg-muted/50">
           <Input
             placeholder="Enter agent URL..."
@@ -399,6 +400,7 @@ export function PredefinedAgents() {
           onChange={(e) => setSearch(e.target.value)}
           className="h-8 pl-8 text-sm"
         />
+      </div>
       </div>
 
       {/* Custom agents section */}
