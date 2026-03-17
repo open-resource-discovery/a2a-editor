@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { usePredefinedAgentsStore } from "@lib/stores/predefinedAgentsStore";
 import { Card } from "@lib/components/ui/card";
+import { Badge } from "@lib/components/ui/badge";
 import { cn } from "@lib/utils/cn";
 import { selectPredefinedAgent } from "@lib/utils/agent-selection";
 
@@ -70,6 +71,11 @@ export function AgentSelector() {
                 <p className="text-[10px] text-muted-foreground truncate mt-1">
                   {getHostname(agent.url)}
                 </p>
+                {agent.mocked !== false && (
+                  <Badge variant="outline" className="text-[10px] h-4 mt-1.5 border-warning/50 text-warning">
+                    Mocked LLM
+                  </Badge>
+                )}
               </Card>
             ))}
           </div>

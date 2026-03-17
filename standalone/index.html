@@ -103,6 +103,14 @@
         border-radius: 12px;
         color: #374151;
       }
+      .agent-tag-mock {
+        font-size: 10px;
+        padding: 2px 8px;
+        border: 1px solid rgba(255, 152, 0, 0.5);
+        border-radius: 12px;
+        color: #ff9800;
+        background: transparent;
+      }
 
       /* Right playground */
       .playground {
@@ -555,6 +563,7 @@
             description: card.description,
             url: url.replace(/\/$/, ""),
             authType: authType,
+            mocked: false,
             tags: ["Custom"],
           };
 
@@ -627,6 +636,7 @@
               agent.tags && agent.tags.length > 0
                 ? `
               <div class="agent-tags">
+                ${agent.mocked !== false ? '<span class="agent-tag-mock">Mocked LLM</span>' : ""}
                 ${agent.tags
                   .slice(0, 3)
                   .map((tag) => `<span class="agent-tag">${tag}</span>`)
@@ -663,6 +673,7 @@
               agent.tags && agent.tags.length > 0
                 ? `
               <div class="agent-tags">
+                ${agent.mocked !== false ? '<span class="agent-tag-mock">Mocked LLM</span>' : ""}
                 ${agent.tags
                   .slice(0, 3)
                   .map((tag) => `<span class="agent-tag">${tag}</span>`)

@@ -216,6 +216,7 @@ export function PredefinedAgents() {
         authType,
         ...(authConfig ? { authConfig } : {}),
         tags: ["Custom"],
+        mocked: false,
         protocolVersion,
       };
 
@@ -267,6 +268,11 @@ export function PredefinedAgents() {
       {agent.description && <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{agent.description}</p>}
       {agent.tags && agent.tags.length > 0 && (
         <div className="flex flex-wrap gap-1 mt-2">
+          {agent.mocked !== false && (
+            <Badge variant="outline" className="text-xs h-5 border-warning/50 text-warning">
+              Mocked LLM
+            </Badge>
+          )}
           {agent.tags.slice(0, 3).map((tag) => (
             <Badge key={tag} variant="secondary" className="text-xs h-5">
               {tag}
