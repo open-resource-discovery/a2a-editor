@@ -7,6 +7,17 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [unreleased]
 
+### Added
+
+- Favicon using new `a2a-icon.svg` across playground, standalone, and Docusaurus website
+- Open Graph / Twitter Card social card image with generation script (`npm run generate:og-image`)
+- "Mocked LLM" badge on predefined agents (shown by default, opt-out via `"mocked": false`)
+- Demo GIF in README
+
+### Changed
+
+- Removed "Validate" button from the editor toolbar (validation still runs automatically)
+
 ## [[0.2.0](https://github.com/open-resource-discovery/a2a-editor/releases/tag/v0.2.0)] - 2026-03-12
 
 ### Added
