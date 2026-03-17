@@ -9,6 +9,9 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Added
 
+- Unit test suite with vitest covering auth logic (connection store, PKCE, predefined agent auth helpers)
+- Unit test step in CI workflow
+
 - Full A2A protocol v1.0 compatibility layer in `a2a-protocol.ts`
   - `isV1()` helper for flexible version matching (`"1.0"`, `"1.0.0"`, etc.)
   - `buildOutboundParts()` converts internal parts to v1.0 unified Part format (including `bytes` → `raw`)
