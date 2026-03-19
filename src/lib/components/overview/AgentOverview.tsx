@@ -8,6 +8,7 @@ import { SecuritySection } from "./sections/SecuritySection";
 import { SecurityRequirementsSection } from "./sections/SecurityRequirementsSection";
 import { ModesSection } from "./sections/ModesSection";
 import { ExtensionsSection } from "./sections/ExtensionsSection";
+import { AlertTriangle } from "lucide-react";
 
 interface AgentOverviewProps {
   disableExamplePrompts?: boolean;
@@ -21,7 +22,38 @@ export function AgentOverview({
   showConnection = true,
 }: AgentOverviewProps) {
   const card = useAgentCardStore((state) => state.parsedCard);
+  const lastValidCard = useAgentCardStore((state) => state.lastValidCard);
+  const parseError = useAgentCardStore((state) => state.parseError);
   const { url, connectionStatus } = useConnectionStore();
+
+  // Show last valid card in read-only mode when current JSON is invalid
+  if (!card && lastValidCard && parseError) {
+    return (
+      <div className="space-y-4 p-4">
+        <div className="flex items-start gap-2 rounded-md border border-destructive/50 bg-destructive/10 px-3 py-2 text-sm text-destructive">
+          <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
+          <span>{parseError}</span>
+        </div>
+        <AgentHeader card={lastValidCard} />
+        {lastValidCard.securitySchemes && Object.keys(lastValidCard.securitySchemes).length > 0 && (
+          <SecuritySection schemes={lastValidCard.securitySchemes} readOnly />
+        )}
+        {lastValidCard.capabilities && typeof lastValidCard.capabilities === "object" && !Array.isArray(lastValidCard.capabilities) && (
+          <CapabilitiesSection capabilities={lastValidCard.capabilities} />
+        )}
+        <ModesSection card={lastValidCard} />
+        {lastValidCard.skills && lastValidCard.skills.length > 0 && (
+          <SkillsSection skills={lastValidCard.skills} disableExamplePrompts readOnly />
+        )}
+        {lastValidCard.security && lastValidCard.security.length > 0 && (
+          <SecurityRequirementsSection requirements={lastValidCard.security} />
+        )}
+        {lastValidCard.extensions && lastValidCard.extensions.length > 0 && (
+          <ExtensionsSection extensions={lastValidCard.extensions} />
+        )}
+      </div>
+    );
+  }
 
   if (!card) {
     // In read-only mode, don't show connection section
@@ -65,7 +97,9 @@ export function AgentOverview({
       {card.securitySchemes && Object.keys(card.securitySchemes).length > 0 && (
         <SecuritySection schemes={card.securitySchemes} readOnly={readOnly} />
       )}
-      <CapabilitiesSection capabilities={card.capabilities} />
+      {card.capabilities && typeof card.capabilities === "object" && !Array.isArray(card.capabilities) && (
+        <CapabilitiesSection capabilities={card.capabilities} />
+      )}
       <ModesSection card={card} />
       {card.skills && card.skills.length > 0 && (
         <SkillsSection skills={card.skills} disableExamplePrompts={disableExamplePrompts} readOnly={readOnly} />
