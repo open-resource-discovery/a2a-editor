@@ -37,6 +37,7 @@ function parseAgentCard(json: string): {
 interface AgentCardState {
   rawJson: string;
   parsedCard: AgentCard | null;
+  lastValidCard: AgentCard | null;
   parseError: string | null;
   isLoading: boolean;
   isDirty: boolean;
@@ -49,16 +50,20 @@ interface AgentCardState {
 export const useAgentCardStore = create<AgentCardState>((set, get) => ({
   rawJson: "",
   parsedCard: null,
+  lastValidCard: null,
   parseError: null,
   isLoading: false,
   isDirty: false,
 
   setRawJson: (json) => {
     const { card, error } = parseAgentCard(json);
-    set({ rawJson: json, parsedCard: card, parseError: error, isDirty: true });
+    const updates: Partial<AgentCardState> = { rawJson: json, parsedCard: card, parseError: error, isDirty: true };
+    if (card) updates.lastValidCard = card;
+    set(updates);
 
     // Deselect predefined agent and reset connection when editor is cleared
     if (!json.trim()) {
+      set({ lastValidCard: null });
       usePredefinedAgentsStore.getState().deselect();
       useHttpLogStore.getState().clearLogs();
       useConnectionStore.getState().disconnect();
@@ -88,6 +93,7 @@ export const useAgentCardStore = create<AgentCardState>((set, get) => ({
     set({
       rawJson: "",
       parsedCard: null,
+      lastValidCard: null,
       parseError: null,
       isDirty: false,
       isLoading: false,
@@ -110,6 +116,7 @@ export const useAgentCardStore = create<AgentCardState>((set, get) => ({
         set({
           rawJson: json,
           parsedCard: card,
+          lastValidCard: card,
           parseError: null,
           isDirty: false,
         });
@@ -136,6 +143,7 @@ export const useAgentCardStore = create<AgentCardState>((set, get) => ({
       set({
         rawJson: json,
         parsedCard: card,
+        lastValidCard: card,
         parseError: null,
         isDirty: false,
       });
