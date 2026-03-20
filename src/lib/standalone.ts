@@ -118,6 +118,12 @@ export interface A2APlaygroundOptions {
   onError?: (error: Error) => void;
 }
 
+export interface SendMessageResult {
+  response: string;
+  compliant: boolean;
+  complianceDetails: { rule: string; passed: boolean; message: string }[];
+}
+
 export interface A2APlaygroundInstance {
   /** Set the agent card JSON */
   setAgentCard(json: string): void;
@@ -147,7 +153,7 @@ export interface A2APlaygroundInstance {
   destroy(): void;
 
   /** Send a text message through the built-in chat UI */
-  sendMessage(text: string): Promise<void>;
+  sendMessage(text: string): Promise<SendMessageResult>;
 
   /** Snapshot all store state (agent card, chat, HTTP logs, connection) */
   saveState(): Record<string, unknown>;
@@ -423,12 +429,33 @@ function createInstance(element: HTMLElement, options: A2APlaygroundOptions): A2
       useUIStore.getState().setActiveTab(tab);
     },
 
-    async sendMessage(text: string) {
+    async sendMessage(text: string): Promise<SendMessageResult> {
       const parts: Part[] = [{ text }];
       const connStore = useConnectionStore.getState();
       const agentUrl = connStore.messagingUrl || connStore.url;
       const authHeaders = connStore.authHeaders;
       await useChatStore.getState().sendMessage(parts, agentUrl, authHeaders);
+
+      // After await, the last message in the store is the agent's response
+      const messages = useChatStore.getState().messages;
+      const agentMsg = messages[messages.length - 1];
+      const responseText =
+        agentMsg?.role === "agent"
+          ? agentMsg.parts
+              .map((p) => ("text" in p ? p.text : ""))
+              .filter(Boolean)
+              .join("\n")
+          : "";
+
+      return {
+        response: responseText,
+        compliant: agentMsg?.compliant ?? false,
+        complianceDetails: (agentMsg?.complianceDetails ?? []).map((d) => ({
+          rule: d.rule,
+          passed: d.passed,
+          message: d.message,
+        })),
+      };
     },
 
     setTheme(theme) {
