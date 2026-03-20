@@ -1,24 +1,16 @@
 import { Copy, Wand2, RotateCcw, Check } from "lucide-react";
 import { Button } from "@lib/components/ui/button";
 import { useAgentCardStore } from "@lib/stores/agentCardStore";
-import { useValidationStore } from "@lib/stores/validationStore";
 import { useState } from "react";
 
 export function JsonToolbar() {
   const { rawJson, formatJson, reset } = useAgentCardStore();
-  const { validate } = useValidationStore();
   const [copied, setCopied] = useState(false);
 
   const handleCopy = async () => {
     await navigator.clipboard.writeText(rawJson);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
-  };
-
-  const handleValidate = () => {
-    if (rawJson.trim()) {
-      validate(rawJson);
-    }
   };
 
   return (
@@ -48,17 +40,6 @@ export function JsonToolbar() {
           <Copy className="h-4 w-4" />
         )}
         <span className="hidden sm:inline">{copied ? "Copied" : "Copy"}</span>
-      </Button>
-      <Button
-        variant="ghost"
-        size="sm"
-        onClick={handleValidate}
-        title="Validate"
-        disabled={!rawJson.trim()}
-        data-testid="toolbar-validate"
-      >
-        <Check className="h-4 w-4" />
-        <span className="hidden sm:inline">Validate</span>
       </Button>
       <div className="flex-1" />
       <Button

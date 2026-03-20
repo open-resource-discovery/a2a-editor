@@ -3,6 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <link rel="icon" type="image/svg+xml" href="./images/a2a-icon.svg" />
     <title>A2A Playground</title>
     <link rel="stylesheet" href="./a2a-playground.css" />
     <style>
@@ -101,6 +102,14 @@
         background: #e5e7eb;
         border-radius: 12px;
         color: #374151;
+      }
+      .agent-tag-mock {
+        font-size: 10px;
+        padding: 2px 8px;
+        border: 1px solid rgba(255, 152, 0, 0.5);
+        border-radius: 12px;
+        color: #ff9800;
+        background: transparent;
       }
 
       /* Right playground */
@@ -554,6 +563,7 @@
             description: card.description,
             url: url.replace(/\/$/, ""),
             authType: authType,
+            mocked: false,
             tags: ["Custom"],
           };
 
@@ -626,6 +636,7 @@
               agent.tags && agent.tags.length > 0
                 ? `
               <div class="agent-tags">
+                ${agent.mocked !== false ? '<span class="agent-tag-mock">Mocked LLM</span>' : ""}
                 ${agent.tags
                   .slice(0, 3)
                   .map((tag) => `<span class="agent-tag">${tag}</span>`)
@@ -662,6 +673,7 @@
               agent.tags && agent.tags.length > 0
                 ? `
               <div class="agent-tags">
+                ${agent.mocked !== false ? '<span class="agent-tag-mock">Mocked LLM</span>' : ""}
                 ${agent.tags
                   .slice(0, 3)
                   .map((tag) => `<span class="agent-tag">${tag}</span>`)

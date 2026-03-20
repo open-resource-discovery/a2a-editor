@@ -57,6 +57,8 @@ export interface PredefinedAgent {
   connectionAuthType?: AuthType;
   connectionAuthConfig?: BasicCredentials | OAuth2Credentials | ApiKeyCredentials;
   tags?: string[];
+  /** Whether this agent uses a mocked LLM backend (defaults to true for predefined agents) */
+  mocked?: boolean;
   /** A2A protocol version this agent uses ("0.3.0" or "1.0.0") */
   protocolVersion?: string;
 }

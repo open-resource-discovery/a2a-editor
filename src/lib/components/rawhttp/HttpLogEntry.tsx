@@ -59,14 +59,17 @@ export function HttpLogEntry({ entry, isHighlighted }: HttpLogEntryProps) {
   const isError = entry.error || (entry.response && entry.response.status >= 400);
 
   const generateCurlFormat = () => {
+    // Escape single quotes for safe shell usage: ' → '\''
+    const esc = (s: string) => s.replace(/'/g, "'\\''");
+
     const headers = Object.entries(entry.request.headers)
-      .map(([key, value]) => `-H '${key}: ${value}'`)
+      .map(([key, value]) => `-H '${esc(key)}: ${esc(value)}'`)
       .join(" \\\n  ");
 
-    let curl = `curl -X ${entry.request.method} '${entry.request.url}' \\\n  ${headers}`;
+    let curl = `curl -X ${entry.request.method} '${esc(entry.request.url)}' \\\n  ${headers}`;
 
     if (entry.request.body) {
-      curl += ` \\\n  -d '${entry.request.body}'`;
+      curl += ` \\\n  -d '${esc(entry.request.body)}'`;
     }
 
     return curl;
@@ -154,7 +157,7 @@ export function HttpLogEntry({ entry, isHighlighted }: HttpLogEntryProps) {
         isHighlighted && "ring-2 ring-primary",
       )}>
       <Collapsible open={open} onOpenChange={setOpen}>
-        <CollapsibleTrigger className="flex w-full items-center justify-between p-3 text-left hover:bg-accent/50">
+        <CollapsibleTrigger className="flex w-full items-center justify-between p-3 text-left hover:bg-accent/50 cursor-pointer">
           <div className="flex flex-wrap items-center gap-2 flex-1 min-w-0">
             <div className="flex items-center gap-2 min-w-0 flex-1">
               {isSuccess && <CheckCircle className="h-4 w-4 text-success shrink-0" />}

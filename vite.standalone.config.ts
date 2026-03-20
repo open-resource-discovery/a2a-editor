@@ -63,13 +63,12 @@ export default defineConfig({
   },
   define: {
     // Replace version placeholder with actual version
-    __VERSION__: JSON.stringify(
-      process.env.npm_package_version || "0.0.0-standalone"
-    ),
+    "__VERSION__": JSON.stringify(process.env.npm_package_version || "0.0.0-standalone"),
     // Define process.env for browser compatibility
     "process.env.NODE_ENV": JSON.stringify("production"),
     "process.env": JSON.stringify({}),
   },
+  publicDir: false,
   build: {
     lib: {
       entry: resolve(__dirname, "src/lib/standalone.ts"),
