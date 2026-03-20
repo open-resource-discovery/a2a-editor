@@ -8,8 +8,10 @@ import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@
 import { cn } from "@lib/utils/cn";
 import { selectPredefinedAgent } from "@lib/utils/agent-selection";
 import { detectProtocolVersion, normalizeAgentCard } from "@lib/utils/a2a-protocol";
+import { buildAddHeaders, mapAddAuth, buildPredefinedConnHeaders } from "@lib/utils/predefined-auth";
+import type { AddAuthType } from "@lib/utils/predefined-auth";
 import { Search, Plus, X, Loader2 } from "lucide-react";
-import type { PredefinedAgent, AuthType, BasicCredentials, OAuth2Credentials, ApiKeyCredentials } from "@lib/types/connection";
+import type { PredefinedAgent } from "@lib/types/connection";
 
 function parseAgentUrl(input: string): { normalizedUrl: string; fetchUrl: string } {
   const trimmed = input.trim();
@@ -33,85 +35,6 @@ function parseAgentUrl(input: string): { normalizedUrl: string; fetchUrl: string
   const fetchUrl = parsed.pathname.endsWith(".json") ? parsed.href : `${normalizedUrl}/.well-known/agent.json`;
 
   return { normalizedUrl, fetchUrl };
-}
-
-type AddAuthType = "none" | "basic" | "bearer" | "apiKey";
-
-function buildAddHeaders(
-  authType: AddAuthType,
-  username: string,
-  password: string,
-  token: string,
-  apiKey: string,
-): Record<string, string> | undefined {
-  switch (authType) {
-    case "basic":
-      if (username && password) {
-        return { Authorization: `Basic ${btoa(`${username}:${password}`)}` };
-      }
-      return undefined;
-    case "bearer":
-      if (token) {
-        return { Authorization: `Bearer ${token}` };
-      }
-      return undefined;
-    case "apiKey":
-      if (apiKey) {
-        return { Authorization: apiKey };
-      }
-      return undefined;
-    default:
-      return undefined;
-  }
-}
-
-function mapAddAuth(
-  addAuthType: AddAuthType,
-  username: string,
-  password: string,
-  token: string,
-  apiKey: string,
-): { authType: AuthType; authConfig?: BasicCredentials | OAuth2Credentials | ApiKeyCredentials } {
-  switch (addAuthType) {
-    case "basic":
-      return { authType: "basic", authConfig: { username, password } };
-    case "bearer":
-      return {
-        authType: "oauth2",
-        authConfig: { clientId: "", clientSecret: "", tokenUrl: "", scopes: "", accessToken: token },
-      };
-    case "apiKey":
-      return { authType: "apiKey", authConfig: { key: apiKey, headerName: "Authorization" } };
-    default:
-      return { authType: "none" };
-  }
-}
-
-function buildPredefinedConnHeaders(
-  authType: AuthType,
-  config: BasicCredentials | OAuth2Credentials | ApiKeyCredentials,
-): Record<string, string> | undefined {
-  switch (authType) {
-    case "basic": {
-      const { username, password } = config as BasicCredentials;
-      if (username && password) return { Authorization: `Basic ${btoa(`${username}:${password}`)}` };
-      return undefined;
-    }
-    case "oauth2": {
-      const { accessToken } = config as OAuth2Credentials;
-      if (accessToken) return { Authorization: `Bearer ${accessToken}` };
-      return undefined;
-    }
-    case "apiKey": {
-      const creds = config as ApiKeyCredentials;
-      // Query-param API keys are handled by connect() via state, not headers
-      if (creds.in === "query") return undefined;
-      if (creds.key) return { [creds.headerName || "Authorization"]: creds.key };
-      return undefined;
-    }
-    default:
-      return undefined;
-  }
 }
 
 export function PredefinedAgents() {
