@@ -1,3 +1,4 @@
+/// <reference types="vitest" />
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
@@ -12,6 +13,10 @@ export default defineConfig(({ mode }) => {
   return {
     // Base path for GitHub Pages deployment (org/repo-name)
     base: isLib ? "/" : isProduction ? "/ORD/a2a-editor/" : "/",
+    test: {
+      include: ["src/**/*.test.ts", "src/**/*.test.tsx"],
+      environment: "jsdom",
+    },
     plugins: [
       react(),
       tailwindcss(),
