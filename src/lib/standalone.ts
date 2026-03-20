@@ -27,7 +27,7 @@ import { useUIStore } from "./stores/uiStore";
 import { usePredefinedAgentsStore } from "./stores/predefinedAgentsStore";
 import { useChatStore } from "./stores/chatStore";
 import { useHttpLogStore } from "./stores/httpLogStore";
-import type { AgentCard } from "./types/a2a";
+import type { AgentCard, Part } from "./types/a2a";
 import type { ValidationResult } from "./types/validation";
 import type { AuthType } from "./types/connection";
 import type { PredefinedAgent } from "./types/connection";
@@ -145,6 +145,9 @@ export interface A2APlaygroundInstance {
 
   /** Destroy the playground instance */
   destroy(): void;
+
+  /** Send a text message through the built-in chat UI */
+  sendMessage(text: string): Promise<void>;
 
   /** Snapshot all store state (agent card, chat, HTTP logs, connection) */
   saveState(): Record<string, unknown>;
@@ -418,6 +421,14 @@ function createInstance(element: HTMLElement, options: A2APlaygroundOptions): A2
 
     setActiveTab(tab) {
       useUIStore.getState().setActiveTab(tab);
+    },
+
+    async sendMessage(text: string) {
+      const parts: Part[] = [{ text }];
+      const connStore = useConnectionStore.getState();
+      const agentUrl = connStore.messagingUrl || connStore.url;
+      const authHeaders = connStore.authHeaders;
+      await useChatStore.getState().sendMessage(parts, agentUrl, authHeaders);
     },
 
     setTheme(theme) {
