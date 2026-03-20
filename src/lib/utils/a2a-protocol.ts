@@ -476,11 +476,18 @@ export function buildOutboundParts(parts: Part[], version: string): unknown[] {
 export function buildOutboundMessage(
   parts: Part[],
   version: string,
-): { role: string; parts: unknown[] } {
-  return {
+  messageId: string,
+  contextId?: string | null,
+): Record<string, unknown> {
+  const message: Record<string, unknown> = {
     role: buildOutboundRole(version),
     parts: buildOutboundParts(parts, version),
+    messageId,
   };
+  if (contextId) {
+    message.contextId = contextId;
+  }
+  return message;
 }
 
 /** Build protocol-specific headers for outbound requests. */

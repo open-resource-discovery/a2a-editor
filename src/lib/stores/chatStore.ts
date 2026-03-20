@@ -221,18 +221,14 @@ export const useChatStore = create<ChatState>((set, get) => {
       useHttpLogStore.getState().addLog(syntheticLog);
     } else {
       const version = useConnectionStore.getState().protocolVersion;
-      const outboundMessage = buildOutboundMessage(parts, version);
+      const outboundMessage = buildOutboundMessage(parts, version, messageId, get().contextId);
       const configuration = buildOutboundConfiguration(version);
       const rpcRequest: Record<string, unknown> = {
         jsonrpc: "2.0",
         id: uuidv4(),
         method: getJsonRpcMethod(version),
         params: {
-          message: {
-            ...outboundMessage,
-            messageId,
-            contextId: get().contextId,
-          },
+          message: outboundMessage,
           ...(configuration ? { configuration } : {}),
         },
       };
@@ -303,18 +299,14 @@ export const useChatStore = create<ChatState>((set, get) => {
     }));
 
     // Build JSON-RPC request
-    const outboundMessage = buildOutboundMessage(parts, version);
+    const outboundMessage = buildOutboundMessage(parts, version, messageId, get().contextId);
     const configuration = buildOutboundConfiguration(version);
     const rpcRequest: Record<string, unknown> = {
       jsonrpc: "2.0",
       id: uuidv4(),
       method: getStreamingJsonRpcMethod(version),
       params: {
-        message: {
-          ...outboundMessage,
-          messageId,
-          contextId: get().contextId,
-        },
+        message: outboundMessage,
         ...(configuration ? { configuration } : {}),
       },
     };
