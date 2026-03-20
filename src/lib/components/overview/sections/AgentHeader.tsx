@@ -33,9 +33,11 @@ export function AgentHeader({ card }: AgentHeaderProps) {
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
             <span className="text-xl font-bold truncate leading-none" data-testid="agent-name">{card.name}</span>
-            <Badge variant="outline" className="shrink-0 translate-y-px" data-testid="agent-version">
-              v{card.version}
-            </Badge>
+            {card.version && (
+              <Badge variant="outline" className="shrink-0 translate-y-px" data-testid="agent-version">
+                v{card.version}
+              </Badge>
+            )}
           </div>
           {card.supportedInterfaces && card.supportedInterfaces.length > 0 ? (
             <span className="text-xs text-muted-foreground">
