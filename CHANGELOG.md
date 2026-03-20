@@ -7,6 +7,8 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [unreleased]
 
+## [[0.3.0](https://github.com/open-resource-discovery/a2a-editor/releases/tag/v0.3.0)] - 2026-03-20
+
 ### Added
 
 - Favicon using new `a2a-icon.svg` across playground, standalone, and Docusaurus website
