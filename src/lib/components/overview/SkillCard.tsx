@@ -48,7 +48,7 @@ export function SkillCard({ skill, disableExamplePrompts = false, readOnly = fal
                 </div>
               )}
             </div>
-            <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{skill.description}</p>
+            <span className="block text-xs text-muted-foreground mt-1.5 px-0.5 line-clamp-2">{skill.description}</span>
           </div>
           <ChevronDown
             className={`h-4 w-4 shrink-0 text-muted-foreground transition-transform ${open ? "rotate-180" : ""}`}
