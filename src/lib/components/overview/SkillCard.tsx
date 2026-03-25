@@ -1,4 +1,5 @@
 import { useState } from "react";
+import ReactMarkdown from "react-markdown";
 import type { AgentSkill } from "@lib/types/a2a";
 import { Badge } from "@lib/components/ui/badge";
 import { Button } from "@lib/components/ui/button";
@@ -48,7 +49,9 @@ export function SkillCard({ skill, disableExamplePrompts = false, readOnly = fal
                 </div>
               )}
             </div>
-            <span className="block text-xs text-muted-foreground mt-1.5 px-0.5 line-clamp-2">{skill.description}</span>
+            <div className={`text-xs text-muted-foreground mt-1.5 px-0.5 prose prose-sm dark:prose-invert max-w-none prose-p:my-0 prose-headings:my-1 prose-ul:my-0.5 prose-ol:my-0.5 prose-li:my-0 prose-ul:list-disc prose-ol:list-decimal prose-ul:pl-4 prose-ol:pl-4 prose-a:text-primary ${!open ? "line-clamp-2" : ""}`}>
+              <ReactMarkdown>{skill.description}</ReactMarkdown>
+            </div>
           </div>
           <ChevronDown
             className={`h-4 w-4 shrink-0 text-muted-foreground transition-transform ${open ? "rotate-180" : ""}`}
