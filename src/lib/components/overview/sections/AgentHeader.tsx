@@ -1,5 +1,7 @@
-import { useState } from "react";
+import { useState, useRef, useLayoutEffect } from "react";
+import ReactMarkdown from "react-markdown";
 import type { AgentCard } from "@lib/types/a2a";
+import { cn } from "@lib/utils/cn";
 import { Badge } from "@lib/components/ui/badge";
 import { Button } from "@lib/components/ui/button";
 import { ExternalLink, User, Building, ChevronDown, ChevronUp, Globe } from "lucide-react";
@@ -8,23 +10,22 @@ interface AgentHeaderProps {
   card: AgentCard;
 }
 
-// Simple markdown-like rendering for descriptions
-function renderDescription(text: string) {
-  // Simple approach: just render as text with line breaks
-  return text.split("\n").map((line, i) => (
-    <span key={i}>
-      {i > 0 && <br />}
-      {line}
-    </span>
-  ));
-}
-
 export function AgentHeader({ card }: AgentHeaderProps) {
   const [expanded, setExpanded] = useState(false);
+  const descriptionRef = useRef<HTMLDivElement>(null);
+  const [isClamped, setIsClamped] = useState(false);
 
-  const descriptionTooLong = card.description && card.description.length > 150;
-  const displayDescription =
-    descriptionTooLong && !expanded ? card.description!.slice(0, 150) + "..." : card.description;
+  useLayoutEffect(() => {
+    const el = descriptionRef.current;
+    if (!el) return;
+    // Temporarily remove clamp to measure full height
+    el.style.display = "-webkit-box";
+    el.style.webkitLineClamp = "unset";
+    const fullHeight = el.scrollHeight;
+    el.style.webkitLineClamp = "";
+    el.style.display = "";
+    setIsClamped(fullHeight > el.clientHeight);
+  }, [card.description]);
 
   return (
     <div className="space-y-3" data-testid="agent-header">
@@ -51,8 +52,16 @@ export function AgentHeader({ card }: AgentHeaderProps) {
 
       {card.description && (
         <div className="text-sm text-muted-foreground">
-          <p>{renderDescription(displayDescription!)}</p>
-          {descriptionTooLong && (
+          <div
+            ref={descriptionRef}
+            className={cn(
+              "prose prose-sm dark:prose-invert max-w-none prose-p:my-1 prose-headings:my-2 prose-ul:my-1 prose-ol:my-1 prose-li:my-0 prose-a:text-primary",
+              !expanded && "line-clamp-3",
+            )}
+          >
+            <ReactMarkdown>{card.description}</ReactMarkdown>
+          </div>
+          {isClamped && (
             <Button variant="ghost" size="sm" className="h-6 px-2 text-xs mt-1" onClick={() => setExpanded(!expanded)}>
               {expanded ? (
                 <>

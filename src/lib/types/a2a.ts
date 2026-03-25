@@ -133,6 +133,7 @@ export interface TextPart {
   text: string;
   kind?: "text"; // Legacy
   type?: "text"; // Legacy
+  mediaType?: string;
   metadata?: Record<string, unknown>;
 }
 
