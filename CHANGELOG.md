@@ -7,6 +7,18 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [unreleased]
 
+### Added
+
+- Markdown rendering for agent card descriptions and skill card descriptions via ReactMarkdown
+- Syntax highlighting for JSON, XML, and YAML code blocks in agent chat responses with copy buttons
+- Tag-based multi-select filtering on the Skills section (replaces text search input)
+- `mediaType`-aware text parts: structured content (XML, JSON, YAML) auto-rendered as highlighted code blocks
+
+### Fixed
+
+- Registered `@tailwindcss/typography` plugin for Tailwind v4 (prose classes were silently ignored)
+- Agent card description uses CSS `line-clamp-3` instead of character-count truncation
+
 ## [[0.3.0](https://github.com/open-resource-discovery/a2a-editor/releases/tag/v0.3.0)] - 2026-03-20
 
 ### Added
