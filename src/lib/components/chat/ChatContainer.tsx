@@ -63,7 +63,7 @@ export function ChatContainer({ maxExamplePrompts = 2, disableExamplePrompts = f
     <div className="flex h-full flex-col">
       {/* Clear button when there are messages */}
       {messages.length > 0 && (
-        <div className="flex items-center justify-end border-b px-4 pb-1.5">
+        <div className="flex items-center justify-end border-b px-4 py-1.5">
           <Button variant="ghost" size="sm" onClick={clearChat} data-testid="chat-clear">
             <Trash2 className="mr-1 h-3.5 w-3.5" />
             Clear

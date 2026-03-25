@@ -8,7 +8,7 @@ const baseUrl = process.env.BASE_URL || "/";
 const config = {
   title: "A2A Editor",
   tagline: "React components for editing and testing A2A Agent Cards",
-  favicon: "img/favicon.ico",
+  favicon: "img/a2a-icon.svg",
 
   url: process.env.SITE_URL || "https://open-resource-discovery.github.io",
   baseUrl,

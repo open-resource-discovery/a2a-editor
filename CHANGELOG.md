@@ -7,8 +7,14 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [unreleased]
 
+## [[0.3.0](https://github.com/open-resource-discovery/a2a-editor/releases/tag/v0.3.0)] - 2026-03-20
+
 ### Added
 
+- Favicon using new `a2a-icon.svg` across playground, standalone, and Docusaurus website
+- Open Graph / Twitter Card social card image with generation script (`npm run generate:og-image`)
+- "Mocked LLM" badge on predefined agents (shown by default, opt-out via `"mocked": false`)
+- Demo GIF in README
 - Renovate configuration for automated dependency updates
 - Bump GitHub Actions to latest major versions
 - Unit test suite with vitest covering auth logic (connection store, PKCE, predefined agent auth helpers)
@@ -32,6 +38,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 - Added `PROTOCOL_VERSIONS` typed constants replacing scattered version string literals
 - Version-aware outbound methods: `SendMessage`/`SendStreamingMessage` for v1.0, `message/send`/`message/stream` for v0.3.0
 - `detectProtocolVersion()` now reads `supportedInterfaces[0].protocolVersion` for accurate version string
+- Removed "Validate" button from the editor toolbar (validation still runs automatically)
 
 ### Fixed
 

@@ -139,6 +139,7 @@ export function PredefinedAgents() {
         authType,
         ...(authConfig ? { authConfig } : {}),
         tags: ["Custom"],
+        mocked: false,
         protocolVersion,
       };
 
@@ -190,6 +191,11 @@ export function PredefinedAgents() {
       {agent.description && <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{agent.description}</p>}
       {agent.tags && agent.tags.length > 0 && (
         <div className="flex flex-wrap gap-1 mt-2">
+          {agent.mocked !== false && (
+            <Badge variant="outline" className="text-xs h-5 border-warning/50 text-warning">
+              Mocked LLM
+            </Badge>
+          )}
           {agent.tags.slice(0, 3).map((tag) => (
             <Badge key={tag} variant="secondary" className="text-xs h-5">
               {tag}
@@ -202,16 +208,17 @@ export function PredefinedAgents() {
 
   return (
     <div className="space-y-3">
-      <div className="flex items-center justify-between">
-        <h3 className="text-sm font-medium">Agents</h3>
-        <Button variant="ghost" size="sm" className="h-7" onClick={() => setShowAddForm(!showAddForm)} data-testid="add-agent-btn">
-          <Plus className="h-3.5 w-3.5 mr-1" />
-          Add
-        </Button>
-      </div>
+      <div className="sticky top-0 z-10 bg-sidebar pb-3 space-y-3">
+        <div className="flex items-center justify-between">
+          <h3 className="text-sm font-medium">Agents</h3>
+          <Button variant="ghost" size="sm" className="h-7" onClick={() => setShowAddForm(!showAddForm)} data-testid="add-agent-btn">
+            <Plus className="h-3.5 w-3.5 mr-1" />
+            Add
+          </Button>
+        </div>
 
-      {/* Add agent form */}
-      {showAddForm && (
+        {/* Add agent form */}
+        {showAddForm && (
         <div className="rounded-lg border p-3 space-y-2 bg-muted/50">
           <Input
             placeholder="Enter agent URL..."
@@ -322,6 +329,7 @@ export function PredefinedAgents() {
           onChange={(e) => setSearch(e.target.value)}
           className="h-8 pl-8 text-sm"
         />
+      </div>
       </div>
 
       {/* Custom agents section */}

@@ -59,14 +59,17 @@ export function HttpLogEntry({ entry, isHighlighted }: HttpLogEntryProps) {
   const isError = entry.error || (entry.response && entry.response.status >= 400);
 
   const generateCurlFormat = () => {
+    // Escape single quotes for safe shell usage: ' → '\''
+    const esc = (s: string) => s.replace(/'/g, "'\\''");
+
     const headers = Object.entries(entry.request.headers)
-      .map(([key, value]) => `-H '${key}: ${value}'`)
+      .map(([key, value]) => `-H '${esc(key)}: ${esc(value)}'`)
       .join(" \\\n  ");
 
-    let curl = `curl -X ${entry.request.method} '${entry.request.url}' \\\n  ${headers}`;
+    let curl = `curl -X ${entry.request.method} '${esc(entry.request.url)}' \\\n  ${headers}`;
 
     if (entry.request.body) {
-      curl += ` \\\n  -d '${entry.request.body}'`;
+      curl += ` \\\n  -d '${esc(entry.request.body)}'`;
     }
 
     return curl;

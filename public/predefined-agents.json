@@ -5,6 +5,7 @@
     "description": "Echoes back whatever you send. Useful for testing connectivity and message format.",
     "url": "mock://echo",
     "authType": "none",
+    "mocked": true,
     "tags": ["test", "echo", "mock"]
   },
   {
@@ -13,6 +14,7 @@
     "description": "Mock translation agent. Supports common phrases in German, French, Spanish, and Japanese.",
     "url": "mock://translator",
     "authType": "none",
+    "mocked": true,
     "tags": ["translation", "language", "mock"]
   },
   {
@@ -21,6 +23,7 @@
     "description": "Accepts JSON input with math operations. Send {\"operation\": \"add\", \"a\": 5, \"b\": 3}.",
     "url": "mock://calculator",
     "authType": "none",
+    "mocked": true,
     "tags": ["math", "json", "mock"]
   }
 ]
