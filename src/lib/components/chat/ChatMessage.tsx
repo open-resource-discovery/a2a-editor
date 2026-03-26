@@ -7,12 +7,24 @@ import { Copy, Check, RotateCcw, FileText, CheckCircle, AlertCircle, ChevronDown
 import { Badge } from "@lib/components/ui/badge";
 import { Button } from "@lib/components/ui/button";
 import { JsonHighlight } from "@lib/components/ui/JsonHighlight";
+import { CodeBlock, PreBlock } from "@lib/components/ui/CodeBlock";
 import { useUIStore } from "@lib/stores/uiStore";
 import { useHttpLogStore } from "@lib/stores/httpLogStore";
 
 interface ChatMessageProps {
   message: ChatMessageType;
   onRetry?: () => void;
+}
+
+/** Map a MIME mediaType to a code fence language tag, or null for plain text. */
+function mediaTypeToLang(mediaType?: string): string | null {
+  if (!mediaType) return null;
+  const mt = mediaType.toLowerCase();
+  if (mt.includes("xml")) return "xml";
+  if (mt.includes("json")) return "json";
+  if (mt.includes("yaml") || mt.includes("yml")) return "yaml";
+  if (mt.includes("html")) return "xml";
+  return null;
 }
 
 function DataPartView({ data }: { data: Record<string, unknown> }) {
@@ -30,7 +42,7 @@ function DataPartView({ data }: { data: Record<string, unknown> }) {
         <span className="font-medium">Data</span>
       </button>
       {expanded && (
-        <JsonHighlight code={jsonStr} className="rounded-none rounded-b bg-transparent p-2 text-[11px]" />
+        <JsonHighlight code={jsonStr} className="rounded-none rounded-b bg-transparent p-2 text-[11px]" showCopy />
       )}
     </div>
   );
@@ -101,7 +113,14 @@ export function ChatMessage({ message, onRetry }: ChatMessageProps) {
   const textParts = message.parts.filter(isTextPart);
   const dataParts = message.parts.filter(isDataPart);
   const fileParts = message.parts.filter(isFilePart);
-  const fullText = textParts.map((p) => p.text).join("\n");
+  const fullText = textParts
+    .map((p) => {
+      // Wrap structured media types in fenced code blocks for syntax highlighting
+      const lang = mediaTypeToLang(p.mediaType);
+      if (lang) return `\n\`\`\`${lang}\n${p.text}\n\`\`\``;
+      return p.text;
+    })
+    .join("\n");
 
   const handleCopy = async () => {
     if (!fullText) return;
@@ -193,7 +212,7 @@ export function ChatMessage({ message, onRetry }: ChatMessageProps) {
               <p className="text-sm whitespace-pre-wrap break-words">{fullText}</p>
             ) : (
               <div className="text-sm prose prose-sm dark:prose-invert max-w-none [word-break:break-word] [&_pre]:overflow-x-auto [&_pre]:max-w-full [&_code]:break-all prose-p:my-1 prose-headings:my-2 prose-ul:my-1 prose-ol:my-1 prose-li:my-0 prose-pre:my-2 prose-code:bg-background/50 prose-code:px-1 prose-code:rounded prose-code:before:content-none prose-code:after:content-none">
-                <ReactMarkdown>{fullText}</ReactMarkdown>
+                <ReactMarkdown components={{ code: CodeBlock, pre: PreBlock }}>{fullText}</ReactMarkdown>
               </div>
             ))}
 

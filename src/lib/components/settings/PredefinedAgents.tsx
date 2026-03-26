@@ -208,9 +208,9 @@ export function PredefinedAgents() {
 
   return (
     <div className="space-y-3">
-      <div className="sticky top-0 z-10 bg-sidebar pb-3 space-y-3">
+      <div className="sticky top-0 z-10 bg-sidebar pt-4 pb-3 space-y-3">
         <div className="flex items-center justify-between">
-          <h3 className="text-sm font-medium">Agents</h3>
+          <span className="text-sm font-medium">Agents</span>
           <Button variant="ghost" size="sm" className="h-7" onClick={() => setShowAddForm(!showAddForm)} data-testid="add-agent-btn">
             <Plus className="h-3.5 w-3.5 mr-1" />
             Add
