@@ -4,7 +4,7 @@ import { isMockUrl, getMockAgentCard } from "@lib/mock/agents";
 import { usePredefinedAgentsStore } from "./predefinedAgentsStore";
 import { useConnectionStore } from "./connectionStore";
 import { useHttpLogStore } from "./httpLogStore";
-import { normalizeAgentCard, detectProtocolVersion } from "@lib/utils/a2a-compat";
+import { normalizeAgentCard, detectProtocolVersion } from "@lib/utils/a2a-protocol";
 
 // Helper to parse JSON, normalize for version compat, and extract card/error
 function parseAgentCard(json: string): {
@@ -37,6 +37,7 @@ function parseAgentCard(json: string): {
 interface AgentCardState {
   rawJson: string;
   parsedCard: AgentCard | null;
+  lastValidCard: AgentCard | null;
   parseError: string | null;
   isLoading: boolean;
   isDirty: boolean;
@@ -49,16 +50,20 @@ interface AgentCardState {
 export const useAgentCardStore = create<AgentCardState>((set, get) => ({
   rawJson: "",
   parsedCard: null,
+  lastValidCard: null,
   parseError: null,
   isLoading: false,
   isDirty: false,
 
   setRawJson: (json) => {
     const { card, error } = parseAgentCard(json);
-    set({ rawJson: json, parsedCard: card, parseError: error, isDirty: true });
+    const updates: Partial<AgentCardState> = { rawJson: json, parsedCard: card, parseError: error, isDirty: true };
+    if (card) updates.lastValidCard = card;
+    set(updates);
 
     // Deselect predefined agent and reset connection when editor is cleared
     if (!json.trim()) {
+      set({ lastValidCard: null });
       usePredefinedAgentsStore.getState().deselect();
       useHttpLogStore.getState().clearLogs();
       useConnectionStore.getState().disconnect();
@@ -68,9 +73,9 @@ export const useAgentCardStore = create<AgentCardState>((set, get) => ({
     // Auto-configure connection when a valid card is parsed
     if (card) {
       const connectionStore = useConnectionStore.getState();
-      // Set URL from card if not already set or if different
-      if (card.url && connectionStore.url !== card.url) {
-        connectionStore.setUrl(card.url);
+      // Set messaging URL from card if available
+      if (card.url) {
+        connectionStore.setMessagingUrl(card.url);
       }
       // Auto-configure auth from security schemes
       connectionStore.autoConfigureAuth(card);
@@ -88,6 +93,7 @@ export const useAgentCardStore = create<AgentCardState>((set, get) => ({
     set({
       rawJson: "",
       parsedCard: null,
+      lastValidCard: null,
       parseError: null,
       isDirty: false,
       isLoading: false,
@@ -110,11 +116,12 @@ export const useAgentCardStore = create<AgentCardState>((set, get) => ({
         set({
           rawJson: json,
           parsedCard: card,
+          lastValidCard: card,
           parseError: null,
           isDirty: false,
         });
-        if (card.url && connectionStore.url !== card.url) {
-          connectionStore.setUrl(card.url);
+        if (card.url) {
+          connectionStore.setMessagingUrl(card.url);
         }
         connectionStore.autoConfigureAuth(card);
         return;
@@ -128,12 +135,15 @@ export const useAgentCardStore = create<AgentCardState>((set, get) => ({
       // Detect version and normalize
       const version = detectProtocolVersion(data);
       const card = normalizeAgentCard(data) as AgentCard;
-      connectionStore.setUrl(card.url ?? connectionStore.url);
+      if (card.url) {
+        connectionStore.setMessagingUrl(card.url);
+      }
       useConnectionStore.setState({ protocolVersion: version });
 
       set({
         rawJson: json,
         parsedCard: card,
+        lastValidCard: card,
         parseError: null,
         isDirty: false,
       });

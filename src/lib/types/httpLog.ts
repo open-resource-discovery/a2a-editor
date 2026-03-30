@@ -17,4 +17,5 @@ export interface HttpLogEntry {
   error?: string;
   durationMs?: number;
   derivedFromLogId?: string;
+  isSSE?: boolean;
 }

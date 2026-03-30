@@ -1524,13 +1524,13 @@ article.markdown,
   li {
     display: inline-flex;
     align-items: center;
+    line-height: 1;
   }
 
   /* Fix home icon vertical alignment */
   .breadcrumbs__link svg,
   a[href] svg {
     display: block;
-    vertical-align: middle;
   }
 
   /* Home breadcrumb item (first item) */
@@ -1541,6 +1541,7 @@ article.markdown,
     a {
       display: inline-flex;
       align-items: center;
+      line-height: 1;
     }
   }
 }

@@ -7,9 +7,11 @@ import { PasswordInput } from "@lib/components/ui/PasswordInput";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@lib/components/ui/select";
 import { cn } from "@lib/utils/cn";
 import { selectPredefinedAgent } from "@lib/utils/agent-selection";
-import { detectProtocolVersion, normalizeAgentCard } from "@lib/utils/a2a-compat";
+import { detectProtocolVersion, normalizeAgentCard } from "@lib/utils/a2a-protocol";
+import { buildAddHeaders, mapAddAuth, buildPredefinedConnHeaders } from "@lib/utils/predefined-auth";
+import type { AddAuthType } from "@lib/utils/predefined-auth";
 import { Search, Plus, X, Loader2 } from "lucide-react";
-import type { PredefinedAgent, AuthType, BasicCredentials, OAuth2Credentials, ApiKeyCredentials } from "@lib/types/connection";
+import type { PredefinedAgent } from "@lib/types/connection";
 
 function parseAgentUrl(input: string): { normalizedUrl: string; fetchUrl: string } {
   const trimmed = input.trim();
@@ -33,85 +35,6 @@ function parseAgentUrl(input: string): { normalizedUrl: string; fetchUrl: string
   const fetchUrl = parsed.pathname.endsWith(".json") ? parsed.href : `${normalizedUrl}/.well-known/agent.json`;
 
   return { normalizedUrl, fetchUrl };
-}
-
-type AddAuthType = "none" | "basic" | "bearer" | "apiKey";
-
-function buildAddHeaders(
-  authType: AddAuthType,
-  username: string,
-  password: string,
-  token: string,
-  apiKey: string,
-): Record<string, string> | undefined {
-  switch (authType) {
-    case "basic":
-      if (username && password) {
-        return { Authorization: `Basic ${btoa(`${username}:${password}`)}` };
-      }
-      return undefined;
-    case "bearer":
-      if (token) {
-        return { Authorization: `Bearer ${token}` };
-      }
-      return undefined;
-    case "apiKey":
-      if (apiKey) {
-        return { Authorization: apiKey };
-      }
-      return undefined;
-    default:
-      return undefined;
-  }
-}
-
-function mapAddAuth(
-  addAuthType: AddAuthType,
-  username: string,
-  password: string,
-  token: string,
-  apiKey: string,
-): { authType: AuthType; authConfig?: BasicCredentials | OAuth2Credentials | ApiKeyCredentials } {
-  switch (addAuthType) {
-    case "basic":
-      return { authType: "basic", authConfig: { username, password } };
-    case "bearer":
-      return {
-        authType: "oauth2",
-        authConfig: { clientId: "", clientSecret: "", tokenUrl: "", scopes: "", accessToken: token },
-      };
-    case "apiKey":
-      return { authType: "apiKey", authConfig: { key: apiKey, headerName: "Authorization" } };
-    default:
-      return { authType: "none" };
-  }
-}
-
-function buildPredefinedConnHeaders(
-  authType: AuthType,
-  config: BasicCredentials | OAuth2Credentials | ApiKeyCredentials,
-): Record<string, string> | undefined {
-  switch (authType) {
-    case "basic": {
-      const { username, password } = config as BasicCredentials;
-      if (username && password) return { Authorization: `Basic ${btoa(`${username}:${password}`)}` };
-      return undefined;
-    }
-    case "oauth2": {
-      const { accessToken } = config as OAuth2Credentials;
-      if (accessToken) return { Authorization: `Bearer ${accessToken}` };
-      return undefined;
-    }
-    case "apiKey": {
-      const creds = config as ApiKeyCredentials;
-      // Query-param API keys are handled by connect() via state, not headers
-      if (creds.in === "query") return undefined;
-      if (creds.key) return { [creds.headerName || "Authorization"]: creds.key };
-      return undefined;
-    }
-    default:
-      return undefined;
-  }
 }
 
 export function PredefinedAgents() {
@@ -212,10 +135,11 @@ export function PredefinedAgents() {
         id: `custom-${Date.now()}`,
         name: normalizedCard.name || "Custom Agent",
         description: normalizedCard.description ?? "",
-        url: normalizedCard.url ?? normalizedUrl,
+        url: normalizedUrl,
         authType,
         ...(authConfig ? { authConfig } : {}),
         tags: ["Custom"],
+        mocked: false,
         protocolVersion,
       };
 
@@ -241,6 +165,7 @@ export function PredefinedAgents() {
     <div
       key={agent.id}
       role="listitem"
+      data-testid={`agent-card-${agent.id}`}
       tabIndex={0}
       className={cn(
         "rounded-lg border p-3 cursor-pointer transition-colors relative group",
@@ -266,6 +191,11 @@ export function PredefinedAgents() {
       {agent.description && <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{agent.description}</p>}
       {agent.tags && agent.tags.length > 0 && (
         <div className="flex flex-wrap gap-1 mt-2">
+          {agent.mocked !== false && (
+            <Badge variant="outline" className="text-xs h-5 border-warning/50 text-warning">
+              Mocked LLM
+            </Badge>
+          )}
           {agent.tags.slice(0, 3).map((tag) => (
             <Badge key={tag} variant="secondary" className="text-xs h-5">
               {tag}
@@ -278,19 +208,21 @@ export function PredefinedAgents() {
 
   return (
     <div className="space-y-3">
-      <div className="flex items-center justify-between">
-        <h3 className="text-sm font-medium">Agents</h3>
-        <Button variant="ghost" size="sm" className="h-7" onClick={() => setShowAddForm(!showAddForm)}>
-          <Plus className="h-3.5 w-3.5 mr-1" />
-          Add
-        </Button>
-      </div>
+      <div className="sticky top-0 z-10 bg-sidebar pb-3 space-y-3">
+        <div className="flex items-center justify-between">
+          <h3 className="text-sm font-medium">Agents</h3>
+          <Button variant="ghost" size="sm" className="h-7" onClick={() => setShowAddForm(!showAddForm)} data-testid="add-agent-btn">
+            <Plus className="h-3.5 w-3.5 mr-1" />
+            Add
+          </Button>
+        </div>
 
-      {/* Add agent form */}
-      {showAddForm && (
+        {/* Add agent form */}
+        {showAddForm && (
         <div className="rounded-lg border p-3 space-y-2 bg-muted/50">
           <Input
             placeholder="Enter agent URL..."
+            data-testid="add-agent-url"
             value={newAgentUrl}
             onChange={(e) => {
               setNewAgentUrl(e.target.value);
@@ -369,10 +301,11 @@ export function PredefinedAgents() {
                 setShowAddForm(false);
                 setNewAgentUrl("");
                 setAddError("");
-              }}>
+              }}
+              data-testid="add-agent-cancel">
               Cancel
             </Button>
-            <Button size="sm" onClick={handleAddAgent} disabled={isAdding || !isValidNewAgentUrl}>
+            <Button size="sm" onClick={handleAddAgent} disabled={isAdding || !isValidNewAgentUrl} data-testid="add-agent-submit">
               {isAdding ? (
                 <>
                   <Loader2 className="h-3 w-3 mr-1 animate-spin" />
@@ -391,10 +324,12 @@ export function PredefinedAgents() {
         <Search className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
         <Input
           placeholder="Search agents..."
+          data-testid="agent-search"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="h-8 pl-8 text-sm"
         />
+      </div>
       </div>
 
       {/* Custom agents section */}

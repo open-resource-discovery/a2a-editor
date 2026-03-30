@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import { useChatStore } from "@lib/stores/chatStore";
-import { useConnectionStore } from "@lib/stores/connectionStore";
+import { useConnectionStore, selectEffectiveUrl } from "@lib/stores/connectionStore";
 import { useAgentCardStore } from "@lib/stores/agentCardStore";
 import { useIsLargeScreen } from "@lib/hooks/useMediaQuery";
 import { ScrollArea } from "@lib/components/ui/scroll-area";
@@ -17,7 +17,8 @@ interface ChatContainerProps {
 
 export function ChatContainer({ maxExamplePrompts = 2, disableExamplePrompts = false }: ChatContainerProps) {
   const { messages, isStreaming, sendMessage, retryMessage, clearChat } = useChatStore();
-  const { connectionStatus, url, authHeaders } = useConnectionStore();
+  const { connectionStatus, authHeaders } = useConnectionStore();
+  const effectiveUrl = useConnectionStore(selectEffectiveUrl);
   const parsedCard = useAgentCardStore((state) => state.parsedCard);
   const isLargeScreen = useIsLargeScreen();
   const scrollViewportRef = useRef<HTMLDivElement>(null);
@@ -50,20 +51,20 @@ export function ChatContainer({ maxExamplePrompts = 2, disableExamplePrompts = f
   const examplePrompts = allExamplePrompts.slice(0, isLargeScreen ? desktopLimit : mobileLimit);
 
   const handleExampleClick = (example: string) => {
-    if (!isConnected) return;
-    sendMessage([{ text: example }], url, authHeaders);
+    if (!isConnected || isStreaming) return;
+    sendMessage([{ text: example }], effectiveUrl, authHeaders);
   };
 
   const handleRetry = (messageId: string) => {
-    retryMessage(messageId, url, authHeaders);
+    retryMessage(messageId, effectiveUrl, authHeaders);
   };
 
   return (
     <div className="flex h-full flex-col">
       {/* Clear button when there are messages */}
       {messages.length > 0 && (
-        <div className="flex items-center justify-end border-b px-4 pb-1.5">
-          <Button variant="ghost" size="sm" onClick={clearChat}>
+        <div className="flex items-center justify-end border-b px-4 py-1.5">
+          <Button variant="ghost" size="sm" onClick={clearChat} data-testid="chat-clear">
             <Trash2 className="mr-1 h-3.5 w-3.5" />
             Clear
           </Button>
@@ -71,7 +72,7 @@ export function ChatContainer({ maxExamplePrompts = 2, disableExamplePrompts = f
       )}
 
       <ScrollArea className="min-h-0 flex-1" viewportRef={scrollViewportRef}>
-        <div className="p-4">
+        <div className="p-4" data-testid="chat-messages">
           {messages.length === 0 ? (
             <div className="flex h-full flex-col items-center justify-center gap-4 text-center">
               <p className="text-sm text-muted-foreground">
@@ -84,8 +85,9 @@ export function ChatContainer({ maxExamplePrompts = 2, disableExamplePrompts = f
                   {examplePrompts.map((example, index) => (
                     <button
                       key={index}
+                      data-testid={`example-prompt-${index}`}
                       onClick={() => handleExampleClick(example)}
-                      disabled={!isConnected || disableExamplePrompts}
+                      disabled={!isConnected || isStreaming || disableExamplePrompts}
                       className="group inline-flex items-center gap-1.5 rounded-full border bg-background px-3 py-1.5 text-xs text-foreground cursor-pointer transition-colors hover:bg-accent hover:text-accent-foreground active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed">
                       <Play className="h-3 w-3 text-success" />
                       <span className="max-w-48 truncate">{example}</span>
@@ -103,7 +105,7 @@ export function ChatContainer({ maxExamplePrompts = 2, disableExamplePrompts = f
                   onRetry={message.role === "user" ? () => handleRetry(message.id) : undefined}
                 />
               ))}
-              {isStreaming && <TypingIndicator />}
+              {isStreaming && !messages[messages.length - 1]?.isStreaming && <TypingIndicator />}
             </>
           )}
         </div>
@@ -117,7 +119,7 @@ export function ChatContainer({ maxExamplePrompts = 2, disableExamplePrompts = f
               <button
                 key={index}
                 onClick={() => handleExampleClick(example)}
-                disabled={!isConnected}
+                disabled={!isConnected || isStreaming}
                 className="inline-flex items-center gap-1 rounded-full border bg-background px-2 py-1 text-[11px] text-foreground cursor-pointer transition-colors hover:bg-accent hover:text-accent-foreground active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed">
                 <Play className="h-2.5 w-2.5 text-green-500" />
                 <span className="max-w-32 truncate">{example}</span>

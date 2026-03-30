@@ -31,6 +31,8 @@ export interface AgentPlaygroundProps {
   showToolbar?: boolean;
   /** Make the editor read-only (default: false) */
   readOnly?: boolean;
+  /** Show the connection card in the overview (default: true) */
+  showConnection?: boolean;
   /** Default tab to show (default: "overview") */
   defaultTab?: "overview" | "chat" | "validation" | "rawhttp";
   /** Maximum number of example prompts to show in chat (default: 2) */
@@ -90,6 +92,7 @@ export function AgentPlayground({
   showEditor = true,
   showToolbar = true,
   readOnly = false,
+  showConnection = true,
   defaultTab = "overview",
   maxExamplePrompts = 2,
   disableExamplePrompts = false,
@@ -151,6 +154,7 @@ export function AgentPlayground({
           showEditor={showEditor}
           showToolbar={showToolbar}
           readOnly={readOnly}
+          showConnection={showConnection}
           defaultTab={defaultTab}
           maxExamplePrompts={maxExamplePrompts}
           disableExamplePrompts={disableExamplePrompts}

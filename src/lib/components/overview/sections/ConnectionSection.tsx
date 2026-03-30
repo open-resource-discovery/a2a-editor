@@ -80,7 +80,7 @@ export function ConnectionSection() {
           <CardTitle className="text-sm">Connection</CardTitle>
           <div className="flex items-center gap-2">
             <div className={`h-2 w-2 rounded-full ${statusColor}`} />
-            <span className="text-xs text-muted-foreground capitalize">
+            <span className="text-xs text-muted-foreground capitalize" data-testid="connection-status">
               {connectionStatus}
             </span>
           </div>
@@ -92,12 +92,13 @@ export function ConnectionSection() {
           <div className="flex gap-2">
           <Input
             placeholder="Agent URL"
+            data-testid="connection-url"
             value={url}
             onChange={(e) => setUrl(e.target.value)}
             className="h-8 text-sm"
           />
           {connectionStatus === "connected" ? (
-            <Button variant="outline" size="sm" onClick={disconnect} className="h-8 shrink-0">
+            <Button variant="outline" size="sm" onClick={disconnect} className="h-8 shrink-0" data-testid="disconnect-btn">
               <Unplug className="h-4 w-4 mr-1" />
               Disconnect
             </Button>
@@ -107,6 +108,7 @@ export function ConnectionSection() {
               onClick={handleConnect}
               disabled={!url || connectionStatus === "connecting"}
               className="h-8 shrink-0"
+              data-testid="connect-btn"
             >
               {connectionStatus === "connecting" ? (
                 <Loader2 className="h-4 w-4 mr-1 animate-spin" />

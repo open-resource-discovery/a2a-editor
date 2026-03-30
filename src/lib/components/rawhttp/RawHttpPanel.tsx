@@ -7,7 +7,7 @@ export function RawHttpPanel() {
   const { logs, highlightedLogId, clearLogs } = useHttpLogStore();
 
   return (
-    <div className="space-y-4 p-4">
+    <div className="space-y-4 p-4" data-testid="raw-http-panel">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Network className="h-4 w-4 text-muted-foreground" />
