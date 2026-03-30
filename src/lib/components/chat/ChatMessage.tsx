@@ -3,10 +3,11 @@ import ReactMarkdown from "react-markdown";
 import type { ChatMessage as ChatMessageType } from "@lib/types/chat";
 import { isTextPart, isDataPart, isFilePart } from "@lib/types/a2a";
 import { cn } from "@lib/utils/cn";
-import { Copy, Check, RotateCcw, FileText, CheckCircle, AlertCircle, ChevronDown, ChevronUp, Database, Loader2 } from "lucide-react";
+import { Copy, Check, RotateCcw, FileText, CheckCircle, AlertCircle, ChevronDown, ChevronUp, Loader2 } from "lucide-react";
 import { Badge } from "@lib/components/ui/badge";
 import { Button } from "@lib/components/ui/button";
 import { JsonHighlight } from "@lib/components/ui/JsonHighlight";
+import { CodeBlock, PreBlock } from "@lib/components/ui/CodeBlock";
 import { useUIStore } from "@lib/stores/uiStore";
 import { useHttpLogStore } from "@lib/stores/httpLogStore";
 
@@ -15,25 +16,22 @@ interface ChatMessageProps {
   onRetry?: () => void;
 }
 
-function DataPartView({ data }: { data: Record<string, unknown> }) {
-  const [expanded, setExpanded] = useState(false);
-  const jsonStr = JSON.stringify(data, null, 2);
-  return (
-    <div className="mt-2 rounded bg-background/50 text-xs">
-      <button
-        type="button"
-        onClick={() => setExpanded(!expanded)}
-        className="flex items-center gap-1 w-full px-2 py-1.5 hover:bg-background/80 rounded cursor-pointer"
-      >
-        {expanded ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
-        <Database className="h-3 w-3" />
-        <span className="font-medium">Data</span>
-      </button>
-      {expanded && (
-        <JsonHighlight code={jsonStr} className="rounded-none rounded-b bg-transparent p-2 text-[11px]" />
-      )}
-    </div>
-  );
+/** Map a MIME mediaType to a code fence language tag, or null for plain text. */
+function mediaTypeToLang(mediaType?: string): string | null {
+  if (!mediaType) return null;
+  const mt = mediaType.toLowerCase();
+  if (mt.includes("xml")) return "xml";
+  if (mt.includes("json")) return "json";
+  if (mt.includes("yaml") || mt.includes("yml")) return "yaml";
+  if (mt.includes("html")) return "xml";
+  return null;
+}
+
+/** Quick check whether a string looks like valid JSON (object or array). */
+function isJsonLike(text: string): boolean {
+  const trimmed = text.trim();
+  if (!(trimmed.startsWith("{") || trimmed.startsWith("["))) return false;
+  try { JSON.parse(trimmed); return true; } catch { return false; }
 }
 
 function FilePartView({ file: filePart }: { file: { uri: string; mimeType?: string; mediaType?: string; name?: string } }) {
@@ -101,7 +99,14 @@ export function ChatMessage({ message, onRetry }: ChatMessageProps) {
   const textParts = message.parts.filter(isTextPart);
   const dataParts = message.parts.filter(isDataPart);
   const fileParts = message.parts.filter(isFilePart);
-  const fullText = textParts.map((p) => p.text).join("\n");
+  const fullText = textParts
+    .map((p) => {
+      // Wrap structured media types in fenced code blocks for syntax highlighting
+      const lang = mediaTypeToLang(p.mediaType);
+      if (lang) return `\n\`\`\`${lang}\n${p.text}\n\`\`\``;
+      return p.text;
+    })
+    .join("\n");
 
   const handleCopy = async () => {
     if (!fullText) return;
@@ -128,7 +133,7 @@ export function ChatMessage({ message, onRetry }: ChatMessageProps) {
         <div
           className={cn(
             "max-w-[85%] rounded-2xl px-4 py-2 min-w-0 overflow-hidden",
-            isUser ? "rounded-br-sm bg-primary text-primary-foreground" : "rounded-bl-sm bg-muted",
+            isUser ? "chat-user-bubble rounded-br-sm bg-[#999]! dark:bg-[#0079cc]! text-primary-foreground" : "rounded-bl-sm bg-muted",
           )}>
           {message.status && (
             <div className="flex items-center gap-1.5 mb-2">
@@ -188,18 +193,27 @@ export function ChatMessage({ message, onRetry }: ChatMessageProps) {
           {/* Text parts */}
           {fullText &&
             (isUser ? (
-              <p className="text-sm whitespace-pre-wrap break-words">{fullText}</p>
+              isJsonLike(fullText) ? (
+                <JsonHighlight code={JSON.stringify(JSON.parse(fullText.trim()), null, 2)} className="bg-black/20! text-primary-foreground!" showCopy />
+              ) : (
+                <p className="text-sm whitespace-pre-wrap break-words">{fullText}</p>
+              )
             ) : message.status === "failed" ? (
               <p className="text-sm whitespace-pre-wrap break-words">{fullText}</p>
             ) : (
-              <div className="text-sm prose prose-sm dark:prose-invert max-w-none [word-break:break-word] [&_pre]:overflow-x-auto [&_pre]:max-w-full [&_code]:break-all prose-p:my-1 prose-headings:my-2 prose-ul:my-1 prose-ol:my-1 prose-li:my-0 prose-pre:my-2 prose-code:bg-background/50 prose-code:px-1 prose-code:rounded prose-code:before:content-none prose-code:after:content-none">
-                <ReactMarkdown>{fullText}</ReactMarkdown>
+              <div className="text-sm prose prose-sm dark:prose-invert max-w-none [word-break:break-word] [&_pre]:overflow-x-auto [&_pre]:max-w-full [&_code]:break-all prose-p:my-1! prose-headings:my-2! prose-ul:my-1! prose-ol:my-1! prose-li:my-0! prose-pre:my-2! prose-code:bg-background/50! prose-code:px-1! prose-code:rounded! prose-code:before:content-none! prose-code:after:content-none!">
+                <ReactMarkdown components={{ code: CodeBlock, pre: PreBlock }}>{fullText}</ReactMarkdown>
               </div>
             ))}
 
           {/* Data parts */}
           {dataParts.map((part, index) => (
-            <DataPartView key={`data-${index}`} data={part.data} />
+            <JsonHighlight
+              key={`data-${index}`}
+              code={JSON.stringify(part.data, null, 2)}
+              className="mt-2 rounded bg-background/50! p-2 text-[11px]"
+              showCopy
+            />
           ))}
 
           {/* File parts */}

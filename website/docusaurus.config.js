@@ -7,7 +7,8 @@ const baseUrl = process.env.BASE_URL || "/";
 /** @type {import('@docusaurus/types').Config} */
 const config = {
   title: "A2A Editor",
-  tagline: "React components for editing and testing A2A Agent Cards",
+  tagline:
+    "Analyze, validate, and interact with Agent-to-Agent (A2A) protocol agent cards. Connect to agents, inspect their capabilities, and test communication in real-time.",
   favicon: "img/a2a-icon.svg",
 
   url: process.env.SITE_URL || "https://open-resource-discovery.github.io",
@@ -21,7 +22,12 @@ const config = {
   projectName: "a2a-editor",
 
   onBrokenLinks: "throw",
-  onBrokenMarkdownLinks: "warn",
+
+  markdown: {
+    hooks: {
+      onBrokenMarkdownLinks: "warn",
+    },
+  },
 
   i18n: {
     defaultLocale: "en",
