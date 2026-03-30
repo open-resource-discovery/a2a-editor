@@ -1,7 +1,7 @@
 {
   "name": "@open-resource-discovery/a2a-editor",
   "version": "0.3.0",
-  "description": "React components for editing and viewing A2A (Agent-to-Agent) protocol Agent Cards",
+  "description": "Analyze, validate, and interact with Agent-to-Agent (A2A) protocol agent cards. Connect to agents, inspect their capabilities, and test communication in real-time.",
   "license": "Apache-2.0",
   "author": "SAP SE",
   "type": "module",

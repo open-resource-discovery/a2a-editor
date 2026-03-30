@@ -3,7 +3,7 @@ import ReactMarkdown from "react-markdown";
 import type { ChatMessage as ChatMessageType } from "@lib/types/chat";
 import { isTextPart, isDataPart, isFilePart } from "@lib/types/a2a";
 import { cn } from "@lib/utils/cn";
-import { Copy, Check, RotateCcw, FileText, CheckCircle, AlertCircle, ChevronDown, ChevronUp, Database, Loader2 } from "lucide-react";
+import { Copy, Check, RotateCcw, FileText, CheckCircle, AlertCircle, ChevronDown, ChevronUp, Loader2 } from "lucide-react";
 import { Badge } from "@lib/components/ui/badge";
 import { Button } from "@lib/components/ui/button";
 import { JsonHighlight } from "@lib/components/ui/JsonHighlight";
@@ -27,25 +27,11 @@ function mediaTypeToLang(mediaType?: string): string | null {
   return null;
 }
 
-function DataPartView({ data }: { data: Record<string, unknown> }) {
-  const [expanded, setExpanded] = useState(false);
-  const jsonStr = JSON.stringify(data, null, 2);
-  return (
-    <div className="mt-2 rounded bg-background/50 text-xs">
-      <button
-        type="button"
-        onClick={() => setExpanded(!expanded)}
-        className="flex items-center gap-1 w-full px-2 py-1.5 hover:bg-background/80 rounded cursor-pointer"
-      >
-        {expanded ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
-        <Database className="h-3 w-3" />
-        <span className="font-medium">Data</span>
-      </button>
-      {expanded && (
-        <JsonHighlight code={jsonStr} className="rounded-none rounded-b bg-transparent p-2 text-[11px]" showCopy />
-      )}
-    </div>
-  );
+/** Quick check whether a string looks like valid JSON (object or array). */
+function isJsonLike(text: string): boolean {
+  const trimmed = text.trim();
+  if (!(trimmed.startsWith("{") || trimmed.startsWith("["))) return false;
+  try { JSON.parse(trimmed); return true; } catch { return false; }
 }
 
 function FilePartView({ file: filePart }: { file: { uri: string; mimeType?: string; mediaType?: string; name?: string } }) {
@@ -147,7 +133,7 @@ export function ChatMessage({ message, onRetry }: ChatMessageProps) {
         <div
           className={cn(
             "max-w-[85%] rounded-2xl px-4 py-2 min-w-0 overflow-hidden",
-            isUser ? "rounded-br-sm bg-primary text-primary-foreground" : "rounded-bl-sm bg-muted",
+            isUser ? "chat-user-bubble rounded-br-sm bg-[#999]! dark:bg-[#0079cc]! text-primary-foreground" : "rounded-bl-sm bg-muted",
           )}>
           {message.status && (
             <div className="flex items-center gap-1.5 mb-2">
@@ -207,7 +193,11 @@ export function ChatMessage({ message, onRetry }: ChatMessageProps) {
           {/* Text parts */}
           {fullText &&
             (isUser ? (
-              <p className="text-sm whitespace-pre-wrap break-words">{fullText}</p>
+              isJsonLike(fullText) ? (
+                <JsonHighlight code={JSON.stringify(JSON.parse(fullText.trim()), null, 2)} className="bg-black/20! text-primary-foreground!" showCopy />
+              ) : (
+                <p className="text-sm whitespace-pre-wrap break-words">{fullText}</p>
+              )
             ) : message.status === "failed" ? (
               <p className="text-sm whitespace-pre-wrap break-words">{fullText}</p>
             ) : (
@@ -218,7 +208,12 @@ export function ChatMessage({ message, onRetry }: ChatMessageProps) {
 
           {/* Data parts */}
           {dataParts.map((part, index) => (
-            <DataPartView key={`data-${index}`} data={part.data} />
+            <JsonHighlight
+              key={`data-${index}`}
+              code={JSON.stringify(part.data, null, 2)}
+              className="mt-2 rounded bg-background/50! p-2 text-[11px]"
+              showCopy
+            />
           ))}
 
           {/* File parts */}

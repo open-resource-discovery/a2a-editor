@@ -194,6 +194,23 @@
   color: var(--hljs-number);
 }
 
+/* Override hljs colors inside user chat bubbles — need light tones for mid-gray / blue bg */
+.chat-user-bubble .hljs-attr {
+  color: #ffe484;
+}
+.chat-user-bubble .hljs-string {
+  color: #a8ff9a;
+}
+.chat-user-bubble .hljs-number {
+  color: #ffb876;
+}
+.chat-user-bubble .hljs-literal {
+  color: #8fd4ff;
+}
+.chat-user-bubble .hljs-punctuation {
+  color: #ffffffcc;
+}
+
 /* Custom scrollbar styling */
 @layer utilities {
   .scrollbar-thin {

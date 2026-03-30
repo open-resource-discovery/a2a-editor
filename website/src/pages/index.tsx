@@ -18,21 +18,12 @@ function HeroSection(): React.JSX.Element {
 
   return (
     <section className="hero-section">
-      <img
-        src={lightLogo}
-        alt="A2A Logo"
-        className="hero-logo hero-logo--light"
-      />
-      <img
-        src={darkLogo}
-        alt="A2A Logo"
-        className="hero-logo hero-logo--dark"
-      />
+      <img src={lightLogo} alt="A2A Logo" className="hero-logo hero-logo--light" />
+      <img src={darkLogo} alt="A2A Logo" className="hero-logo hero-logo--dark" />
       <h1 className="hero-title">A2A Editor</h1>
       <p className="hero-description">
-        Analyze, validate, and interact with Agent-to-Agent (A2A) protocol agent
-        cards. Connect to agents, inspect their capabilities, and test
-        communication in real-time.
+        Analyze, validate, and interact with Agent-to-Agent (A2A) protocol agent cards. Connect to agents, inspect their
+        capabilities, and test communication in real-time.
       </p>
       <Link className="hero-cta" to="/playground">
         Open Playground
@@ -45,9 +36,7 @@ function AgentCard({ agent }: { agent: PredefinedAgent }): React.JSX.Element {
   return (
     <Link to={`/playground?agent=${agent.id}`} className="agent-card">
       <h3 className="agent-card__title">{agent.name}</h3>
-      {agent.description && (
-        <p className="agent-card__description">{agent.description}</p>
-      )}
+      {agent.description && <p className="agent-card__description">{agent.description}</p>}
       {agent.tags && agent.tags.length > 0 && (
         <div className="agent-card__tags">
           {agent.tags.slice(0, 3).map((tag) => (
@@ -69,9 +58,7 @@ function PredefinedAgentsList(): React.JSX.Element | null {
     try {
       const raw = siteConfig.customFields?.predefinedAgents as string;
       const data: PredefinedAgent[] = raw ? JSON.parse(raw) : [];
-      const realAgents = data.filter(
-        (a: PredefinedAgent) => !a.url.startsWith("mock://"),
-      );
+      const realAgents = data.filter((a: PredefinedAgent) => !a.url.startsWith("mock://"));
       setAgents(realAgents);
     } catch {
       // Invalid JSON — no agents to show
@@ -101,9 +88,8 @@ export default function Home(): React.JSX.Element {
   return (
     <Layout
       title={siteConfig.title}
-      description="React components for editing and testing A2A Agent Cards"
-      wrapperClassName="home"
-    >
+      description="Analyze, validate, and interact with Agent-to-Agent (A2A) protocol agent cards. Connect to agents, inspect their capabilities, and test communication in real-time."
+      wrapperClassName="home">
       <main>
         <HeroSection />
         <PredefinedAgentsList />

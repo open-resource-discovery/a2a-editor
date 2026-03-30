@@ -48,7 +48,7 @@ export function JsonHighlight({ code, className, showCopy = false }: JsonHighlig
       )}
       <pre
         className={cn(
-          "overflow-x-auto rounded bg-muted p-2 text-[11px]",
+          "overflow-x-auto rounded bg-muted! p-2 text-[11px]",
           className
         )}
       >
