@@ -68,7 +68,7 @@ export function AgentPlaygroundLite({
   initialAgentCard,
   initialAgentUrl,
   showSettings = true,
-  showValidation = false,
+  showValidation = true,
   readOnly = false,
   defaultTab = "overview",
   onAgentCardChange,

@@ -1,6 +1,5 @@
 import type { ValidationResult } from "@lib/types/validation";
 import { Card, CardContent } from "@lib/components/ui/card";
-import { Badge } from "@lib/components/ui/badge";
 import { CheckCircle, XCircle, AlertTriangle } from "lucide-react";
 import { cn } from "@lib/utils/cn";
 
@@ -11,17 +10,14 @@ interface ValidationResultCardProps {
 const statusConfig = {
   pass: {
     icon: CheckCircle,
-    variant: "success" as const,
     borderClass: "border-l-green-500",
   },
   warning: {
     icon: AlertTriangle,
-    variant: "warning" as const,
     borderClass: "border-l-yellow-500",
   },
   fail: {
     icon: XCircle,
-    variant: "error" as const,
     borderClass: "border-l-red-500",
   },
 };
@@ -45,11 +41,6 @@ export function ValidationResultCard({ result }: ValidationResultCardProps) {
           <div className="flex-1 min-w-0 space-y-1">
             <div className="flex items-center gap-2 flex-wrap">
               <span className="font-medium text-sm">{result.rule}</span>
-              {result.severity && (
-                <Badge variant={config.variant} className="text-xs h-5">
-                  {result.severity}
-                </Badge>
-              )}
               {result.path && (
                 <code className="text-xs bg-muted px-1 rounded">
                   {result.path}

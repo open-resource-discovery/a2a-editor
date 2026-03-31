@@ -56,7 +56,7 @@ function ResizeHandle() {
  */
 export function PlaygroundLiteLayout({
   showSettings = true,
-  showValidation = false,
+  showValidation = true,
   showToolbar = true,
   readOnly = false,
   defaultTab = "overview",

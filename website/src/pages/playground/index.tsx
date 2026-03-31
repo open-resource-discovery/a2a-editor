@@ -71,7 +71,6 @@ export default function Playground(): React.JSX.Element {
           showSettings: true,
           showEditor: true,
           showChat: true,
-          showValidation: false,
           theme,
           ...(agentId ? { selectedAgentId: agentId } : {}),
         });

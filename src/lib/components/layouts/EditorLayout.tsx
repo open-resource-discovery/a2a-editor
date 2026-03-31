@@ -54,7 +54,7 @@ function ResizeHandle() {
  */
 export function EditorLayout({
   showSettings = true,
-  showValidation = false,
+  showValidation = true,
   showToolbar = true,
   readOnly = false,
   defaultTab = "overview",

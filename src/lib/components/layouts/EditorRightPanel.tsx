@@ -17,7 +17,7 @@ interface EditorRightPanelProps {
 /**
  * Right panel for AgentEditor - no chat tab
  */
-export function EditorRightPanel({ showValidation = false, defaultTab = "overview" }: EditorRightPanelProps) {
+export function EditorRightPanel({ showValidation = true, defaultTab = "overview" }: EditorRightPanelProps) {
   const [localTab, setLocalTab] = useState<TabValue>(defaultTab);
   const summary = useValidationStore((state) => state.summary);
 

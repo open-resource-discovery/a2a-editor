@@ -55,7 +55,7 @@ function ResizeHandle() {
 
 export function PlaygroundLayout({
   showSettings = true,
-  showValidation = false,
+  showValidation = true,
   showChat = true,
   showRawHttp = true,
   showEditor = true,

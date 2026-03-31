@@ -1,6 +1,9 @@
+import { useMemo } from "react";
 import { MonacoEditor } from "./MonacoEditor";
 import { JsonToolbar } from "./JsonToolbar";
 import { useAgentCardStore } from "@lib/stores/agentCardStore";
+import { useValidationStore } from "@lib/stores/validationStore";
+import type { EditorMarker } from "@lib/types/validation";
 
 interface AgentCardEditorProps {
   readOnly?: boolean;
@@ -9,6 +12,17 @@ interface AgentCardEditorProps {
 
 export function AgentCardEditor({ readOnly = false, showToolbar = true }: AgentCardEditorProps) {
   const { rawJson, setRawJson, parseError } = useAgentCardStore();
+  const validationResults = useValidationStore((s) => s.results);
+
+  const markers = useMemo<EditorMarker[]>(() => {
+    return validationResults
+      .filter((r) => r.status === "fail")
+      .map((r) => ({
+        path: r.path,
+        message: r.message,
+        severity: r.severity ?? "error",
+      }));
+  }, [validationResults]);
 
   return (
     <div className="flex h-full flex-col overflow-hidden bg-background" data-testid="editor-panel">
@@ -19,6 +33,7 @@ export function AgentCardEditor({ readOnly = false, showToolbar = true }: AgentC
           onChange={setRawJson}
           readOnly={readOnly}
           minHeight="100%"
+          markers={markers}
         />
       </div>
       {parseError && (

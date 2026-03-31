@@ -25,7 +25,7 @@ interface RightPanelProps {
 
 export function RightPanel({
   showChat = true,
-  showValidation = false,
+  showValidation = true,
   showRawHttp = true,
   defaultTab = "overview",
   maxExamplePrompts = 2,
@@ -81,6 +81,16 @@ export function RightPanel({
                 Chat
               </TabsTrigger>
             )}
+            {showRawHttp && (
+              <TabsTrigger value="rawhttp" className="text-xs" data-testid="tab-rawhttp">
+                Raw HTTP
+                {logCount > 0 && (
+                  <Badge variant="secondary" className="ml-1 h-5 min-w-5 justify-center p-0 px-1 text-xs">
+                    {logCount}
+                  </Badge>
+                )}
+              </TabsTrigger>
+            )}
             {showValidation && (
               <TabsTrigger value="validation" className="relative text-xs" data-testid="tab-validation">
                 Validation
@@ -92,16 +102,6 @@ export function RightPanel({
                 {summary.fail === 0 && summary.warning > 0 && (
                   <Badge variant="warning" className="ml-1 h-5 min-w-5 justify-center p-0 px-1 text-xs">
                     {summary.warning}
-                  </Badge>
-                )}
-              </TabsTrigger>
-            )}
-            {showRawHttp && (
-              <TabsTrigger value="rawhttp" className="text-xs" data-testid="tab-rawhttp">
-                Raw HTTP
-                {logCount > 0 && (
-                  <Badge variant="secondary" className="ml-1 h-5 min-w-5 justify-center p-0 px-1 text-xs">
-                    {logCount}
                   </Badge>
                 )}
               </TabsTrigger>
@@ -125,18 +125,18 @@ export function RightPanel({
           </TabsContent>
         )}
 
-        {showValidation && (
-          <TabsContent value="validation" className="flex-1 overflow-hidden mt-0">
-            <ScrollArea className="h-full">
-              <ValidationPanel />
-            </ScrollArea>
-          </TabsContent>
-        )}
-
         {showRawHttp && (
           <TabsContent value="rawhttp" className="flex-1 overflow-hidden mt-0">
             <ScrollArea className="h-full">
               <RawHttpPanel />
+            </ScrollArea>
+          </TabsContent>
+        )}
+
+        {showValidation && (
+          <TabsContent value="validation" className="flex-1 overflow-hidden mt-0">
+            <ScrollArea className="h-full">
+              <ValidationPanel />
             </ScrollArea>
           </TabsContent>
         )}

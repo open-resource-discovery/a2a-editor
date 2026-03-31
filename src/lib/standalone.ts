@@ -546,7 +546,7 @@ const A2APlayground: A2APlaygroundAPI = {
     const props: AgentPlaygroundProps = {
       showChat: options.showChat ?? true,
       showRawHttp: options.showRawHttp ?? true,
-      showValidation: options.showValidation ?? false,
+      showValidation: options.showValidation ?? true,
       showSettings: options.showSettings ?? true,
       showEditor: options.showEditor ?? true,
       readOnly: options.readOnly ?? false,
@@ -631,7 +631,7 @@ const A2APlayground: A2APlaygroundAPI = {
     const props: AgentCardViewProps = {
       initialAgentCard: options.agentCard,
       initialAgentUrl: options.agentUrl,
-      showValidation: options.showValidation ?? false,
+      showValidation: options.showValidation ?? true,
       defaultTab: options.defaultTab ?? "overview",
       readOnly: options.readOnly ?? false,
       showConnection: options.showConnection ?? true,
@@ -653,7 +653,7 @@ const A2APlayground: A2APlaygroundAPI = {
     const props: AgentViewerProps = {
       initialAgentCard: options.agentCard,
       initialAgentUrl: options.agentUrl,
-      showValidation: options.showValidation ?? false,
+      showValidation: options.showValidation ?? true,
       defaultTab: options.defaultTab ?? "overview",
       onAgentCardChange: options.onAgentCardChange,
       onValidationComplete: options.onValidationComplete,
@@ -674,7 +674,7 @@ const A2APlayground: A2APlaygroundAPI = {
       initialAgentCard: options.agentCard,
       initialAgentUrl: options.agentUrl,
       showSettings: options.showSettings ?? true,
-      showValidation: options.showValidation ?? false,
+      showValidation: options.showValidation ?? true,
       readOnly: options.readOnly ?? false,
       defaultTab: options.defaultTab ?? "overview",
       onAgentCardChange: options.onAgentCardChange,
