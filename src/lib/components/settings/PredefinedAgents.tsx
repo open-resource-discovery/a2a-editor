@@ -13,7 +13,7 @@ import type { AddAuthType } from "@lib/utils/predefined-auth";
 import { Search, Plus, X, Loader2 } from "lucide-react";
 import type { PredefinedAgent } from "@lib/types/connection";
 
-function parseAgentUrl(input: string): { normalizedUrl: string; fetchUrl: string } {
+function parseAgentUrl(input: string): { normalizedUrl: string; candidateUrls: string[] } {
   const trimmed = input.trim();
 
   if (!trimmed) {
@@ -32,9 +32,21 @@ function parseAgentUrl(input: string): { normalizedUrl: string; fetchUrl: string
   }
 
   const normalizedUrl = parsed.href.replace(/\/$/, "");
-  const fetchUrl = parsed.pathname.endsWith(".json") ? parsed.href : `${normalizedUrl}/.well-known/agent.json`;
 
-  return { normalizedUrl, fetchUrl };
+  // If URL points directly to a .json file, use it as-is
+  if (parsed.pathname.endsWith(".json")) {
+    return { normalizedUrl, candidateUrls: [parsed.href] };
+  }
+
+  // Otherwise try multiple discovery paths
+  const candidateUrls = [
+    parsed.href,                                    // as-is
+    `${normalizedUrl}/agent.json`,                  // /agent.json
+    `${normalizedUrl}/.well-known/agent.json`,      // A2A v1.0.0
+    `${normalizedUrl}/.well-known/agent-card.json`, // A2A v0.3.0
+  ];
+
+  return { normalizedUrl, candidateUrls };
 }
 
 export function PredefinedAgents() {
@@ -117,12 +129,31 @@ export function PredefinedAgents() {
     setAddError("");
 
     try {
-      const { normalizedUrl, fetchUrl } = parseAgentUrl(newAgentUrl);
+      const { normalizedUrl, candidateUrls } = parseAgentUrl(newAgentUrl);
 
       const headers = buildAddHeaders(addAuthType, addUsername, addPassword, addToken, addApiKey);
-      const res = await fetch(fetchUrl, headers ? { headers } : undefined);
-      if (!res.ok) {
-        throw new Error(`Failed to fetch: ${res.statusText}`);
+      const fetchOpts = headers ? { headers } : undefined;
+
+      let res: Response | null = null;
+      for (const url of candidateUrls) {
+        try {
+          const attempt = await fetch(url, fetchOpts);
+          if (attempt.status === 401 || attempt.status === 403) {
+            throw new Error(`Authentication required (${attempt.status})`);
+          }
+          if (attempt.ok) {
+            res = attempt;
+            break;
+          }
+        } catch (err) {
+          if (err instanceof Error && err.message.startsWith("Authentication required")) {
+            throw err;
+          }
+        }
+      }
+
+      if (!res) {
+        throw new Error("Failed to fetch agent card from any known path");
       }
 
       const card = await res.json();

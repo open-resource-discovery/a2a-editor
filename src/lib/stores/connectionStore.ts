@@ -203,7 +203,6 @@ export const useConnectionStore = create<ConnectionState>((set, get) => ({
       }
 
       // Auto-discover: if URL doesn't end with .json, try well-known paths
-      let fetchUrl: string;
       let data: unknown;
 
       // Build effective fetch headers and URL query params
@@ -219,7 +218,7 @@ export const useConnectionStore = create<ConnectionState>((set, get) => ({
       };
 
       if (state.url.endsWith(".json")) {
-        fetchUrl = appendApiKeyQuery(state.url);
+        const fetchUrl = appendApiKeyQuery(state.url);
         const res = await fetch(fetchUrl, { headers: fetchHeaders });
         if (!res.ok) {
           if (res.status === 401 || res.status === 403) {
@@ -230,20 +229,43 @@ export const useConnectionStore = create<ConnectionState>((set, get) => ({
         data = await res.json();
       } else {
         const baseUrl = state.url.replace(/\/$/, "");
-        // Try v1.0.0 path first (/.well-known/agent.json), fall back to v0.3.0
-        const v1Url = appendApiKeyQuery(`${baseUrl}/.well-known/agent.json`);
-        const v03Url = appendApiKeyQuery(`${baseUrl}/.well-known/agent-card.json`);
 
-        let res = await fetch(v1Url, { headers: fetchHeaders });
-        if (res.status === 404) {
-          res = await fetch(v03Url, { headers: fetchHeaders });
+        // Discovery order:
+        // 1. URL as-is (may already point to a JSON endpoint)
+        // 2. URL + /agent.json
+        // 3. URL + /.well-known/agent.json (A2A v1.0.0)
+        // 4. URL + /.well-known/agent-card.json (A2A v0.3.0)
+        const candidateUrls = [
+          appendApiKeyQuery(state.url),
+          appendApiKeyQuery(`${baseUrl}/agent.json`),
+          appendApiKeyQuery(`${baseUrl}/.well-known/agent.json`),
+          appendApiKeyQuery(`${baseUrl}/.well-known/agent-card.json`),
+        ];
+
+        let res: Response | null = null;
+        const lastError: string | null = null;
+
+        for (const url of candidateUrls) {
+          try {
+            const attempt = await fetch(url, { headers: fetchHeaders });
+            if (attempt.status === 401 || attempt.status === 403) {
+              throw new Error(`Authentication required (${attempt.status})`);
+            }
+            if (attempt.ok) {
+              res = attempt;
+              break;
+            }
+          } catch (err) {
+            // Auth errors should bubble up immediately
+            if (err instanceof Error && err.message.startsWith("Authentication required")) {
+              throw err;
+            }
+            // Network errors — continue to next candidate
+          }
         }
 
-        if (!res.ok) {
-          if (res.status === 401 || res.status === 403) {
-            throw new Error(`Authentication required (${res.status})`);
-          }
-          throw new Error(`Failed to fetch agent card (${res.status})`);
+        if (!res) {
+          throw new Error(lastError ?? "Failed to fetch agent card from any known path");
         }
         data = await res.json();
       }
