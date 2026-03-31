@@ -89,7 +89,7 @@ interface ConnectionState {
   setBasicCredentials: (creds: Partial<BasicCredentials>) => void;
   setOAuth2Credentials: (creds: Partial<OAuth2Credentials>) => void;
   setApiKeyCredentials: (creds: Partial<ApiKeyCredentials>) => void;
-  connect: (headers?: Record<string, string>) => Promise<AgentCard | null>;
+  connect: (headers?: Record<string, string>) => Promise<{ card: AgentCard; rawJson: string } | null>;
   disconnect: () => void;
   reset: () => void;
   setFromPredefined: (agent: PredefinedAgent) => void;
@@ -248,6 +248,9 @@ export const useConnectionStore = create<ConnectionState>((set, get) => ({
         data = await res.json();
       }
 
+      // Preserve original JSON before normalization (for the editor)
+      const rawJson = JSON.stringify(data, null, 2);
+
       // Detect protocol version and normalize the card
       const version = detectProtocolVersion(data);
       const card = normalizeAgentCard(data);
@@ -258,7 +261,7 @@ export const useConnectionStore = create<ConnectionState>((set, get) => ({
       }
 
       set({ connectionStatus: "connected", protocolVersion: version });
-      return card;
+      return { card, rawJson };
     } catch (err) {
       set({
         connectionStatus: "error",

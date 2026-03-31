@@ -59,10 +59,10 @@ export function ConnectionSection() {
 
   const handleConnect = useCallback(async () => {
     const headers = buildConnHeaders(connAuthType, localUsername, localPassword, localToken, localApiKey, storeApiKeyCreds.headerName);
-    const card = await connect(Object.keys(headers).length > 0 ? headers : undefined);
-    if (card) {
-      setRawJson(JSON.stringify(card, null, 2));
-      autoConfigureAuth(card);
+    const result = await connect(Object.keys(headers).length > 0 ? headers : undefined);
+    if (result) {
+      setRawJson(result.rawJson);
+      autoConfigureAuth(result.card);
     }
   }, [connAuthType, localUsername, localPassword, localToken, localApiKey, storeApiKeyCreds.headerName, connect, setRawJson, autoConfigureAuth]);
 
@@ -95,6 +95,7 @@ export function ConnectionSection() {
             data-testid="connection-url"
             value={url}
             onChange={(e) => setUrl(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && url && connectionStatus !== "connecting" && handleConnect()}
             className="h-8 text-sm"
           />
           {connectionStatus === "connected" ? (

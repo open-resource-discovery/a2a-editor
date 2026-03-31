@@ -79,7 +79,79 @@ export function normalizeAgentCard(raw: unknown): AgentCard {
     }
   }
 
+  // Normalize v1.0 nested securitySchemes to v0.3 flat format
+  if (card.securitySchemes && typeof card.securitySchemes === "object") {
+    const schemes = card.securitySchemes as Record<string, Record<string, unknown>>;
+    const normalized: Record<string, Record<string, unknown>> = {};
+    for (const [name, scheme] of Object.entries(schemes)) {
+      normalized[name] = normalizeSecurityScheme(scheme);
+    }
+    card.securitySchemes = normalized;
+  }
+
+  // Normalize v1.0 securityRequirements to v0.3 security format
+  if (Array.isArray(card.securityRequirements) && !card.security) {
+    card.security = (card.securityRequirements as Array<Record<string, unknown>>).map(
+      normalizeSecurityRequirement,
+    );
+  }
+
   return card as unknown as AgentCard;
+}
+
+/**
+ * Flatten a v1.0 nested security scheme to the v0.3 flat `type` discriminator format.
+ * If the scheme already has a `type` field (v0.3 format), return as-is.
+ */
+function normalizeSecurityScheme(scheme: Record<string, unknown>): Record<string, unknown> {
+  // Already v0.3 format
+  if (typeof scheme.type === "string") return scheme;
+
+  if (scheme.httpAuthSecurityScheme && typeof scheme.httpAuthSecurityScheme === "object") {
+    const inner = scheme.httpAuthSecurityScheme as Record<string, unknown>;
+    return { type: "http", scheme: inner.scheme, bearerFormat: inner.bearerFormat, description: inner.description };
+  }
+  if (scheme.oauth2SecurityScheme && typeof scheme.oauth2SecurityScheme === "object") {
+    const inner = scheme.oauth2SecurityScheme as Record<string, unknown>;
+    return { type: "oauth2", flows: inner.flows, oauth2MetadataUrl: inner.oauth2MetadataUrl, description: inner.description };
+  }
+  if (scheme.apiKeySecurityScheme && typeof scheme.apiKeySecurityScheme === "object") {
+    const inner = scheme.apiKeySecurityScheme as Record<string, unknown>;
+    // v1.0 uses `location` instead of v0.3's `in`
+    return { type: "apiKey", name: inner.name, in: inner.location, description: inner.description };
+  }
+  if (scheme.openIdConnectSecurityScheme && typeof scheme.openIdConnectSecurityScheme === "object") {
+    const inner = scheme.openIdConnectSecurityScheme as Record<string, unknown>;
+    return { type: "openIdConnect", openIdConnectUrl: inner.openIdConnectUrl, description: inner.description };
+  }
+  if (scheme.mtlsSecurityScheme && typeof scheme.mtlsSecurityScheme === "object") {
+    const inner = scheme.mtlsSecurityScheme as Record<string, unknown>;
+    return { type: "mutualTLS", description: inner.description };
+  }
+
+  // Unknown shape — return as-is
+  return scheme;
+}
+
+/**
+ * Convert a v1.0 SecurityRequirement to v0.3 format.
+ * v1.0: { schemes: { "basic": { list: ["scope1"] } } }
+ * v0.3: { "basic": ["scope1"] }
+ */
+function normalizeSecurityRequirement(req: Record<string, unknown>): Record<string, string[]> {
+  if (req.schemes && typeof req.schemes === "object") {
+    const result: Record<string, string[]> = {};
+    for (const [name, value] of Object.entries(req.schemes as Record<string, unknown>)) {
+      if (value && typeof value === "object" && "list" in (value as Record<string, unknown>)) {
+        result[name] = (value as { list?: string[] }).list ?? [];
+      } else {
+        result[name] = [];
+      }
+    }
+    return result;
+  }
+  // Already v0.3 format or unknown — return as-is
+  return req as Record<string, string[]>;
 }
 
 // ===================================================================

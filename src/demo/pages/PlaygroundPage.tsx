@@ -63,10 +63,10 @@ export function PlaygroundPage() {
         select(agentId);
         setFromPredefined(agent);
 
-        const card = await connect();
-        if (card) {
-          setRawJson(JSON.stringify(card, null, 2));
-          autoConfigureAuth(card);
+        const result = await connect();
+        if (result) {
+          setRawJson(result.rawJson);
+          autoConfigureAuth(result.card);
         }
       }
     };

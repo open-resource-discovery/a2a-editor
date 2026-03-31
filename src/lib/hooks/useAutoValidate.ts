@@ -7,10 +7,14 @@ export function useAutoValidate() {
   const rawJson = useAgentCardStore((s) => s.rawJson);
   const autoValidate = useEditorSettingsStore((s) => s.autoValidate);
   const validate = useValidationStore((s) => s.validate);
+  const clear = useValidationStore((s) => s.clear);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
-    if (!autoValidate || !rawJson.trim()) return;
+    if (!autoValidate || !rawJson.trim()) {
+      clear();
+      return;
+    }
 
     if (timerRef.current) {
       clearTimeout(timerRef.current);
