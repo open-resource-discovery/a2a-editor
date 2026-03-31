@@ -393,20 +393,20 @@ function createInstance(element: HTMLElement, options: A2APlaygroundOptions): A2
       store.setUrl(url);
 
       // connect() handles well-known path discovery and returns the card
-      const card = await store.connect();
+      const result = await store.connect();
 
-      if (!card) {
+      if (!result) {
         throw new Error("Failed to load agent card");
       }
 
       // Set the card in the editor store
-      useAgentCardStore.getState().setRawJson(JSON.stringify(card, null, 2));
+      useAgentCardStore.getState().setRawJson(result.rawJson);
 
       if (options.onConnect) {
-        options.onConnect(url, card);
+        options.onConnect(url, result.card);
       }
 
-      return card;
+      return result.card;
     },
 
     disconnect() {
@@ -546,7 +546,7 @@ const A2APlayground: A2APlaygroundAPI = {
     const props: AgentPlaygroundProps = {
       showChat: options.showChat ?? true,
       showRawHttp: options.showRawHttp ?? true,
-      showValidation: options.showValidation ?? false,
+      showValidation: options.showValidation ?? true,
       showSettings: options.showSettings ?? true,
       showEditor: options.showEditor ?? true,
       readOnly: options.readOnly ?? false,
@@ -582,10 +582,10 @@ const A2APlayground: A2APlaygroundAPI = {
             store.select(agent.id);
             const connStore = useConnectionStore.getState();
             connStore.setFromPredefined(agent);
-            const card = await connStore.connect();
-            if (card) {
-              useAgentCardStore.getState().setRawJson(JSON.stringify(card, null, 2));
-              connStore.autoConfigureAuth(card);
+            const result = await connStore.connect();
+            if (result) {
+              useAgentCardStore.getState().setRawJson(result.rawJson);
+              connStore.autoConfigureAuth(result.card);
               useUIStore.getState().setMobileView("card");
             }
           }
@@ -631,7 +631,7 @@ const A2APlayground: A2APlaygroundAPI = {
     const props: AgentCardViewProps = {
       initialAgentCard: options.agentCard,
       initialAgentUrl: options.agentUrl,
-      showValidation: options.showValidation ?? false,
+      showValidation: options.showValidation ?? true,
       defaultTab: options.defaultTab ?? "overview",
       readOnly: options.readOnly ?? false,
       showConnection: options.showConnection ?? true,
@@ -653,7 +653,7 @@ const A2APlayground: A2APlaygroundAPI = {
     const props: AgentViewerProps = {
       initialAgentCard: options.agentCard,
       initialAgentUrl: options.agentUrl,
-      showValidation: options.showValidation ?? false,
+      showValidation: options.showValidation ?? true,
       defaultTab: options.defaultTab ?? "overview",
       onAgentCardChange: options.onAgentCardChange,
       onValidationComplete: options.onValidationComplete,
@@ -674,7 +674,7 @@ const A2APlayground: A2APlaygroundAPI = {
       initialAgentCard: options.agentCard,
       initialAgentUrl: options.agentUrl,
       showSettings: options.showSettings ?? true,
-      showValidation: options.showValidation ?? false,
+      showValidation: options.showValidation ?? true,
       readOnly: options.readOnly ?? false,
       defaultTab: options.defaultTab ?? "overview",
       onAgentCardChange: options.onAgentCardChange,

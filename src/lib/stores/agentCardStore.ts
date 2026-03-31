@@ -83,9 +83,12 @@ export const useAgentCardStore = create<AgentCardState>((set, get) => ({
   },
 
   formatJson: () => {
-    const { parsedCard } = get();
-    if (parsedCard) {
-      set({ rawJson: JSON.stringify(parsedCard, null, 2) });
+    const { rawJson } = get();
+    try {
+      const parsed = JSON.parse(rawJson);
+      set({ rawJson: JSON.stringify(parsed, null, 2) });
+    } catch {
+      // rawJson is invalid — leave as-is
     }
   },
 

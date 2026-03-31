@@ -59,7 +59,7 @@ export interface AgentViewerProps {
 export function AgentViewer({
   initialAgentCard,
   initialAgentUrl,
-  showValidation = false,
+  showValidation = true,
   defaultTab = "overview",
   onAgentCardChange,
   onValidationComplete,

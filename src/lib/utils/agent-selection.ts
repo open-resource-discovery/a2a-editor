@@ -40,10 +40,10 @@ export async function selectPredefinedAgent(
 
   // Connect and process the card
   // Keep the old card visible while fetching; replace atomically on success
-  const card = await useConnectionStore.getState().connect(connectHeaders);
-  if (card) {
-    useAgentCardStore.getState().setRawJson(JSON.stringify(card, null, 2));
-    useConnectionStore.getState().autoConfigureAuth(card);
+  const result = await useConnectionStore.getState().connect(connectHeaders);
+  if (result) {
+    useAgentCardStore.getState().setRawJson(result.rawJson);
+    useConnectionStore.getState().autoConfigureAuth(result.card);
     useUIStore.getState().setMobileView("card");
 
     if (shouldCloseSettings) {

@@ -1,6 +1,6 @@
 export type ValidationStatus = "pass" | "fail" | "warning";
 
-// Severity levels from external validator: 0=error, 1=warning, 2=info, 3=hint
+// Severity levels: error, warning, info, hint
 export type ValidationSeverity = "error" | "warning" | "info" | "hint";
 
 export interface ValidationResult {
@@ -20,20 +20,8 @@ export interface ValidationSummary {
   total: number;
 }
 
-// External API types
-export interface ExternalValidationResult {
-  code: string;
+export interface EditorMarker {
+  path?: string;
   message: string;
-  severity: number | string; // 0=error, 1=warn, 2=info, 3=hint OR "error", "warning", "info", "hint"
-  path?: string[];
-  range?: {
-    start: { line: number; character: number };
-    end: { line: number; character: number };
-  };
-}
-
-export interface Ruleset {
-  id: string;
-  name?: string;
-  description?: string;
+  severity: "error" | "warning" | "info" | "hint";
 }

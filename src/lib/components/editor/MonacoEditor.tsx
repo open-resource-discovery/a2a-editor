@@ -1,6 +1,8 @@
 import { useEffect, useRef } from "react";
 import Editor, { useMonaco, type OnMount } from "@monaco-editor/react";
 import { useTheme } from "@lib/hooks/useTheme";
+import type { EditorMarker } from "@lib/types/validation";
+import { resolveJsonPathToPosition } from "@lib/utils/json-path-resolver";
 
 interface MonacoEditorProps {
   value: string;
@@ -9,6 +11,7 @@ interface MonacoEditorProps {
   readOnly?: boolean;
   lineNumbers?: "on" | "off";
   minHeight?: string;
+  markers?: EditorMarker[];
 }
 
 export function MonacoEditor({
@@ -18,6 +21,7 @@ export function MonacoEditor({
   readOnly = false,
   lineNumbers = "on",
   minHeight = "300px",
+  markers,
 }: MonacoEditorProps) {
   const { resolvedTheme } = useTheme();
   const monaco = useMonaco();
@@ -63,6 +67,46 @@ export function MonacoEditor({
       monaco.editor.setTheme(resolvedTheme === "dark" ? "app-dark" : "app-light");
     }
   }, [resolvedTheme, monaco]);
+
+  // Apply validation markers
+  useEffect(() => {
+    if (!monaco || !editorRef.current) return;
+    const model = editorRef.current.getModel();
+    if (!model) return;
+
+    if (!markers || markers.length === 0) {
+      monaco.editor.setModelMarkers(model, "a2a-validation", []);
+      return;
+    }
+
+    const severityMap: Record<string, number> = {
+      error: monaco.MarkerSeverity.Error,
+      warning: monaco.MarkerSeverity.Warning,
+      info: monaco.MarkerSeverity.Info,
+      hint: monaco.MarkerSeverity.Hint,
+    };
+
+    const monacoMarkers = markers.map((marker) => {
+      const pos = resolveJsonPathToPosition(value, marker.path);
+      return {
+        severity: severityMap[marker.severity] ?? monaco.MarkerSeverity.Error,
+        message: marker.message,
+        startLineNumber: pos.startLineNumber,
+        startColumn: pos.startColumn,
+        endLineNumber: pos.endLineNumber,
+        endColumn: pos.endColumn,
+        source: "A2A Validation",
+      };
+    });
+
+    monaco.editor.setModelMarkers(model, "a2a-validation", monacoMarkers);
+
+    return () => {
+      if (model && !model.isDisposed()) {
+        monaco.editor.setModelMarkers(model, "a2a-validation", []);
+      }
+    };
+  }, [monaco, markers, value]);
 
   const handleEditorDidMount: OnMount = (editor, monacoInstance) => {
     editorRef.current = editor;

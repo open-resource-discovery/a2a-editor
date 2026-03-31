@@ -63,7 +63,7 @@ export interface AgentCardViewProps {
 export function AgentCardView({
   initialAgentCard,
   initialAgentUrl,
-  showValidation = false,
+  showValidation = true,
   defaultTab = "overview",
   readOnly = false,
   showConnection = true,

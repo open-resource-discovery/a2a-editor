@@ -105,7 +105,6 @@ function ComponentBasedDemo({ type, height }: { type: DemoType; height: string }
           showChat: type !== "card",
           showRawHttp: type !== "card",
           readOnly: type === "card",
-          showValidation: false,
           defaultTab: "overview" as const,
           theme,
         };

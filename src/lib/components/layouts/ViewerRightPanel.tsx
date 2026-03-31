@@ -17,7 +17,7 @@ interface ViewerRightPanelProps {
 /**
  * Right panel for AgentViewer - no chat tab
  */
-export function ViewerRightPanel({ showValidation = false, defaultTab = "overview" }: ViewerRightPanelProps) {
+export function ViewerRightPanel({ showValidation = true, defaultTab = "overview" }: ViewerRightPanelProps) {
   const [localTab, setLocalTab] = useState<TabValue>(defaultTab);
   const summary = useValidationStore((state) => state.summary);
 

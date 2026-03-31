@@ -18,7 +18,7 @@ interface CardViewLayoutProps {
  * without any JSON editor.
  */
 export function CardViewLayout({
-  showValidation = false,
+  showValidation = true,
   defaultTab = "overview",
   readOnly = false,
   showConnection = true,

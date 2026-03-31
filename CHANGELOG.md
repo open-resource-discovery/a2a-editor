@@ -13,6 +13,11 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 - Syntax highlighting for JSON, XML, and YAML code blocks in agent chat responses with copy buttons
 - Tag-based multi-select filtering on the Skills section (replaces text search input)
 - `mediaType`-aware text parts: structured content (XML, JSON, YAML) auto-rendered as highlighted code blocks
+- Version-aware Zod schema validation for agent cards against authoritative A2A JSON schemas (`schemas/a2a-0.3.0.schema.json`, `schemas/a2a-1.0.0.schema.json`)
+  - Auto-detects v0.3 vs v1.0 based on `supportedInterfaces` presence
+  - v0.3: lenient (extra properties allowed); v1.0: strict (`additionalProperties: false`)
+  - Version-specific field hints in validation error messages
+- Zod-based compliance checks for JSON-RPC responses and streaming events (replaces hand-written structural checks)
 
 ### Fixed
 
