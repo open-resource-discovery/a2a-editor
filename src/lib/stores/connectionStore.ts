@@ -199,7 +199,7 @@ export const useConnectionStore = create<ConnectionState>((set, get) => ({
         const card = getMockAgentCard(state.url);
         if (!card) throw new Error("Mock agent not found");
         set({ connectionStatus: "connected", protocolVersion: PROTOCOL_VERSIONS.V0_3 });
-        return card;
+        return { card, rawJson: JSON.stringify(card, null, 2) };
       }
 
       // Auto-discover: if URL doesn't end with .json, try well-known paths
