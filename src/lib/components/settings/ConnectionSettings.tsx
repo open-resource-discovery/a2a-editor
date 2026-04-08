@@ -4,13 +4,7 @@ import { useAgentCardStore } from "@lib/stores/agentCardStore";
 import { Input } from "@lib/components/ui/input";
 import { PasswordInput } from "@lib/components/ui/PasswordInput";
 import { Button } from "@lib/components/ui/button";
-import {
-  Select,
-  SelectTrigger,
-  SelectValue,
-  SelectContent,
-  SelectItem,
-} from "@lib/components/ui/select";
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@lib/components/ui/select";
 import { Loader2, Plug, Unplug } from "lucide-react";
 import { type ConnAuthType, mapStoreAuthType, buildConnHeaders } from "@lib/utils/connection-auth";
 
@@ -63,13 +57,30 @@ export function ConnectionSettings() {
   }, [storeConnAuthType]);
 
   const handleConnect = useCallback(async () => {
-    const headers = buildConnHeaders(connAuthType, effectiveUsername, effectivePassword, effectiveToken, effectiveApiKey, storeApiKeyCreds.headerName);
+    const headers = buildConnHeaders(
+      connAuthType,
+      effectiveUsername,
+      effectivePassword,
+      effectiveToken,
+      effectiveApiKey,
+      storeApiKeyCreds.headerName,
+    );
     const result = await connect(Object.keys(headers).length > 0 ? headers : undefined);
     if (result) {
       setRawJson(result.rawJson);
       autoConfigureAuth(result.card);
     }
-  }, [connAuthType, effectiveUsername, effectivePassword, effectiveToken, effectiveApiKey, storeApiKeyCreds.headerName, connect, setRawJson, autoConfigureAuth]);
+  }, [
+    connAuthType,
+    effectiveUsername,
+    effectivePassword,
+    effectiveToken,
+    effectiveApiKey,
+    storeApiKeyCreds.headerName,
+    connect,
+    setRawJson,
+    autoConfigureAuth,
+  ]);
 
   const statusColor = {
     disconnected: "bg-muted",
@@ -84,9 +95,7 @@ export function ConnectionSettings() {
         <h3 className="text-sm font-medium">Connection</h3>
         <div className="flex items-center gap-2">
           <div className={`h-2 w-2 rounded-full ${statusColor}`} />
-          <span className="text-xs text-muted-foreground capitalize">
-            {connectionStatus}
-          </span>
+          <span className="text-xs text-muted-foreground capitalize">{connectionStatus}</span>
         </div>
       </div>
 
@@ -157,11 +166,7 @@ export function ConnectionSettings() {
               Disconnect
             </Button>
           ) : (
-            <Button
-              size="sm"
-              onClick={handleConnect}
-              disabled={!url || connectionStatus === "connecting"}
-            >
+            <Button size="sm" onClick={handleConnect} disabled={!url || connectionStatus === "connecting"}>
               {connectionStatus === "connecting" ? (
                 <Loader2 className="h-4 w-4 mr-1 animate-spin" />
               ) : (
@@ -172,9 +177,7 @@ export function ConnectionSettings() {
           )}
         </div>
 
-        {errorMessage && (
-          <p className="text-xs text-destructive">{errorMessage}</p>
-        )}
+        {errorMessage && <p className="text-xs text-destructive">{errorMessage}</p>}
       </div>
     </div>
   );

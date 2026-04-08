@@ -3,7 +3,17 @@ import ReactMarkdown from "react-markdown";
 import type { ChatMessage as ChatMessageType } from "@lib/types/chat";
 import { isTextPart, isDataPart, isFilePart } from "@lib/types/a2a";
 import { cn } from "@lib/utils/cn";
-import { Copy, Check, RotateCcw, FileText, CheckCircle, AlertCircle, ChevronDown, ChevronUp, Loader2 } from "lucide-react";
+import {
+  Copy,
+  Check,
+  RotateCcw,
+  FileText,
+  CheckCircle,
+  AlertCircle,
+  ChevronDown,
+  ChevronUp,
+  Loader2,
+} from "lucide-react";
 import { Badge } from "@lib/components/ui/badge";
 import { Button } from "@lib/components/ui/button";
 import { JsonHighlight } from "@lib/components/ui/JsonHighlight";
@@ -31,10 +41,19 @@ function mediaTypeToLang(mediaType?: string): string | null {
 function isJsonLike(text: string): boolean {
   const trimmed = text.trim();
   if (!(trimmed.startsWith("{") || trimmed.startsWith("["))) return false;
-  try { JSON.parse(trimmed); return true; } catch { return false; }
+  try {
+    JSON.parse(trimmed);
+    return true;
+  } catch {
+    return false;
+  }
 }
 
-function FilePartView({ file: filePart }: { file: { uri: string; mimeType?: string; mediaType?: string; name?: string } }) {
+function FilePartView({
+  file: filePart,
+}: {
+  file: { uri: string; mimeType?: string; mediaType?: string; name?: string };
+}) {
   const mime = (filePart.mimeType || filePart.mediaType || "").toLowerCase();
 
   if (mime.startsWith("image/")) {
@@ -128,18 +147,28 @@ export function ChatMessage({ message, onRetry }: ChatMessageProps) {
   };
 
   return (
-    <div className={cn("group flex mb-3 min-w-0", isUser ? "justify-end" : "justify-start")} data-testid={isUser ? "message-user" : "message-agent"}>
+    <div
+      className={cn("group flex mb-3 min-w-0", isUser ? "justify-end" : "justify-start")}
+      data-testid={isUser ? "message-user" : "message-agent"}>
       <div className={cn("flex items-end gap-1 min-w-0 max-w-full", isUser ? "flex-row-reverse" : "flex-row")}>
         <div
           className={cn(
             "max-w-[85%] rounded-2xl px-4 py-2 min-w-0 overflow-hidden",
-            isUser ? "chat-user-bubble rounded-br-sm bg-[#999]! dark:bg-[#0079cc]! text-primary-foreground" : "rounded-bl-sm bg-muted",
+            isUser
+              ? "chat-user-bubble rounded-br-sm bg-[#999]! dark:bg-[#0079cc]! text-primary-foreground"
+              : "rounded-bl-sm bg-muted",
           )}>
           {message.status && (
             <div className="flex items-center gap-1.5 mb-2">
               <Badge
                 variant={
-                  message.status === "completed" ? "default" : message.status === "failed" ? "error" : message.status === "auth-required" ? "error" : "secondary"
+                  message.status === "completed"
+                    ? "default"
+                    : message.status === "failed"
+                      ? "error"
+                      : message.status === "auth-required"
+                        ? "error"
+                        : "secondary"
                 }>
                 {message.status}
               </Badge>
@@ -147,26 +176,22 @@ export function ChatMessage({ message, onRetry }: ChatMessageProps) {
                 <button
                   type="button"
                   className="inline-flex items-center gap-0.5 text-xs text-success hover:underline cursor-pointer"
-                  onClick={() => setShowCompliance((v) => !v)}
-                >
+                  onClick={() => setShowCompliance((v) => !v)}>
                   <CheckCircle className="h-3.5 w-3.5" />
                   compliant
-                  {message.complianceDetails && (
-                    showCompliance ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />
-                  )}
+                  {message.complianceDetails &&
+                    (showCompliance ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />)}
                 </button>
               )}
               {!isUser && message.compliant === false && (
                 <button
                   type="button"
                   className="inline-flex items-center gap-0.5 text-xs text-orange-600 dark:text-orange-400 hover:underline cursor-pointer"
-                  onClick={() => setShowCompliance((v) => !v)}
-                >
+                  onClick={() => setShowCompliance((v) => !v)}>
                   <AlertCircle className="h-3.5 w-3.5" />
                   non-compliant
-                  {message.complianceDetails && (
-                    showCompliance ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />
-                  )}
+                  {message.complianceDetails &&
+                    (showCompliance ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />)}
                 </button>
               )}
             </div>
@@ -182,9 +207,7 @@ export function ChatMessage({ message, onRetry }: ChatMessageProps) {
                   ) : (
                     <AlertCircle className="h-3 w-3 mt-0.5 shrink-0 text-orange-600 dark:text-orange-400" />
                   )}
-                  <span className={cn(!result.passed && "text-orange-600 dark:text-orange-400")}>
-                    {result.message}
-                  </span>
+                  <span className={cn(!result.passed && "text-orange-600 dark:text-orange-400")}>{result.message}</span>
                 </div>
               ))}
             </div>
@@ -194,7 +217,11 @@ export function ChatMessage({ message, onRetry }: ChatMessageProps) {
           {fullText &&
             (isUser ? (
               isJsonLike(fullText) ? (
-                <JsonHighlight code={JSON.stringify(JSON.parse(fullText.trim()), null, 2)} className="bg-black/20! text-primary-foreground!" showCopy />
+                <JsonHighlight
+                  code={JSON.stringify(JSON.parse(fullText.trim()), null, 2)}
+                  className="bg-black/20! text-primary-foreground!"
+                  showCopy
+                />
               ) : (
                 <p className="text-sm whitespace-pre-wrap break-words">{fullText}</p>
               )
@@ -223,9 +250,7 @@ export function ChatMessage({ message, onRetry }: ChatMessageProps) {
           })}
 
           {/* Streaming indicator */}
-          {message.isStreaming && (
-            <Loader2 className="h-3 w-3 mt-1 animate-spin text-muted-foreground" />
-          )}
+          {message.isStreaming && <Loader2 className="h-3 w-3 mt-1 animate-spin text-muted-foreground" />}
 
           <time className="mt-1 block text-[10px] opacity-50">{message.timestamp.toLocaleTimeString()}</time>
         </div>

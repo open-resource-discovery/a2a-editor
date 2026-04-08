@@ -34,17 +34,12 @@ export function AppHeader() {
           <Link
             key={link.to}
             to={link.to}
-            className="text-sm text-muted-foreground transition-colors hover:text-foreground"
-          >
+            className="text-sm text-muted-foreground transition-colors hover:text-foreground">
             {link.label}
           </Link>
         ))}
         <Button variant="ghost" size="icon" onClick={toggleTheme}>
-          {resolvedTheme === "dark" ? (
-            <Sun className="h-5 w-5" />
-          ) : (
-            <Moon className="h-5 w-5" />
-          )}
+          {resolvedTheme === "dark" ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
           <span className="sr-only">Toggle theme</span>
         </Button>
       </nav>
@@ -52,17 +47,9 @@ export function AppHeader() {
       {/* Mobile nav */}
       <div className="flex sm:hidden items-center gap-2">
         <Button variant="ghost" size="icon" onClick={toggleTheme}>
-          {resolvedTheme === "dark" ? (
-            <Sun className="h-5 w-5" />
-          ) : (
-            <Moon className="h-5 w-5" />
-          )}
+          {resolvedTheme === "dark" ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
         </Button>
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-        >
+        <Button variant="ghost" size="icon" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
           {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           <span className="sr-only">Toggle menu</span>
         </Button>
@@ -77,8 +64,7 @@ export function AppHeader() {
                 key={link.to}
                 to={link.to}
                 className="text-sm py-2 px-3 rounded-md text-muted-foreground transition-colors hover:text-foreground hover:bg-accent"
-                onClick={() => setMobileMenuOpen(false)}
-              >
+                onClick={() => setMobileMenuOpen(false)}>
                 {link.label}
               </Link>
             ))}

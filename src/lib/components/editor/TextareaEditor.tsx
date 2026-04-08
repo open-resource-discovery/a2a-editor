@@ -8,12 +8,7 @@ interface TextareaEditorProps {
   className?: string;
 }
 
-export function TextareaEditor({
-  value,
-  onChange,
-  readOnly = false,
-  className,
-}: TextareaEditorProps) {
+export function TextareaEditor({ value, onChange, readOnly = false, className }: TextareaEditorProps) {
   const [localValue, setLocalValue] = useState(value);
   const [error, setError] = useState<string | null>(null);
 
@@ -41,7 +36,7 @@ export function TextareaEditor({
 
       onChange(newValue);
     },
-    [onChange]
+    [onChange],
   );
 
   return (
@@ -56,7 +51,7 @@ export function TextareaEditor({
           "focus:outline-none focus:ring-0",
           "border-0",
           readOnly && "cursor-default opacity-75",
-          error && "border-b-2 border-b-destructive"
+          error && "border-b-2 border-b-destructive",
         )}
         placeholder="Paste or type agent card JSON here..."
       />

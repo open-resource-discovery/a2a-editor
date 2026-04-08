@@ -8,11 +8,7 @@ interface ValidationSummaryProps {
   lastValidatedAt: Date | null;
 }
 
-export function ValidationSummary({
-  summary,
-  isValidating,
-  lastValidatedAt,
-}: ValidationSummaryProps) {
+export function ValidationSummary({ summary, isValidating, lastValidatedAt }: ValidationSummaryProps) {
   return (
     <div className="flex items-center justify-between">
       <div className="flex items-center gap-2">
@@ -46,9 +42,7 @@ export function ValidationSummary({
       </div>
 
       {lastValidatedAt && !isValidating && (
-        <span className="text-xs text-muted-foreground">
-          Last validated: {lastValidatedAt.toLocaleTimeString()}
-        </span>
+        <span className="text-xs text-muted-foreground">Last validated: {lastValidatedAt.toLocaleTimeString()}</span>
       )}
     </div>
   );

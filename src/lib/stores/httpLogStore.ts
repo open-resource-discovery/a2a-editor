@@ -25,9 +25,7 @@ export const useHttpLogStore = create<HttpLogState>((set, get) => ({
 
   updateLog: (id, updates) =>
     set((state) => ({
-      logs: state.logs.map((log) =>
-        log.id === id ? { ...log, ...updates } : log,
-      ),
+      logs: state.logs.map((log) => (log.id === id ? { ...log, ...updates } : log)),
     })),
 
   clearLogs: () => set({ logs: [], highlightedLogId: null }),

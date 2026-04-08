@@ -21,15 +21,10 @@ test.describe("Custom Agent", () => {
     // Submit button should be disabled for invalid URL
     await expect(playground.addAgentSubmit).toBeDisabled();
     // Should show inline validation message
-    await expect(
-      playground.page.getByText("Please enter a valid absolute"),
-    ).toBeVisible();
+    await expect(playground.page.getByText("Please enter a valid absolute")).toBeVisible();
   });
 
-  test("should add custom agent via network mock", async ({
-    playground,
-    page,
-  }) => {
+  test("should add custom agent via network mock", async ({ playground, page }) => {
     // Intercept the .well-known/agent.json fetch
     await page.route("**/example.com/.well-known/agent.json", (route) => {
       route.fulfill({
@@ -53,13 +48,9 @@ test.describe("Custom Agent", () => {
     await playground.addAgentSubmit.click();
 
     // Wait for the custom agent card to appear (id starts with "custom-")
-    await expect(
-      page.locator("[data-testid^='agent-card-custom-']"),
-    ).toBeVisible({ timeout: 10000 });
+    await expect(page.locator("[data-testid^='agent-card-custom-']")).toBeVisible({ timeout: 10000 });
     // The new agent should display its name
-    await expect(
-      page.locator("[data-testid^='agent-card-custom-']"),
-    ).toContainText("Test Custom Agent");
+    await expect(page.locator("[data-testid^='agent-card-custom-']")).toContainText("Test Custom Agent");
     // Add form should be hidden after successful add
     await expect(playground.addAgentUrl).toBeHidden();
   });

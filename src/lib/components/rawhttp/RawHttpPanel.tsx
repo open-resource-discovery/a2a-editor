@@ -24,11 +24,7 @@ export function RawHttpPanel() {
       {logs.length > 0 ? (
         <div className="space-y-2">
           {logs.map((entry) => (
-            <HttpLogEntry
-              key={entry.id}
-              entry={entry}
-              isHighlighted={entry.id === highlightedLogId}
-            />
+            <HttpLogEntry key={entry.id} entry={entry} isHighlighted={entry.id === highlightedLogId} />
           ))}
         </div>
       ) : (

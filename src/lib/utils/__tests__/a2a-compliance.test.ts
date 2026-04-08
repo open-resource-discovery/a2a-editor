@@ -1,10 +1,5 @@
 import { describe, it, expect } from "vitest";
-import {
-  isFullyCompliant,
-  validateAgentCard,
-  validateResponse,
-  validateMessageKind,
-} from "../a2a-compliance";
+import { isFullyCompliant, validateAgentCard, validateResponse, validateMessageKind } from "../a2a-compliance";
 
 // ===================================================================
 // isFullyCompliant
@@ -12,17 +7,21 @@ import {
 
 describe("isFullyCompliant", () => {
   it("returns true when all results pass", () => {
-    expect(isFullyCompliant([
-      { rule: "a", passed: true, message: "ok" },
-      { rule: "b", passed: true, message: "ok" },
-    ])).toBe(true);
+    expect(
+      isFullyCompliant([
+        { rule: "a", passed: true, message: "ok" },
+        { rule: "b", passed: true, message: "ok" },
+      ]),
+    ).toBe(true);
   });
 
   it("returns false when any result fails", () => {
-    expect(isFullyCompliant([
-      { rule: "a", passed: true, message: "ok" },
-      { rule: "b", passed: false, message: "fail" },
-    ])).toBe(false);
+    expect(
+      isFullyCompliant([
+        { rule: "a", passed: true, message: "ok" },
+        { rule: "b", passed: false, message: "fail" },
+      ]),
+    ).toBe(false);
   });
 
   it("returns false for empty array", () => {
@@ -170,8 +169,15 @@ describe("validateResponse", () => {
 
   it("passes for all v0.3 lowercase states", () => {
     const states = [
-      "pending", "submitted", "working", "input-required",
-      "auth-required", "completed", "canceled", "failed", "rejected",
+      "pending",
+      "submitted",
+      "working",
+      "input-required",
+      "auth-required",
+      "completed",
+      "canceled",
+      "failed",
+      "rejected",
     ];
     for (const state of states) {
       const results = validateResponse({

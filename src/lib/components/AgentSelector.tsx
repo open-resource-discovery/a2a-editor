@@ -45,9 +45,7 @@ export function AgentSelector() {
     <div className="h-full overflow-y-auto p-4">
       <div className="flex min-h-full items-center justify-center">
         <div className="w-full max-w-xs">
-          <h2 className="mb-3 text-center text-sm font-medium text-muted-foreground">
-            Select an Agent
-          </h2>
+          <h2 className="mb-3 text-center text-sm font-medium text-muted-foreground">Select an Agent</h2>
           <div className="grid grid-cols-2 gap-2" role="list">
             {agents.map((agent) => (
               <Card
@@ -65,12 +63,9 @@ export function AgentSelector() {
                     e.preventDefault();
                     handleSelectAgent(agent.id);
                   }
-                }}
-              >
+                }}>
                 <p className="text-sm font-medium truncate">{agent.name}</p>
-                <p className="text-[10px] text-muted-foreground truncate mt-1">
-                  {getHostname(agent.url)}
-                </p>
+                <p className="text-[10px] text-muted-foreground truncate mt-1">{getHostname(agent.url)}</p>
                 {agent.mocked !== false && (
                   <Badge variant="outline" className="text-[10px] h-4 mt-1.5 border-warning/50 text-warning">
                     Mocked LLM

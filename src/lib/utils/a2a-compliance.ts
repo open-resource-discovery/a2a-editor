@@ -22,9 +22,7 @@ export function isFullyCompliant(results: ComplianceResult[]): boolean {
 // Agent Card Validation (delegates to Zod schemas in a2a-schema.ts)
 // ===================================================================
 
-export function validateAgentCard(
-  card: Record<string, unknown>,
-): ComplianceResult[] {
+export function validateAgentCard(card: Record<string, unknown>): ComplianceResult[] {
   const json = JSON.stringify(card);
   const results = validateAgentCardSchema(json);
 
@@ -69,42 +67,54 @@ const PartSchema = z.union([
   z.object({ data: z.record(z.string(), z.unknown()) }).loose(),
 ]);
 
-const MessageSchema = z.object({
-  role: z.enum(["user", "agent", "ROLE_USER", "ROLE_AGENT"]),
-  parts: z.array(PartSchema),
-}).loose();
+const MessageSchema = z
+  .object({
+    role: z.enum(["user", "agent", "ROLE_USER", "ROLE_AGENT"]),
+    parts: z.array(PartSchema),
+  })
+  .loose();
 
-const TaskStatusSchema = z.object({
-  state: z.enum(VALID_TASK_STATES),
-  timestamp: z.string().optional(),
-  message: MessageSchema.optional(),
-}).loose();
+const TaskStatusSchema = z
+  .object({
+    state: z.enum(VALID_TASK_STATES),
+    timestamp: z.string().optional(),
+    message: MessageSchema.optional(),
+  })
+  .loose();
 
-const ArtifactSchema = z.object({
-  artifactId: z.string().optional(),
-  parts: z.array(PartSchema),
-}).loose();
+const ArtifactSchema = z
+  .object({
+    artifactId: z.string().optional(),
+    parts: z.array(PartSchema),
+  })
+  .loose();
 
-const TaskSchema = z.object({
-  id: z.string(),
-  contextId: z.string(),
-  status: TaskStatusSchema,
-  artifacts: z.array(ArtifactSchema).optional(),
-  history: z.array(MessageSchema).optional(),
-  metadata: z.record(z.string(), z.unknown()).optional(),
-}).loose();
+const TaskSchema = z
+  .object({
+    id: z.string(),
+    contextId: z.string(),
+    status: TaskStatusSchema,
+    artifacts: z.array(ArtifactSchema).optional(),
+    history: z.array(MessageSchema).optional(),
+    metadata: z.record(z.string(), z.unknown()).optional(),
+  })
+  .loose();
 
-const JsonRpcErrorSchema = z.object({
-  code: z.number(),
-  message: z.string(),
-  data: z.unknown().optional(),
-}).loose();
+const JsonRpcErrorSchema = z
+  .object({
+    code: z.number(),
+    message: z.string(),
+    data: z.unknown().optional(),
+  })
+  .loose();
 
-const JsonRpcResponseSchema = z.object({
-  jsonrpc: z.literal("2.0"),
-  result: TaskSchema.optional(),
-  error: JsonRpcErrorSchema.optional(),
-}).loose();
+const JsonRpcResponseSchema = z
+  .object({
+    jsonrpc: z.literal("2.0"),
+    result: TaskSchema.optional(),
+    error: JsonRpcErrorSchema.optional(),
+  })
+  .loose();
 
 // ===================================================================
 // JSON-RPC Response Validation
@@ -190,9 +200,9 @@ function zodIssueToComplianceResult(issue: any): ComplianceResult {
 
   // Map known paths to rule names matching the old compliance module
   const ruleMap: Record<string, string> = {
-    jsonrpc: "jsonrpc.version",
-    result: "jsonrpc.resultOrError",
-    error: "jsonrpc.resultOrError",
+    "jsonrpc": "jsonrpc.version",
+    "result": "jsonrpc.resultOrError",
+    "error": "jsonrpc.resultOrError",
     "result.id": "a2a.result.id",
     "result.status": "a2a.result.status",
     "result.status.state": "a2a.result.status.state",
@@ -266,9 +276,7 @@ export function validateResponse(data: unknown): ComplianceResult[] {
   results.push({
     rule: "jsonrpc.resultOrError",
     passed: hasResultOrError,
-    message: hasResultOrError
-      ? "Response has result or error"
-      : "Response must have either result or error",
+    message: hasResultOrError ? "Response has result or error" : "Response must have either result or error",
   });
 
   // Add specific Zod failures (skip the ones we already reported above)
@@ -287,41 +295,53 @@ export function validateResponse(data: unknown): ComplianceResult[] {
 // Streaming Event Schemas
 // ===================================================================
 
-const TaskEventSchema = z.object({
-  kind: z.literal("task"),
-  id: z.string(),
-  status: z.object({
-    state: z.string(),
-  }).loose(),
-}).loose();
+const TaskEventSchema = z
+  .object({
+    kind: z.literal("task"),
+    id: z.string(),
+    status: z
+      .object({
+        state: z.string(),
+      })
+      .loose(),
+  })
+  .loose();
 
-const StatusUpdateEventSchema = z.object({
-  kind: z.literal("status-update"),
-  status: z.object({
-    state: z.string(),
-  }).loose(),
-}).loose();
+const StatusUpdateEventSchema = z
+  .object({
+    kind: z.literal("status-update"),
+    status: z
+      .object({
+        state: z.string(),
+      })
+      .loose(),
+  })
+  .loose();
 
-const ArtifactUpdateEventSchema = z.object({
-  kind: z.literal("artifact-update"),
-  artifact: z.object({
+const ArtifactUpdateEventSchema = z
+  .object({
+    kind: z.literal("artifact-update"),
+    artifact: z
+      .object({
+        parts: z.array(PartSchema).min(1),
+      })
+      .loose(),
+  })
+  .loose();
+
+const MessageEventSchema = z
+  .object({
+    kind: z.literal("message"),
+    role: z.enum(["agent", "ROLE_AGENT", "user", "ROLE_USER"]),
     parts: z.array(PartSchema).min(1),
-  }).loose(),
-}).loose();
-
-const MessageEventSchema = z.object({
-  kind: z.literal("message"),
-  role: z.enum(["agent", "ROLE_AGENT", "user", "ROLE_USER"]),
-  parts: z.array(PartSchema).min(1),
-}).loose();
+  })
+  .loose();
 
 // ===================================================================
 // Streaming Event Validation
 // ===================================================================
 
-export function validateMessageKind(
-  data: Record<string, unknown>,
-): ComplianceResult[] {
+export function validateMessageKind(data: Record<string, unknown>): ComplianceResult[] {
   const kind = data.kind as string | undefined;
 
   if (!kind) {

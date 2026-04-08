@@ -53,7 +53,9 @@ export function AgentHeader({ card }: AgentHeaderProps) {
         {card.iconUrl && <img src={card.iconUrl} alt={card.name} className="h-12 w-12 rounded-lg object-cover" />}
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
-            <span className="text-xl font-bold truncate leading-none" data-testid="agent-name">{card.name}</span>
+            <span className="text-xl font-bold truncate leading-none" data-testid="agent-name">
+              {card.name}
+            </span>
             {card.version && (
               <Badge variant="outline" className="shrink-0 translate-y-px" data-testid="agent-version">
                 v{card.version}
@@ -77,8 +79,7 @@ export function AgentHeader({ card }: AgentHeaderProps) {
             className={cn(
               "prose prose-sm dark:prose-invert max-w-none prose-p:my-1! prose-headings:my-2! prose-ul:my-1! prose-ol:my-1! prose-li:my-0! prose-a:text-primary",
               !expanded && "line-clamp-3",
-            )}
-          >
+            )}>
             <ReactMarkdown>{card.description}</ReactMarkdown>
           </div>
           {isClamped && (

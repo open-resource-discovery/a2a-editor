@@ -49,7 +49,8 @@ export function SkillCard({ skill, disableExamplePrompts = false, readOnly = fal
                 </div>
               )}
             </div>
-            <div className={`text-xs text-muted-foreground mt-1.5 px-0.5 prose prose-sm dark:prose-invert max-w-none prose-p:m-0! prose-headings:my-1! prose-ul:my-0.5! prose-ol:my-0.5! prose-li:my-0! prose-ul:list-disc! prose-ol:list-decimal! prose-ul:pl-4! prose-ol:pl-4! prose-a:text-primary text-xs! leading-normal! ${!open ? "line-clamp-2" : ""}`}>
+            <div
+              className={`text-xs text-muted-foreground mt-1.5 px-0.5 prose prose-sm dark:prose-invert max-w-none prose-p:m-0! prose-headings:my-1! prose-ul:my-0.5! prose-ol:my-0.5! prose-li:my-0! prose-ul:list-disc! prose-ol:list-decimal! prose-ul:pl-4! prose-ol:pl-4! prose-a:text-primary text-xs! leading-normal! ${!open ? "line-clamp-2" : ""}`}>
               <ReactMarkdown>{skill.description}</ReactMarkdown>
             </div>
           </div>

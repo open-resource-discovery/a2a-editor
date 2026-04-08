@@ -9,7 +9,11 @@ import { parseSSEStream } from "./sse-parser";
 import { normalizeStreamEvent, type NormalizedStreamEvent } from "./a2a-protocol";
 
 export interface StreamCallbacks {
-  onStatusUpdate(taskId: string, contextId: string, status: { state: TaskState; message?: { role: string; parts: Part[] } }): void;
+  onStatusUpdate(
+    taskId: string,
+    contextId: string,
+    status: { state: TaskState; message?: { role: string; parts: Part[] } },
+  ): void;
   onArtifactUpdate(taskId: string, contextId: string, artifact: Artifact): void;
   onTaskComplete(task: Record<string, unknown>): void;
   onError(error: Error): void;

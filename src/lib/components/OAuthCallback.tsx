@@ -9,13 +9,9 @@ import { useConnectionStore } from "@lib/stores/connectionStore";
  * exchanges them for an access token, then notifies the opener window.
  */
 export function OAuthCallback() {
-  const [status, setStatus] = useState<"processing" | "success" | "error">(
-    "processing",
-  );
+  const [status, setStatus] = useState<"processing" | "success" | "error">("processing");
   const [error, setError] = useState<string>("");
-  const handleAuthCallback = useConnectionStore(
-    (state) => state.handleAuthCallback,
-  );
+  const handleAuthCallback = useConnectionStore((state) => state.handleAuthCallback);
 
   useEffect(() => {
     const processCallback = async () => {
@@ -57,9 +53,7 @@ export function OAuthCallback() {
             ).useConnectionStore;
 
             if (openerStore) {
-              const success = await openerStore
-                .getState()
-                .handleAuthCallback(code, state);
+              const success = await openerStore.getState().handleAuthCallback(code, state);
               if (success) {
                 setStatus("success");
                 // Close popup after a brief delay to show success
@@ -122,20 +116,13 @@ export function OAuthCallback() {
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
-                aria-hidden="true"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M5 13l4 4L19 7"
-                />
+                aria-hidden="true">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
               </svg>
             </div>
             <h2 className="text-lg font-semibold text-success">Success!</h2>
             <p className="mt-2 text-sm text-muted-foreground">
-              You have been successfully authenticated. This window will close
-              automatically.
+              You have been successfully authenticated. This window will close automatically.
             </p>
           </div>
         )}
@@ -148,24 +135,15 @@ export function OAuthCallback() {
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
-                aria-hidden="true"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M6 18L18 6M6 6l12 12"
-                />
+                aria-hidden="true">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
             </div>
-            <h2 className="text-lg font-semibold text-destructive">
-              Authentication Failed
-            </h2>
+            <h2 className="text-lg font-semibold text-destructive">Authentication Failed</h2>
             <p className="mt-2 text-sm text-muted-foreground">{error}</p>
             <button
               className="mt-4 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
-              onClick={() => window.close()}
-            >
+              onClick={() => window.close()}>
               Close Window
             </button>
           </div>

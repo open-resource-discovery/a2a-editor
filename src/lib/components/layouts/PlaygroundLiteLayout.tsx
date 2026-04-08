@@ -7,19 +7,14 @@ import { useAutoValidate } from "@lib/hooks/useAutoValidate";
 import { AgentCardEditor } from "@lib/components/editor/AgentCardEditor";
 import { EditorRightPanel } from "@lib/components/layouts/EditorRightPanel";
 import { MobileBottomBar } from "@lib/components/MobileBottomBar";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-} from "@lib/components/ui/sheet";
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@lib/components/ui/sheet";
 import { cn } from "@lib/utils/cn";
 
 // Lazy load full SettingsPanel (with PredefinedAgents) — only loaded when showSettings=true
 const SettingsPanel = lazy(() =>
   import("@lib/components/settings/SettingsPanel").then((m) => ({
     default: m.SettingsPanel,
-  }))
+  })),
 );
 
 function SettingsPanelFallback() {
@@ -63,13 +58,8 @@ export function PlaygroundLiteLayout({
   className,
 }: PlaygroundLiteLayoutProps) {
   const isLargeScreen = useIsLargeScreen();
-  const {
-    settingsPanelOpen,
-    setSettingsPanelOpen,
-    validationPanelOpen,
-    setValidationPanelOpen,
-    closeAllPanels,
-  } = useUIStore();
+  const { settingsPanelOpen, setSettingsPanelOpen, validationPanelOpen, setValidationPanelOpen, closeAllPanels } =
+    useUIStore();
 
   // Enable auto-validation
   useAutoValidate();
@@ -87,12 +77,7 @@ export function PlaygroundLiteLayout({
         <PanelGroup orientation="horizontal">
           {showSettings && (
             <>
-              <Panel
-                defaultSize={20}
-                minSize={15}
-                collapsible
-                collapsedSize={0}
-              >
+              <Panel defaultSize={20} minSize={15} collapsible collapsedSize={0}>
                 <Suspense fallback={<SettingsPanelFallback />}>
                   <SettingsPanel />
                 </Suspense>
@@ -105,10 +90,7 @@ export function PlaygroundLiteLayout({
           </Panel>
           <ResizeHandle />
           <Panel defaultSize={35} minSize={20}>
-            <EditorRightPanel
-              showValidation={showValidation}
-              defaultTab={defaultTab}
-            />
+            <EditorRightPanel showValidation={showValidation} defaultTab={defaultTab} />
           </Panel>
         </PanelGroup>
       </div>
@@ -143,10 +125,7 @@ export function PlaygroundLiteLayout({
           <SheetHeader className="sr-only">
             <SheetTitle>Overview & Validation</SheetTitle>
           </SheetHeader>
-          <EditorRightPanel
-            showValidation={showValidation}
-            defaultTab={defaultTab}
-          />
+          <EditorRightPanel showValidation={showValidation} defaultTab={defaultTab} />
         </SheetContent>
       </Sheet>
     </div>
