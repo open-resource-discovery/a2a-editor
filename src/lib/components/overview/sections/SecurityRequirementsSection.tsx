@@ -52,9 +52,7 @@ export function SecurityRequirementsSection({ requirements }: SecurityRequiremen
                   </div>
                 ))}
                 {entries.length > 1 && (
-                  <p className="text-[10px] text-muted-foreground pl-6">
-                    All of the above are required together
-                  </p>
+                  <p className="text-[10px] text-muted-foreground pl-6">All of the above are required together</p>
                 )}
               </div>
             </div>

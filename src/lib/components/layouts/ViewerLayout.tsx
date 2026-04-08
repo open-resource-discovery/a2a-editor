@@ -6,12 +6,7 @@ import { useAutoValidate } from "@lib/hooks/useAutoValidate";
 import { TextareaEditor } from "@lib/components/editor/TextareaEditor";
 import { useAgentCardStore } from "@lib/stores/agentCardStore";
 import { ViewerRightPanel } from "./ViewerRightPanel";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-} from "@lib/components/ui/sheet";
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@lib/components/ui/sheet";
 import { cn } from "@lib/utils/cn";
 
 interface ViewerLayoutProps {
@@ -34,15 +29,10 @@ function ResizeHandle() {
  * Layout for AgentViewer - 2 pane layout without Monaco editor
  * Uses simple textarea instead of Monaco for JSON editing
  */
-export function ViewerLayout({
-  showValidation = true,
-  defaultTab = "overview",
-  className,
-}: ViewerLayoutProps) {
+export function ViewerLayout({ showValidation = true, defaultTab = "overview", className }: ViewerLayoutProps) {
   const isLargeScreen = useIsLargeScreen();
   const { rawJson, setRawJson } = useAgentCardStore();
-  const { validationPanelOpen, setValidationPanelOpen, closeAllPanels } =
-    useUIStore();
+  const { validationPanelOpen, setValidationPanelOpen, closeAllPanels } = useUIStore();
 
   // Enable auto-validation
   useAutoValidate();
@@ -58,18 +48,12 @@ export function ViewerLayout({
         <PanelGroup orientation="horizontal">
           <Panel defaultSize={50} minSize={30}>
             <div className="h-full border-r">
-              <TextareaEditor
-                value={rawJson}
-                onChange={setRawJson}
-              />
+              <TextareaEditor value={rawJson} onChange={setRawJson} />
             </div>
           </Panel>
           <ResizeHandle />
           <Panel defaultSize={50} minSize={20}>
-            <ViewerRightPanel
-              showValidation={showValidation}
-              defaultTab={defaultTab}
-            />
+            <ViewerRightPanel showValidation={showValidation} defaultTab={defaultTab} />
           </Panel>
         </PanelGroup>
       </div>
@@ -89,10 +73,7 @@ export function ViewerLayout({
           <SheetHeader className="sr-only">
             <SheetTitle>Overview & Validation</SheetTitle>
           </SheetHeader>
-          <ViewerRightPanel
-            showValidation={showValidation}
-            defaultTab={defaultTab}
-          />
+          <ViewerRightPanel showValidation={showValidation} defaultTab={defaultTab} />
         </SheetContent>
       </Sheet>
     </div>

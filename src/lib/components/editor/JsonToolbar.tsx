@@ -21,8 +21,7 @@ export function JsonToolbar() {
         onClick={formatJson}
         title="Format JSON"
         disabled={!rawJson.trim()}
-        data-testid="toolbar-format"
-      >
+        data-testid="toolbar-format">
         <Wand2 className="h-4 w-4" />
         <span className="hidden sm:inline">Format</span>
       </Button>
@@ -32,13 +31,8 @@ export function JsonToolbar() {
         onClick={handleCopy}
         title="Copy to clipboard"
         disabled={!rawJson.trim()}
-        data-testid="toolbar-copy"
-      >
-        {copied ? (
-          <Check className="h-4 w-4 text-success" />
-        ) : (
-          <Copy className="h-4 w-4" />
-        )}
+        data-testid="toolbar-copy">
+        {copied ? <Check className="h-4 w-4 text-success" /> : <Copy className="h-4 w-4" />}
         <span className="hidden sm:inline">{copied ? "Copied" : "Copy"}</span>
       </Button>
       <div className="flex-1" />
@@ -48,8 +42,7 @@ export function JsonToolbar() {
         onClick={reset}
         title="Reset"
         disabled={!rawJson.trim()}
-        data-testid="toolbar-reset"
-      >
+        data-testid="toolbar-reset">
         <RotateCcw className="h-4 w-4" />
         <span className="hidden sm:inline">Reset</span>
       </Button>

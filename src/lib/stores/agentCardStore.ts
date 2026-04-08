@@ -153,8 +153,7 @@ export const useAgentCardStore = create<AgentCardState>((set, get) => ({
       connectionStore.autoConfigureAuth(card);
     } catch (err) {
       set({
-        parseError:
-          err instanceof Error ? err.message : "Failed to load agent card",
+        parseError: err instanceof Error ? err.message : "Failed to load agent card",
       });
     } finally {
       set({ isLoading: false });
@@ -163,7 +162,5 @@ export const useAgentCardStore = create<AgentCardState>((set, get) => ({
 }));
 
 // Selectors - these now just return stored state (no computation)
-export const selectParsedCard = (state: AgentCardState): AgentCard | null =>
-  state.parsedCard;
-export const selectParseError = (state: AgentCardState): string | null =>
-  state.parseError;
+export const selectParsedCard = (state: AgentCardState): AgentCard | null => state.parsedCard;
+export const selectParseError = (state: AgentCardState): string | null => state.parseError;

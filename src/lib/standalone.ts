@@ -330,10 +330,7 @@ function mountContainer(
 }
 
 /** Create a lightweight instance handle for cardView / viewer / editor */
-function createComponentInstance(
-  element: HTMLElement,
-  options: A2AComponentOptions,
-): A2AComponentInstance {
+function createComponentInstance(element: HTMLElement, options: A2AComponentOptions): A2AComponentInstance {
   const inst: A2AComponentInstance = {
     setAgentCard(json: string) {
       useAgentCardStore.getState().setRawJson(json);

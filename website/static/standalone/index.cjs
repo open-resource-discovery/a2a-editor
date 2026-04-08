@@ -13,7 +13,7 @@
  * ```
  */
 
-const path = require('path');
+const path = require("path");
 
 /**
  * Get the absolute path to the standalone distribution directory.
@@ -29,14 +29,14 @@ function getAbsoluteFSPath() {
  * @param {string} [basePath='/'] - Base path for the playground routes
  * @returns {Function} Express middleware
  */
-function createMiddleware(basePath = '/') {
+function createMiddleware(basePath = "/") {
   try {
-    const express = require('express');
+    const express = require("express");
     const router = express.Router();
     router.use(basePath, express.static(getAbsoluteFSPath()));
     return router;
   } catch {
-    throw new Error('express is required to use createMiddleware. Install it with: npm install express');
+    throw new Error("express is required to use createMiddleware. Install it with: npm install express");
   }
 }
 

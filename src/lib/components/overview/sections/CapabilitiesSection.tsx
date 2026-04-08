@@ -50,11 +50,7 @@ export function CapabilitiesSection({ capabilities }: CapabilitiesSectionProps) 
       <CardContent className="pt-0">
         <div className="flex flex-wrap gap-2">
           {items.map(({ key, label, icon: Icon }) => (
-            <Badge
-              key={key}
-              variant="success"
-              className="flex items-center gap-1"
-            >
+            <Badge key={key} variant="success" className="flex items-center gap-1">
               <Icon className="h-3 w-3" />
               {label}
             </Badge>
