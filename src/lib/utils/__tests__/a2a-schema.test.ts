@@ -251,7 +251,14 @@ describe("validateAgentCardSchema — edge cases", () => {
 describe("validateAgentCardSchema — mock agents", () => {
   it.each(Object.keys(MOCK_AGENTS))("mock agent '%s' passes v0.3 schema validation", (agentId) => {
     const card = MOCK_AGENTS[agentId].card;
-    const json = JSON.stringify(card);
+    // The internal AgentCard type uses protocolVersions (array) but the v0.3
+    // wire format requires protocolVersion (singular string) and url (required).
+    // Build a valid wire-format JSON from the internal representation.
+    const wireCard = {
+      ...card,
+      protocolVersion: "0.3.0",
+    };
+    const json = JSON.stringify(wireCard);
     const results = validateAgentCardSchema(json);
     const failures = results.filter((r) => r.status === "fail");
     expect(failures).toEqual([]);
