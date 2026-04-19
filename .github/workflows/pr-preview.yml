@@ -23,7 +23,7 @@ jobs:
         if: github.event.action != 'closed'
         uses: actions/setup-node@v6
         with:
-          node-version: 22
+          node-version: 22.22.2
 
       - name: Build preview
         if: github.event.action != 'closed'
