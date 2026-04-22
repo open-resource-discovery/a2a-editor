@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { validateAgentCardSchema } from "../a2a-schema";
+import { MOCK_AGENTS } from "@lib/mock/agents";
 
 // ===================================================================
 // Test Helpers
@@ -82,33 +83,37 @@ describe("validateAgentCardSchema — v0.3", () => {
   });
 
   it("validates with security schemes", () => {
-    const results = validateAgentCardSchema(validV03Card({
-      securitySchemes: {
-        bearerAuth: { type: "http", scheme: "bearer", bearerFormat: "JWT" },
-        apiKey: { type: "apiKey", name: "X-API-Key", in: "header" },
-        oauth: {
-          type: "oauth2",
-          flows: {
-            authorizationCode: {
-              authorizationUrl: "https://auth.example.com/authorize",
-              tokenUrl: "https://auth.example.com/token",
-              scopes: { read: "Read access" },
+    const results = validateAgentCardSchema(
+      validV03Card({
+        securitySchemes: {
+          bearerAuth: { type: "http", scheme: "bearer", bearerFormat: "JWT" },
+          apiKey: { type: "apiKey", name: "X-API-Key", in: "header" },
+          oauth: {
+            type: "oauth2",
+            flows: {
+              authorizationCode: {
+                authorizationUrl: "https://auth.example.com/authorize",
+                tokenUrl: "https://auth.example.com/token",
+                scopes: { read: "Read access" },
+              },
             },
           },
         },
-      },
-      security: [{ bearerAuth: [] }],
-    }));
+        security: [{ bearerAuth: [] }],
+      }),
+    );
     expect(results).toHaveLength(1);
     expect(results[0].status).toBe("pass");
   });
 
   it("validates with optional fields", () => {
-    const results = validateAgentCardSchema(validV03Card({
-      provider: { organization: "Test Corp", url: "https://test.com" },
-      documentationUrl: "https://docs.example.com",
-      iconUrl: "https://example.com/icon.png",
-    }));
+    const results = validateAgentCardSchema(
+      validV03Card({
+        provider: { organization: "Test Corp", url: "https://test.com" },
+        documentationUrl: "https://docs.example.com",
+        iconUrl: "https://example.com/icon.png",
+      }),
+    );
     expect(results).toHaveLength(1);
     expect(results[0].status).toBe("pass");
   });
@@ -135,27 +140,31 @@ describe("validateAgentCardSchema — v1.0", () => {
   });
 
   it("validates v1.0 nested security scheme structure", () => {
-    const results = validateAgentCardSchema(validV10Card({
-      securitySchemes: {
-        bearerAuth: {
-          httpAuthSecurityScheme: { scheme: "bearer", bearerFormat: "JWT" },
+    const results = validateAgentCardSchema(
+      validV10Card({
+        securitySchemes: {
+          bearerAuth: {
+            httpAuthSecurityScheme: { scheme: "bearer", bearerFormat: "JWT" },
+          },
+          apiKey: {
+            apiKeySecurityScheme: { location: "header", name: "X-API-Key" },
+          },
         },
-        apiKey: {
-          apiKeySecurityScheme: { location: "header", name: "X-API-Key" },
-        },
-      },
-      securityRequirements: [{ schemes: { bearerAuth: { list: [] } } }],
-    }));
+        securityRequirements: [{ schemes: { bearerAuth: { list: [] } } }],
+      }),
+    );
     expect(results).toHaveLength(1);
     expect(results[0].status).toBe("pass");
   });
 
   it("warns on v0.3-style security in v1.0 card", () => {
-    const results = validateAgentCardSchema(validV10Card({
-      securitySchemes: {
-        bearerAuth: { type: "http", scheme: "bearer" },
-      },
-    }));
+    const results = validateAgentCardSchema(
+      validV10Card({
+        securitySchemes: {
+          bearerAuth: { type: "http", scheme: "bearer" },
+        },
+      }),
+    );
     const warning = results.find((r) => r.message.includes("type"));
     expect(warning).toBeDefined();
     expect(warning!.status).toBe("warning");
@@ -232,5 +241,28 @@ describe("validateAgentCardSchema — edge cases", () => {
     const results = validateAgentCardSchema("{}");
     expect(results.length).toBeGreaterThan(1);
     expect(results.every((r) => r.status === "fail")).toBe(true);
+  });
+});
+
+// ===================================================================
+// Mock Agent Card Validation (regression test)
+// ===================================================================
+
+describe("validateAgentCardSchema — mock agents", () => {
+  it.each(Object.keys(MOCK_AGENTS))("mock agent '%s' passes v0.3 schema validation", (agentId) => {
+    const card = MOCK_AGENTS[agentId].card;
+    // The internal AgentCard type uses protocolVersions (array) but the v0.3
+    // wire format requires protocolVersion (singular string) and url (required).
+    // Build a valid wire-format JSON from the internal representation.
+    const wireCard = {
+      ...card,
+      protocolVersion: "0.3.0",
+    };
+    const json = JSON.stringify(wireCard);
+    const results = validateAgentCardSchema(json);
+    const failures = results.filter((r) => r.status === "fail");
+    expect(failures).toEqual([]);
+    expect(results).toHaveLength(1);
+    expect(results[0].status).toBe("pass");
   });
 });

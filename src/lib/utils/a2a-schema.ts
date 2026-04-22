@@ -6,17 +6,18 @@ import type { ValidationResult, ValidationSeverity } from "@lib/types/validation
 // ===================================================================
 
 const COMMON_HINTS: Record<string, string> = {
-  name: 'Must be a string, e.g. "name": "My Agent"',
-  version: 'Must be a string, e.g. "version": "1.0.0"',
-  description: "Must be a string describing the agent",
-  capabilities: 'Must be an object, e.g. "capabilities": { "streaming": false }',
-  skills: 'Must be an array, e.g. "skills": [{ "id": "echo", "name": "Echo", "description": "Echoes back", "tags": ["echo"] }]',
+  "name": 'Must be a string, e.g. "name": "My Agent"',
+  "version": 'Must be a string, e.g. "version": "1.0.0"',
+  "description": "Must be a string describing the agent",
+  "capabilities": 'Must be an object, e.g. "capabilities": { "streaming": false }',
+  "skills":
+    'Must be an array, e.g. "skills": [{ "id": "echo", "name": "Echo", "description": "Echoes back", "tags": ["echo"] }]',
   "skills.*.id": "Each skill must have a string id",
   "skills.*.name": "Each skill must have a string name",
   "skills.*.description": "Each skill must have a string description",
   "skills.*.tags": "Each skill must have a tags array",
-  defaultInputModes: 'Must be a string array, e.g. "defaultInputModes": ["text/plain"]',
-  defaultOutputModes: 'Must be a string array, e.g. "defaultOutputModes": ["text/plain"]',
+  "defaultInputModes": 'Must be a string array, e.g. "defaultInputModes": ["text/plain"]',
+  "defaultOutputModes": 'Must be a string array, e.g. "defaultOutputModes": ["text/plain"]',
   "provider.organization": "Provider organization must be a string",
   "provider.url": "Provider url must be a string",
 };
@@ -29,7 +30,8 @@ const V03_HINTS: Record<string, string> = {
 
 const V10_HINTS: Record<string, string> = {
   ...COMMON_HINTS,
-  supportedInterfaces: 'Must be an array, e.g. "supportedInterfaces": [{ "url": "https://...", "protocolBinding": "JSONRPC", "protocolVersion": "1.0" }]',
+  "supportedInterfaces":
+    'Must be an array, e.g. "supportedInterfaces": [{ "url": "https://...", "protocolBinding": "JSONRPC", "protocolVersion": "1.0" }]',
   "supportedInterfaces.*.url": "Each interface must have a URL string",
   "supportedInterfaces.*.protocolBinding": "Each interface must have a protocolBinding string",
   "supportedInterfaces.*.protocolVersion": "Each interface must have a protocolVersion string",
@@ -56,8 +58,11 @@ function getReceivedFromMessage(message: string): string | undefined {
   return match?.[1];
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function formatZodIssue(issue: any, version: "v03" | "v10"): { rule: string; message: string; severity: ValidationSeverity } {
+function formatZodIssue(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  issue: any,
+  version: "v03" | "v10",
+): { rule: string; message: string; severity: ValidationSeverity } {
   const path = issue.path.length > 0 ? issue.path.join(".") : undefined;
   const fieldName = getFieldName(path);
   const hint = getFieldHint(path, version);
@@ -178,268 +183,330 @@ function formatZodIssue(issue: any, version: "v03" | "v10"): { rule: string; mes
 // Shared Sub-schemas
 // ===================================================================
 
-const AgentProviderSchema = z.object({
-  organization: z.string(),
-  url: z.string(),
-}).loose();
+const AgentProviderSchema = z
+  .object({
+    organization: z.string(),
+    url: z.string(),
+  })
+  .loose();
 
-const AgentCardSignatureSchema = z.object({
-  protected: z.string(),
-  signature: z.string(),
-  header: z.record(z.string(), z.unknown()).optional(),
-}).loose();
+const AgentCardSignatureSchema = z
+  .object({
+    protected: z.string(),
+    signature: z.string(),
+    header: z.record(z.string(), z.unknown()).optional(),
+  })
+  .loose();
 
-const AgentExtensionSchema = z.object({
-  uri: z.string(),
-  description: z.string().optional(),
-  params: z.record(z.string(), z.unknown()).optional(),
-  required: z.boolean().optional(),
-}).loose();
+const AgentExtensionSchema = z
+  .object({
+    uri: z.string(),
+    description: z.string().optional(),
+    params: z.record(z.string(), z.unknown()).optional(),
+    required: z.boolean().optional(),
+  })
+  .loose();
 
 // ===================================================================
 // v0.3 Schemas (based on a2a-0.3.0.schema.json)
 // ===================================================================
 
 // v0.3: OAuth flows (shared flow shape, no deviceCode, no pkceRequired)
-const V03OAuthFlowSchema = z.object({
-  authorizationUrl: z.string().optional(),
-  tokenUrl: z.string().optional(),
-  refreshUrl: z.string().optional(),
-  scopes: z.record(z.string(), z.string()).optional(),
-}).loose();
+const V03OAuthFlowSchema = z
+  .object({
+    authorizationUrl: z.string().optional(),
+    tokenUrl: z.string().optional(),
+    refreshUrl: z.string().optional(),
+    scopes: z.record(z.string(), z.string()).optional(),
+  })
+  .loose();
 
-const V03OAuthFlowsSchema = z.object({
-  authorizationCode: V03OAuthFlowSchema.optional(),
-  clientCredentials: V03OAuthFlowSchema.optional(),
-  implicit: V03OAuthFlowSchema.optional(),
-  password: V03OAuthFlowSchema.optional(),
-}).loose();
+const V03OAuthFlowsSchema = z
+  .object({
+    authorizationCode: V03OAuthFlowSchema.optional(),
+    clientCredentials: V03OAuthFlowSchema.optional(),
+    implicit: V03OAuthFlowSchema.optional(),
+    password: V03OAuthFlowSchema.optional(),
+  })
+  .loose();
 
 // v0.3: SecurityScheme uses `type` discriminator (flat structure)
-const V03SecuritySchemeSchema = z.object({
-  type: z.enum(["apiKey", "http", "oauth2", "openIdConnect", "mutualTLS"]),
-  description: z.string().optional(),
-  // http-specific
-  scheme: z.string().optional(),
-  bearerFormat: z.string().optional(),
-  // apiKey-specific
-  name: z.string().optional(),
-  in: z.enum(["header", "query", "cookie"]).optional(),
-  // oauth2-specific
-  flows: V03OAuthFlowsSchema.optional(),
-  oauth2MetadataUrl: z.string().optional(),
-  // openIdConnect-specific
-  openIdConnectUrl: z.string().optional(),
-}).loose();
+const V03SecuritySchemeSchema = z
+  .object({
+    type: z.enum(["apiKey", "http", "oauth2", "openIdConnect", "mutualTLS"]),
+    description: z.string().optional(),
+    // http-specific
+    scheme: z.string().optional(),
+    bearerFormat: z.string().optional(),
+    // apiKey-specific
+    name: z.string().optional(),
+    in: z.enum(["header", "query", "cookie"]).optional(),
+    // oauth2-specific
+    flows: V03OAuthFlowsSchema.optional(),
+    oauth2MetadataUrl: z.string().optional(),
+    // openIdConnect-specific
+    openIdConnectUrl: z.string().optional(),
+  })
+  .loose();
 
 // v0.3: SecurityRequirement = Record<string, string[]>
 const V03SecurityRequirementSchema = z.record(z.string(), z.array(z.string()));
 
 // v0.3: AgentInterface (for additionalInterfaces)
-const V03AgentInterfaceSchema = z.object({
-  url: z.string(),
-  transport: z.string(),
-}).loose();
+const V03AgentInterfaceSchema = z
+  .object({
+    url: z.string(),
+    transport: z.string(),
+  })
+  .loose();
 
 // v0.3: AgentCapabilities
-const V03AgentCapabilitiesSchema = z.object({
-  streaming: z.boolean().optional(),
-  pushNotifications: z.boolean().optional(),
-  stateTransitionHistory: z.boolean().optional(),
-  extensions: z.array(AgentExtensionSchema).optional(),
-}).loose();
+const V03AgentCapabilitiesSchema = z
+  .object({
+    streaming: z.boolean().optional(),
+    pushNotifications: z.boolean().optional(),
+    stateTransitionHistory: z.boolean().optional(),
+    extensions: z.array(AgentExtensionSchema).optional(),
+  })
+  .loose();
 
 // v0.3: AgentSkill
-const V03AgentSkillSchema = z.object({
-  id: z.string(),
-  name: z.string(),
-  description: z.string(),
-  tags: z.array(z.string()),
-  inputModes: z.array(z.string()).optional(),
-  outputModes: z.array(z.string()).optional(),
-  examples: z.array(z.string()).optional(),
-  security: z.array(V03SecurityRequirementSchema).optional(),
-}).loose();
+const V03AgentSkillSchema = z
+  .object({
+    id: z.string(),
+    name: z.string(),
+    description: z.string(),
+    tags: z.array(z.string()),
+    inputModes: z.array(z.string()).optional(),
+    outputModes: z.array(z.string()).optional(),
+    examples: z.array(z.string()).optional(),
+    security: z.array(V03SecurityRequirementSchema).optional(),
+  })
+  .loose();
 
 // v0.3: Root AgentCard
-const AgentCardV03Schema = z.object({
-  name: z.string(),
-  version: z.string(),
-  description: z.string(),
-  url: z.string(),
-  protocolVersion: z.string(),
-  capabilities: V03AgentCapabilitiesSchema,
-  skills: z.array(V03AgentSkillSchema),
-  defaultInputModes: z.array(z.string()),
-  defaultOutputModes: z.array(z.string()),
-  provider: AgentProviderSchema.optional(),
-  documentationUrl: z.string().optional(),
-  iconUrl: z.string().optional(),
-  securitySchemes: z.record(z.string(), V03SecuritySchemeSchema).optional(),
-  security: z.array(V03SecurityRequirementSchema).optional(),
-  signatures: z.array(AgentCardSignatureSchema).optional(),
-  additionalInterfaces: z.array(V03AgentInterfaceSchema).optional(),
-  preferredTransport: z.string().optional(),
-  supportsAuthenticatedExtendedCard: z.boolean().optional(),
-}).loose();
+const AgentCardV03Schema = z
+  .object({
+    name: z.string(),
+    version: z.string(),
+    description: z.string(),
+    url: z.string(),
+    protocolVersion: z.string(),
+    capabilities: V03AgentCapabilitiesSchema,
+    skills: z.array(V03AgentSkillSchema),
+    defaultInputModes: z.array(z.string()),
+    defaultOutputModes: z.array(z.string()),
+    provider: AgentProviderSchema.optional(),
+    documentationUrl: z.string().optional(),
+    iconUrl: z.string().optional(),
+    securitySchemes: z.record(z.string(), V03SecuritySchemeSchema).optional(),
+    security: z.array(V03SecurityRequirementSchema).optional(),
+    signatures: z.array(AgentCardSignatureSchema).optional(),
+    additionalInterfaces: z.array(V03AgentInterfaceSchema).optional(),
+    preferredTransport: z.string().optional(),
+    supportsAuthenticatedExtendedCard: z.boolean().optional(),
+  })
+  .loose();
 
 // ===================================================================
 // v1.0 Schemas (based on a2a-1.0.0.schema.json)
 // ===================================================================
 
 // v1.0: OAuth flows with stricter required fields
-const V10AuthorizationCodeOAuthFlowSchema = z.object({
-  authorizationUrl: z.string(),
-  tokenUrl: z.string(),
-  scopes: z.record(z.string(), z.string()),
-  refreshUrl: z.string().optional(),
-  pkceRequired: z.boolean().optional(),
-}).strict();
+const V10AuthorizationCodeOAuthFlowSchema = z
+  .object({
+    authorizationUrl: z.string(),
+    tokenUrl: z.string(),
+    scopes: z.record(z.string(), z.string()),
+    refreshUrl: z.string().optional(),
+    pkceRequired: z.boolean().optional(),
+  })
+  .strict();
 
-const V10ClientCredentialsOAuthFlowSchema = z.object({
-  tokenUrl: z.string(),
-  scopes: z.record(z.string(), z.string()),
-  refreshUrl: z.string().optional(),
-}).strict();
+const V10ClientCredentialsOAuthFlowSchema = z
+  .object({
+    tokenUrl: z.string(),
+    scopes: z.record(z.string(), z.string()),
+    refreshUrl: z.string().optional(),
+  })
+  .strict();
 
-const V10DeviceCodeOAuthFlowSchema = z.object({
-  deviceAuthorizationUrl: z.string(),
-  tokenUrl: z.string(),
-  scopes: z.record(z.string(), z.string()),
-  refreshUrl: z.string().optional(),
-}).strict();
+const V10DeviceCodeOAuthFlowSchema = z
+  .object({
+    deviceAuthorizationUrl: z.string(),
+    tokenUrl: z.string(),
+    scopes: z.record(z.string(), z.string()),
+    refreshUrl: z.string().optional(),
+  })
+  .strict();
 
-const V10ImplicitOAuthFlowSchema = z.object({
-  authorizationUrl: z.string().optional(),
-  refreshUrl: z.string().optional(),
-  scopes: z.record(z.string(), z.string()).optional(),
-}).strict();
+const V10ImplicitOAuthFlowSchema = z
+  .object({
+    authorizationUrl: z.string().optional(),
+    refreshUrl: z.string().optional(),
+    scopes: z.record(z.string(), z.string()).optional(),
+  })
+  .strict();
 
-const V10PasswordOAuthFlowSchema = z.object({
-  tokenUrl: z.string().optional(),
-  refreshUrl: z.string().optional(),
-  scopes: z.record(z.string(), z.string()).optional(),
-}).strict();
+const V10PasswordOAuthFlowSchema = z
+  .object({
+    tokenUrl: z.string().optional(),
+    refreshUrl: z.string().optional(),
+    scopes: z.record(z.string(), z.string()).optional(),
+  })
+  .strict();
 
-const V10OAuthFlowsSchema = z.object({
-  authorizationCode: V10AuthorizationCodeOAuthFlowSchema.optional(),
-  clientCredentials: V10ClientCredentialsOAuthFlowSchema.optional(),
-  deviceCode: V10DeviceCodeOAuthFlowSchema.optional(),
-  implicit: V10ImplicitOAuthFlowSchema.optional(),
-  password: V10PasswordOAuthFlowSchema.optional(),
-}).strict();
+const V10OAuthFlowsSchema = z
+  .object({
+    authorizationCode: V10AuthorizationCodeOAuthFlowSchema.optional(),
+    clientCredentials: V10ClientCredentialsOAuthFlowSchema.optional(),
+    deviceCode: V10DeviceCodeOAuthFlowSchema.optional(),
+    implicit: V10ImplicitOAuthFlowSchema.optional(),
+    password: V10PasswordOAuthFlowSchema.optional(),
+  })
+  .strict();
 
 // v1.0: SecurityScheme uses nested oneof keys (no flat `type` field)
-const V10APIKeySecurityScheme = z.object({
-  location: z.string(),
-  name: z.string(),
-  description: z.string().optional(),
-}).strict();
+const V10APIKeySecurityScheme = z
+  .object({
+    location: z.string(),
+    name: z.string(),
+    description: z.string().optional(),
+  })
+  .strict();
 
-const V10HTTPAuthSecurityScheme = z.object({
-  scheme: z.string(),
-  bearerFormat: z.string().optional(),
-  description: z.string().optional(),
-}).strict();
+const V10HTTPAuthSecurityScheme = z
+  .object({
+    scheme: z.string(),
+    bearerFormat: z.string().optional(),
+    description: z.string().optional(),
+  })
+  .strict();
 
-const V10MutualTlsSecurityScheme = z.object({
-  description: z.string().optional(),
-}).strict();
+const V10MutualTlsSecurityScheme = z
+  .object({
+    description: z.string().optional(),
+  })
+  .strict();
 
-const V10OAuth2SecurityScheme = z.object({
-  flows: V10OAuthFlowsSchema,
-  oauth2MetadataUrl: z.string().optional(),
-  description: z.string().optional(),
-}).strict();
+const V10OAuth2SecurityScheme = z
+  .object({
+    flows: V10OAuthFlowsSchema,
+    oauth2MetadataUrl: z.string().optional(),
+    description: z.string().optional(),
+  })
+  .strict();
 
-const V10OpenIdConnectSecurityScheme = z.object({
-  openIdConnectUrl: z.string(),
-  description: z.string().optional(),
-}).strict();
+const V10OpenIdConnectSecurityScheme = z
+  .object({
+    openIdConnectUrl: z.string(),
+    description: z.string().optional(),
+  })
+  .strict();
 
-const V10SecuritySchemeSchema = z.object({
-  apiKeySecurityScheme: V10APIKeySecurityScheme.optional(),
-  httpAuthSecurityScheme: V10HTTPAuthSecurityScheme.optional(),
-  mtlsSecurityScheme: V10MutualTlsSecurityScheme.optional(),
-  oauth2SecurityScheme: V10OAuth2SecurityScheme.optional(),
-  openIdConnectSecurityScheme: V10OpenIdConnectSecurityScheme.optional(),
-}).strict();
+const V10SecuritySchemeSchema = z
+  .object({
+    apiKeySecurityScheme: V10APIKeySecurityScheme.optional(),
+    httpAuthSecurityScheme: V10HTTPAuthSecurityScheme.optional(),
+    mtlsSecurityScheme: V10MutualTlsSecurityScheme.optional(),
+    oauth2SecurityScheme: V10OAuth2SecurityScheme.optional(),
+    openIdConnectSecurityScheme: V10OpenIdConnectSecurityScheme.optional(),
+  })
+  .strict();
 
 // v1.0: SecurityRequirement = { schemes: Record<string, { list: string[] }> }
-const V10StringListSchema = z.object({
-  list: z.array(z.string()).optional(),
-}).strict();
+const V10StringListSchema = z
+  .object({
+    list: z.array(z.string()).optional(),
+  })
+  .strict();
 
-const V10SecurityRequirementSchema = z.object({
-  schemes: z.record(z.string(), V10StringListSchema).optional(),
-}).strict();
+const V10SecurityRequirementSchema = z
+  .object({
+    schemes: z.record(z.string(), V10StringListSchema).optional(),
+  })
+  .strict();
 
 // v1.0: SupportedInterface (with tenant)
-const V10SupportedInterfaceSchema = z.object({
-  url: z.string(),
-  protocolBinding: z.string(),
-  protocolVersion: z.string(),
-  tenant: z.string().optional(),
-}).strict();
+const V10SupportedInterfaceSchema = z
+  .object({
+    url: z.string(),
+    protocolBinding: z.string(),
+    protocolVersion: z.string(),
+    tenant: z.string().optional(),
+  })
+  .strict();
 
 // v1.0: AgentExtension (strict version)
-const V10AgentExtensionSchema = z.object({
-  uri: z.string().optional(),
-  description: z.string().optional(),
-  params: z.record(z.string(), z.unknown()).optional(),
-  required: z.boolean().optional(),
-}).strict();
+const V10AgentExtensionSchema = z
+  .object({
+    uri: z.string().optional(),
+    description: z.string().optional(),
+    params: z.record(z.string(), z.unknown()).optional(),
+    required: z.boolean().optional(),
+  })
+  .strict();
 
 // v1.0: AgentCapabilities (has extendedAgentCard, extensions; no stateTransitionHistory)
-const V10AgentCapabilitiesSchema = z.object({
-  streaming: z.boolean().optional(),
-  pushNotifications: z.boolean().optional(),
-  extendedAgentCard: z.boolean().optional(),
-  extensions: z.array(V10AgentExtensionSchema).optional(),
-}).strict();
+const V10AgentCapabilitiesSchema = z
+  .object({
+    streaming: z.boolean().optional(),
+    pushNotifications: z.boolean().optional(),
+    extendedAgentCard: z.boolean().optional(),
+    extensions: z.array(V10AgentExtensionSchema).optional(),
+  })
+  .strict();
 
 // v1.0: AgentSkill
-const V10AgentSkillSchema = z.object({
-  id: z.string(),
-  name: z.string(),
-  description: z.string(),
-  tags: z.array(z.string()),
-  inputModes: z.array(z.string()).optional(),
-  outputModes: z.array(z.string()).optional(),
-  examples: z.array(z.string()).optional(),
-  securityRequirements: z.array(V10SecurityRequirementSchema).optional(),
-}).strict();
+const V10AgentSkillSchema = z
+  .object({
+    id: z.string(),
+    name: z.string(),
+    description: z.string(),
+    tags: z.array(z.string()),
+    inputModes: z.array(z.string()).optional(),
+    outputModes: z.array(z.string()).optional(),
+    examples: z.array(z.string()).optional(),
+    securityRequirements: z.array(V10SecurityRequirementSchema).optional(),
+  })
+  .strict();
 
 // v1.0: AgentProvider (strict)
-const V10AgentProviderSchema = z.object({
-  organization: z.string(),
-  url: z.string(),
-}).strict();
+const V10AgentProviderSchema = z
+  .object({
+    organization: z.string(),
+    url: z.string(),
+  })
+  .strict();
 
 // v1.0: AgentCardSignature (strict)
-const V10AgentCardSignatureSchema = z.object({
-  protected: z.string(),
-  signature: z.string(),
-  header: z.record(z.string(), z.unknown()).optional(),
-}).strict();
+const V10AgentCardSignatureSchema = z
+  .object({
+    protected: z.string(),
+    signature: z.string(),
+    header: z.record(z.string(), z.unknown()).optional(),
+  })
+  .strict();
 
 // v1.0: Root AgentCard (strict — additionalProperties: false)
-const AgentCardV10Schema = z.object({
-  name: z.string(),
-  version: z.string(),
-  description: z.string(),
-  supportedInterfaces: z.array(V10SupportedInterfaceSchema),
-  capabilities: V10AgentCapabilitiesSchema,
-  skills: z.array(V10AgentSkillSchema),
-  defaultInputModes: z.array(z.string()),
-  defaultOutputModes: z.array(z.string()),
-  provider: V10AgentProviderSchema.optional(),
-  documentationUrl: z.string().optional(),
-  iconUrl: z.string().optional(),
-  securitySchemes: z.record(z.string(), V10SecuritySchemeSchema).optional(),
-  securityRequirements: z.array(V10SecurityRequirementSchema).optional(),
-  signatures: z.array(V10AgentCardSignatureSchema).optional(),
-}).strict();
+const AgentCardV10Schema = z
+  .object({
+    name: z.string(),
+    version: z.string(),
+    description: z.string(),
+    supportedInterfaces: z.array(V10SupportedInterfaceSchema),
+    capabilities: V10AgentCapabilitiesSchema,
+    skills: z.array(V10AgentSkillSchema),
+    defaultInputModes: z.array(z.string()),
+    defaultOutputModes: z.array(z.string()),
+    provider: V10AgentProviderSchema.optional(),
+    documentationUrl: z.string().optional(),
+    iconUrl: z.string().optional(),
+    securitySchemes: z.record(z.string(), V10SecuritySchemeSchema).optional(),
+    securityRequirements: z.array(V10SecurityRequirementSchema).optional(),
+    signatures: z.array(V10AgentCardSignatureSchema).optional(),
+  })
+  .strict();
 
 // ===================================================================
 // Version Detection

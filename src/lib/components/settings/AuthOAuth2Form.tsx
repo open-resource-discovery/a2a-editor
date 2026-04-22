@@ -28,33 +28,21 @@ export function AuthOAuth2Form() {
         <div className="space-y-2">
           {isAuthFlowInProgress ? (
             <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
-                className="flex-1"
-                disabled
-              >
+              <Button variant="outline" className="flex-1" disabled>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 Waiting for authorization...
               </Button>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={cancelAuthFlow}
-                title="Cancel"
-              >
+              <Button variant="ghost" size="icon" onClick={cancelAuthFlow} title="Cancel">
                 <X className="h-4 w-4" />
               </Button>
             </div>
           ) : hasAccessToken ? (
             <div className="flex items-center justify-between rounded-md border bg-success/10 p-2">
-              <span className="text-sm text-success">
-                ✓ Authenticated
-              </span>
+              <span className="text-sm text-success">✓ Authenticated</span>
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => setOAuth2Credentials({ accessToken: undefined, refreshToken: undefined })}
-              >
+                onClick={() => setOAuth2Credentials({ accessToken: undefined, refreshToken: undefined })}>
                 Sign Out
               </Button>
             </div>
@@ -63,15 +51,12 @@ export function AuthOAuth2Form() {
               variant="default"
               className="w-full"
               onClick={startAuthCodeFlow}
-              disabled={!oauth2Credentials.clientId}
-            >
+              disabled={!oauth2Credentials.clientId}>
               <LogIn className="mr-2 h-4 w-4" />
               Sign In with OAuth
             </Button>
           )}
-          {tokenError && (
-            <p className="text-xs text-destructive">{tokenError}</p>
-          )}
+          {tokenError && <p className="text-xs text-destructive">{tokenError}</p>}
         </div>
       )}
 
@@ -85,9 +70,7 @@ export function AuthOAuth2Form() {
       {/* Client Credentials */}
       <div className="space-y-2">
         <p className="text-xs text-muted-foreground">
-          {hasAuthorizationUrl
-            ? "Client ID is required for OAuth sign-in:"
-            : "Configure OAuth 2.0 credentials:"}
+          {hasAuthorizationUrl ? "Client ID is required for OAuth sign-in:" : "Configure OAuth 2.0 credentials:"}
         </p>
         <Input
           placeholder="Client ID"
@@ -120,12 +103,7 @@ export function AuthOAuth2Form() {
 
       {/* Client Credentials Flow Button */}
       {!hasAuthorizationUrl && hasTokenUrl && hasClientCredentials && (
-        <Button
-          variant="secondary"
-          className="w-full"
-          onClick={fetchOAuth2Token}
-          disabled={isTokenLoading}
-        >
+        <Button variant="secondary" className="w-full" onClick={fetchOAuth2Token} disabled={isTokenLoading}>
           {isTokenLoading ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -138,21 +116,13 @@ export function AuthOAuth2Form() {
       )}
 
       {/* Show error for client credentials flow */}
-      {!hasAuthorizationUrl && tokenError && (
-        <p className="text-xs text-destructive">{tokenError}</p>
-      )}
+      {!hasAuthorizationUrl && tokenError && <p className="text-xs text-destructive">{tokenError}</p>}
 
       {/* Show success state */}
       {!hasAuthorizationUrl && hasAccessToken && !tokenError && (
         <div className="flex items-center justify-between rounded-md border bg-success/10 p-2">
-          <span className="text-sm text-success">
-            ✓ Token acquired
-          </span>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setOAuth2Credentials({ accessToken: undefined })}
-          >
+          <span className="text-sm text-success">✓ Token acquired</span>
+          <Button variant="ghost" size="sm" onClick={() => setOAuth2Credentials({ accessToken: undefined })}>
             Clear
           </Button>
         </div>

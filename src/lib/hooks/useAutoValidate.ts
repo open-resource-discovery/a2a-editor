@@ -29,5 +29,5 @@ export function useAutoValidate() {
         clearTimeout(timerRef.current);
       }
     };
-  }, [rawJson, autoValidate, validate]);
+  }, [rawJson, autoValidate, validate, clear]);
 }

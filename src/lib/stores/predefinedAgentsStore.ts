@@ -30,62 +30,60 @@ function getBaseUrl(): string {
   return import.meta.env.BASE_URL;
 }
 
-export const usePredefinedAgentsStore = create<PredefinedAgentsState>(
-  (set) => ({
-    agents: [],
-    selectedId: null,
+export const usePredefinedAgentsStore = create<PredefinedAgentsState>((set) => ({
+  agents: [],
+  selectedId: null,
 
-    loadDefaults: async () => {
-      let defaults: PredefinedAgent[] = [];
+  loadDefaults: async () => {
+    let defaults: PredefinedAgent[] = [];
 
-      if (ENV_AGENTS) {
-        try {
-          defaults = JSON.parse(ENV_AGENTS);
-        } catch {
-          // Invalid JSON — fall through to fetch
-        }
+    if (ENV_AGENTS) {
+      try {
+        defaults = JSON.parse(ENV_AGENTS);
+      } catch {
+        // Invalid JSON — fall through to fetch
       }
+    }
 
-      if (defaults.length === 0) {
-        try {
-          const res = await fetch(`${getBaseUrl()}predefined-agents.json`);
-          if (res.ok) {
-            defaults = await res.json();
-          }
-        } catch {
-          // Silent fail - predefined agents are optional
+    if (defaults.length === 0) {
+      try {
+        const res = await fetch(`${getBaseUrl()}predefined-agents.json`);
+        if (res.ok) {
+          defaults = await res.json();
         }
+      } catch {
+        // Silent fail - predefined agents are optional
       }
+    }
 
-      const custom: PredefinedAgent[] = getStoredJson("a2a-custom-agents", []);
-      set({ agents: [...custom, ...defaults] });
-    },
+    const custom: PredefinedAgent[] = getStoredJson("a2a-custom-agents", []);
+    set({ agents: [...custom, ...defaults] });
+  },
 
-    addCustomAgent: (agent) => {
-      set((state) => {
-        // Prevent duplicate IDs
-        if (state.agents.some((a) => a.id === agent.id)) {
-          return state;
-        }
-        const newAgents = [...state.agents, agent];
-        persistCustom(newAgents);
-        return { agents: newAgents };
-      });
-    },
+  addCustomAgent: (agent) => {
+    set((state) => {
+      // Prevent duplicate IDs
+      if (state.agents.some((a) => a.id === agent.id)) {
+        return state;
+      }
+      const newAgents = [...state.agents, agent];
+      persistCustom(newAgents);
+      return { agents: newAgents };
+    });
+  },
 
-    removeAgent: (id) => {
-      set((state) => {
-        const newAgents = state.agents.filter((a) => a.id !== id);
-        persistCustom(newAgents);
-        return { agents: newAgents };
-      });
-    },
+  removeAgent: (id) => {
+    set((state) => {
+      const newAgents = state.agents.filter((a) => a.id !== id);
+      persistCustom(newAgents);
+      return { agents: newAgents };
+    });
+  },
 
-    select: (id) => set({ selectedId: id }),
+  select: (id) => set({ selectedId: id }),
 
-    deselect: () => set({ selectedId: null }),
-  }),
-);
+  deselect: () => set({ selectedId: null }),
+}));
 
 function persistCustom(agents: PredefinedAgent[]) {
   const custom = agents.filter((a) => a.id.startsWith("custom-"));
@@ -93,8 +91,6 @@ function persistCustom(agents: PredefinedAgent[]) {
 }
 
 // Selector for selected agent
-export const selectSelectedAgent = (
-  state: PredefinedAgentsState,
-): PredefinedAgent | null => {
+export const selectSelectedAgent = (state: PredefinedAgentsState): PredefinedAgent | null => {
   return state.agents.find((a) => a.id === state.selectedId) ?? null;
 };

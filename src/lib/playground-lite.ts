@@ -31,18 +31,9 @@ export type {
   SecurityRequirement,
 } from "./types/a2a";
 
-export type {
-  ValidationResult,
-  ValidationSummary,
-  ValidationStatus,
-  ValidationSeverity,
-} from "./types/validation";
+export type { ValidationResult, ValidationSummary, ValidationStatus, ValidationSeverity } from "./types/validation";
 
-export type {
-  AuthType,
-  ConnectionStatus,
-  PredefinedAgent,
-} from "./types/connection";
+export type { AuthType, ConnectionStatus, PredefinedAgent } from "./types/connection";
 
 // Store exports (excluding chat store)
 export { useAgentCardStore, selectParsedCard, selectParseError } from "./stores/agentCardStore";

@@ -366,8 +366,14 @@ export const useChatStore = create<ChatState>((set, get) => {
             } else {
               // Concatenate text from incoming chunk onto existing artifact
               const current = existingArtifacts[idx];
-              const currentText = current.parts.filter(isTextPart).map((p) => p.text).join("");
-              const incomingText = artifact.parts.filter(isTextPart).map((p) => p.text).join("");
+              const currentText = current.parts
+                .filter(isTextPart)
+                .map((p) => p.text)
+                .join("");
+              const incomingText = artifact.parts
+                .filter(isTextPart)
+                .map((p) => p.text)
+                .join("");
               const nonTextParts = [
                 ...current.parts.filter((p) => !isTextPart(p)),
                 ...artifact.parts.filter((p) => !isTextPart(p)),

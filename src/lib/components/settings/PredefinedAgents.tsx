@@ -38,8 +38,7 @@ function parseAgentUrl(input: string): { normalizedUrl: string; fetchUrl: string
 }
 
 export function PredefinedAgents() {
-  const { agents, selectedId, loadDefaults, deselect, addCustomAgent, removeAgent } =
-    usePredefinedAgentsStore();
+  const { agents, selectedId, loadDefaults, deselect, addCustomAgent, removeAgent } = usePredefinedAgentsStore();
 
   const [search, setSearch] = useState("");
   const [showAddForm, setShowAddForm] = useState(false);
@@ -94,9 +93,10 @@ export function PredefinedAgents() {
     }
 
     // Build connection-specific auth headers if available
-    const connectHeaders = agent.connectionAuthType && agent.connectionAuthConfig
-      ? buildPredefinedConnHeaders(agent.connectionAuthType, agent.connectionAuthConfig)
-      : undefined;
+    const connectHeaders =
+      agent.connectionAuthType && agent.connectionAuthConfig
+        ? buildPredefinedConnHeaders(agent.connectionAuthType, agent.connectionAuthConfig)
+        : undefined;
 
     await selectPredefinedAgent(agent, {
       connectHeaders,
@@ -211,7 +211,12 @@ export function PredefinedAgents() {
       <div className="sticky top-0 z-10 bg-sidebar pt-8 pb-3 space-y-3">
         <div className="flex items-center justify-between">
           <span className="text-sm font-medium">Agents</span>
-          <Button variant="ghost" size="sm" className="h-7 gap-1" onClick={() => setShowAddForm(!showAddForm)} data-testid="add-agent-btn">
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-7 gap-1"
+            onClick={() => setShowAddForm(!showAddForm)}
+            data-testid="add-agent-btn">
             <Plus className="h-3.5 w-3.5" />
             Add
           </Button>
@@ -219,117 +224,121 @@ export function PredefinedAgents() {
 
         {/* Add agent form */}
         {showAddForm && (
-        <div className="rounded-lg border p-3 space-y-2 bg-muted/50">
-          <Input
-            placeholder="Enter agent URL..."
-            data-testid="add-agent-url"
-            value={newAgentUrl}
-            onChange={(e) => {
-              setNewAgentUrl(e.target.value);
-              if (addError) {
-                setAddError("");
-              }
-            }}
-            className="h-8 text-sm"
-            type="url"
-            inputMode="url"
-            autoComplete="url"
-            onKeyDown={(e) => e.key === "Enter" && handleAddAgent()}
-          />
-          {addError && <p className="text-xs text-destructive">{addError}</p>}
-          {!addError && newAgentUrl.trim() && !isValidNewAgentUrl && (
-            <p className="text-xs text-destructive">Please enter a valid absolute http:// or https:// URL.</p>
-          )}
-
-          {/* Auth for secured agent card endpoints */}
-          <Select value={addAuthType} onValueChange={(v) => setAddAuthType(v as AddAuthType)}>
-            <SelectTrigger className="h-8 text-xs">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="none">No Authentication</SelectItem>
-              <SelectItem value="basic">Basic Auth</SelectItem>
-              <SelectItem value="bearer">Bearer Token</SelectItem>
-              <SelectItem value="apiKey">API Key</SelectItem>
-            </SelectContent>
-          </Select>
-
-          {addAuthType === "basic" && (
-            <div className="space-y-2">
-              <Input
-                placeholder="Username"
-                value={addUsername}
-                onChange={(e) => setAddUsername(e.target.value)}
-                className="h-8 text-sm"
-                autoComplete="off"
-              />
-              <PasswordInput
-                placeholder="Password"
-                value={addPassword}
-                onChange={(e) => setAddPassword(e.target.value)}
-                className="h-8 text-sm"
-                autoComplete="off"
-              />
-            </div>
-          )}
-
-          {addAuthType === "bearer" && (
-            <PasswordInput
-              placeholder="Bearer Token"
-              value={addToken}
-              onChange={(e) => setAddToken(e.target.value)}
-              className="h-8 text-sm"
-              autoComplete="off"
-            />
-          )}
-
-          {addAuthType === "apiKey" && (
-            <PasswordInput
-              placeholder="API Key"
-              value={addApiKey}
-              onChange={(e) => setAddApiKey(e.target.value)}
-              className="h-8 text-sm"
-              autoComplete="off"
-            />
-          )}
-
-          <div className="flex flex-wrap justify-end gap-2">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => {
-                setShowAddForm(false);
-                setNewAgentUrl("");
-                setAddError("");
+          <div className="rounded-lg border p-3 space-y-2 bg-muted/50">
+            <Input
+              placeholder="Enter agent URL..."
+              data-testid="add-agent-url"
+              value={newAgentUrl}
+              onChange={(e) => {
+                setNewAgentUrl(e.target.value);
+                if (addError) {
+                  setAddError("");
+                }
               }}
-              data-testid="add-agent-cancel">
-              Cancel
-            </Button>
-            <Button size="sm" onClick={handleAddAgent} disabled={isAdding || !isValidNewAgentUrl} data-testid="add-agent-submit">
-              {isAdding ? (
-                <>
-                  <Loader2 className="h-3 w-3 mr-1 animate-spin" />
-                  Adding...
-                </>
-              ) : (
-                "Add Agent"
-              )}
-            </Button>
-          </div>
-        </div>
-      )}
+              className="h-8 text-sm"
+              type="url"
+              inputMode="url"
+              autoComplete="url"
+              onKeyDown={(e) => e.key === "Enter" && handleAddAgent()}
+            />
+            {addError && <p className="text-xs text-destructive">{addError}</p>}
+            {!addError && newAgentUrl.trim() && !isValidNewAgentUrl && (
+              <p className="text-xs text-destructive">Please enter a valid absolute http:// or https:// URL.</p>
+            )}
 
-      {/* Search */}
-      <div className="relative">
-        <Search className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
-        <Input
-          placeholder="Search agents..."
-          data-testid="agent-search"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="h-8 pl-8 text-sm"
-        />
-      </div>
+            {/* Auth for secured agent card endpoints */}
+            <Select value={addAuthType} onValueChange={(v) => setAddAuthType(v as AddAuthType)}>
+              <SelectTrigger className="h-8 text-xs">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="none">No Authentication</SelectItem>
+                <SelectItem value="basic">Basic Auth</SelectItem>
+                <SelectItem value="bearer">Bearer Token</SelectItem>
+                <SelectItem value="apiKey">API Key</SelectItem>
+              </SelectContent>
+            </Select>
+
+            {addAuthType === "basic" && (
+              <div className="space-y-2">
+                <Input
+                  placeholder="Username"
+                  value={addUsername}
+                  onChange={(e) => setAddUsername(e.target.value)}
+                  className="h-8 text-sm"
+                  autoComplete="off"
+                />
+                <PasswordInput
+                  placeholder="Password"
+                  value={addPassword}
+                  onChange={(e) => setAddPassword(e.target.value)}
+                  className="h-8 text-sm"
+                  autoComplete="off"
+                />
+              </div>
+            )}
+
+            {addAuthType === "bearer" && (
+              <PasswordInput
+                placeholder="Bearer Token"
+                value={addToken}
+                onChange={(e) => setAddToken(e.target.value)}
+                className="h-8 text-sm"
+                autoComplete="off"
+              />
+            )}
+
+            {addAuthType === "apiKey" && (
+              <PasswordInput
+                placeholder="API Key"
+                value={addApiKey}
+                onChange={(e) => setAddApiKey(e.target.value)}
+                className="h-8 text-sm"
+                autoComplete="off"
+              />
+            )}
+
+            <div className="flex flex-wrap justify-end gap-2">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  setShowAddForm(false);
+                  setNewAgentUrl("");
+                  setAddError("");
+                }}
+                data-testid="add-agent-cancel">
+                Cancel
+              </Button>
+              <Button
+                size="sm"
+                onClick={handleAddAgent}
+                disabled={isAdding || !isValidNewAgentUrl}
+                data-testid="add-agent-submit">
+                {isAdding ? (
+                  <>
+                    <Loader2 className="h-3 w-3 mr-1 animate-spin" />
+                    Adding...
+                  </>
+                ) : (
+                  "Add Agent"
+                )}
+              </Button>
+            </div>
+          </div>
+        )}
+
+        {/* Search */}
+        <div className="relative">
+          <Search className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
+          <Input
+            placeholder="Search agents..."
+            data-testid="agent-search"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="h-8 pl-8 text-sm"
+          />
+        </div>
       </div>
 
       {/* Custom agents section */}

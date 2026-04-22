@@ -5,8 +5,7 @@ var __NAV_SCROLL_THRESHOLD__ = 2;
 var __navScrollTicking__ = false;
 
 function __applyNavScrolled__() {
-  var scrolled =
-    (window.scrollY || window.pageYOffset) > __NAV_SCROLL_THRESHOLD__;
+  var scrolled = (window.scrollY || window.pageYOffset) > __NAV_SCROLL_THRESHOLD__;
   var val = scrolled ? "1" : "0";
   var html = document.documentElement;
   if (html.getAttribute("data-nav-scrolled") !== val) {
@@ -123,8 +122,7 @@ function displayBanner(banner, data) {
   if (!data || !data.url) return;
 
   var content =
-    banner.querySelector(".announcementBarContent") ||
-    banner.querySelector("[class*='announcementBarContent']");
+    banner.querySelector(".announcementBarContent") || banner.querySelector("[class*='announcementBarContent']");
 
   if (content) {
     content.innerHTML =
@@ -141,9 +139,7 @@ function displayBanner(banner, data) {
 async function fetchBannerContent(banner) {
   var apiUrl = getBannerApiUrl();
   if (!apiUrl) {
-    console.debug(
-      "BANNER_SERVER_BASE_URL not configured, skipping banner fetch",
-    );
+    console.debug("BANNER_SERVER_BASE_URL not configured, skipping banner fetch");
     return;
   }
 
@@ -185,7 +181,7 @@ function adjustLayoutForBanner() {
     }
     // Add padding to docRoot if banner is taller than default 30px
     if (docRoot && bannerHeight > 30) {
-      docRoot.style.paddingTop = (bannerHeight - 30) + "px";
+      docRoot.style.paddingTop = bannerHeight - 30 + "px";
     } else if (docRoot) {
       docRoot.style.paddingTop = "";
     }

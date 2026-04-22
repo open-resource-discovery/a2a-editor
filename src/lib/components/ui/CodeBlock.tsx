@@ -47,12 +47,7 @@ export function CodeBlock({ className, children }: CodeBlockProps) {
 
   // Fenced code block with highlighting
   if (highlighted) {
-    return (
-      <code
-        className={`hljs ${className ?? ""}`}
-        dangerouslySetInnerHTML={{ __html: highlighted }}
-      />
-    );
+    return <code className={`hljs ${className ?? ""}`} dangerouslySetInnerHTML={{ __html: highlighted }} />;
   }
 
   // Fenced code block without highlighting (unrecognized language)
@@ -82,8 +77,7 @@ export function PreBlock({ children, ...props }: React.HTMLAttributes<HTMLPreEle
         type="button"
         onClick={handleCopy}
         className="absolute top-1.5 right-1.5 inline-flex items-center text-muted-foreground hover:text-foreground cursor-pointer z-10 rounded p-1 hover:bg-accent/50 opacity-0 group-hover/code:opacity-100 transition-opacity"
-        title="Copy code"
-      >
+        title="Copy code">
         {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
       </button>
       <pre {...props}>{children}</pre>

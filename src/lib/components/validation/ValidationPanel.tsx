@@ -15,15 +15,13 @@ export function ValidationPanel() {
   return (
     <div className="flex flex-col gap-4 p-4 h-full">
       {!allPassed && (
-        <ValidationSummary
-          summary={summary}
-          isValidating={isValidating}
-          lastValidatedAt={lastValidatedAt}
-        />
+        <ValidationSummary summary={summary} isValidating={isValidating} lastValidatedAt={lastValidatedAt} />
       )}
 
       {allPassed ? (
-        <div className="flex flex-1 flex-col items-center justify-center gap-4" style={{ "--c-accent": "#22c55e" } as React.CSSProperties}>
+        <div
+          className="flex flex-1 flex-col items-center justify-center gap-4"
+          style={{ "--c-accent": "#22c55e" } as React.CSSProperties}>
           <Checkmark />
           <p className="text-lg">
             <span className="font-bold text-foreground">{versionMatch ? versionMatch[1] : passMessage}</span>
@@ -40,9 +38,7 @@ export function ValidationPanel() {
         <div className="flex items-center justify-center py-8 text-center text-muted-foreground">
           <div>
             <p className="text-lg font-medium">No validation results</p>
-            <p className="text-sm">
-              Enter an agent card JSON and validation will run automatically.
-            </p>
+            <p className="text-sm">Enter an agent card JSON and validation will run automatically.</p>
           </div>
         </div>
       )}

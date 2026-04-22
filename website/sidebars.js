@@ -16,11 +16,7 @@ const sidebars = {
     {
       type: "category",
       label: "API Reference",
-      items: [
-        "api/stores",
-        "api/hooks",
-        "api/types",
-      ],
+      items: ["api/stores", "api/hooks", "api/types"],
     },
     "customization",
   ],

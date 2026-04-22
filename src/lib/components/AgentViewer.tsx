@@ -93,11 +93,7 @@ export function AgentViewer({
   return (
     <ErrorBoundary>
       <ThemeRoot className={cn("h-full", className)}>
-        <ViewerLayout
-          showValidation={showValidation}
-          defaultTab={defaultTab}
-          className="h-full"
-        />
+        <ViewerLayout showValidation={showValidation} defaultTab={defaultTab} className="h-full" />
       </ThemeRoot>
     </ErrorBoundary>
   );

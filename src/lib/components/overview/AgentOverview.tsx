@@ -38,9 +38,11 @@ export function AgentOverview({
         {lastValidCard.securitySchemes && Object.keys(lastValidCard.securitySchemes).length > 0 && (
           <SecuritySection schemes={lastValidCard.securitySchemes} readOnly />
         )}
-        {lastValidCard.capabilities && typeof lastValidCard.capabilities === "object" && !Array.isArray(lastValidCard.capabilities) && (
-          <CapabilitiesSection capabilities={lastValidCard.capabilities} />
-        )}
+        {lastValidCard.capabilities &&
+          typeof lastValidCard.capabilities === "object" &&
+          !Array.isArray(lastValidCard.capabilities) && (
+            <CapabilitiesSection capabilities={lastValidCard.capabilities} />
+          )}
         <ModesSection card={lastValidCard} />
         {lastValidCard.skills && lastValidCard.skills.length > 0 && (
           <SkillsSection skills={lastValidCard.skills} disableExamplePrompts readOnly />
@@ -104,12 +106,8 @@ export function AgentOverview({
       {card.skills && card.skills.length > 0 && (
         <SkillsSection skills={card.skills} disableExamplePrompts={disableExamplePrompts} readOnly={readOnly} />
       )}
-      {card.security && card.security.length > 0 && (
-        <SecurityRequirementsSection requirements={card.security} />
-      )}
-      {card.extensions && card.extensions.length > 0 && (
-        <ExtensionsSection extensions={card.extensions} />
-      )}
+      {card.security && card.security.length > 0 && <SecurityRequirementsSection requirements={card.security} />}
+      {card.extensions && card.extensions.length > 0 && <ExtensionsSection extensions={card.extensions} />}
     </div>
   );
 }

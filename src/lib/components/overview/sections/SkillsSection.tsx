@@ -13,10 +13,7 @@ interface SkillsSectionProps {
 export function SkillsSection({ skills, disableExamplePrompts = false, readOnly = false }: SkillsSectionProps) {
   const [selectedTags, setSelectedTags] = useState<Set<string>>(new Set());
 
-  const allTags = useMemo(
-    () => [...new Set(skills.flatMap((s) => s.tags ?? []))].sort(),
-    [skills],
-  );
+  const allTags = useMemo(() => [...new Set(skills.flatMap((s) => s.tags ?? []))].sort(), [skills]);
 
   const toggleTag = (tag: string) => {
     setSelectedTags((prev) => {
@@ -44,8 +41,7 @@ export function SkillsSection({ skills, disableExamplePrompts = false, readOnly 
               key={tag}
               variant={selectedTags.has(tag) ? "default" : "outline"}
               className="text-xs h-5 cursor-pointer"
-              onClick={() => toggleTag(tag)}
-            >
+              onClick={() => toggleTag(tag)}>
               {tag}
             </Badge>
           ))}

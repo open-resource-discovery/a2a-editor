@@ -15,14 +15,9 @@ test.describe("Agent Card Overview", () => {
   });
 
   test("should show agent description", async ({ playground }) => {
-    await expect(playground.agentHeader).toContainText(
-      "echo agent",
-      { ignoreCase: true },
-    );
+    await expect(playground.agentHeader).toContainText("echo agent", { ignoreCase: true });
     // The description comes from the mock agent card after connection
-    await expect(playground.agentHeader).toContainText(
-      "testing connectivity",
-    );
+    await expect(playground.agentHeader).toContainText("testing connectivity");
   });
 
   test("should show skills section", async ({ playground }) => {
