@@ -18,19 +18,19 @@
   "dependencies": {
     "@docusaurus/core": "^3.7.0",
     "@docusaurus/preset-classic": "^3.7.0",
-    "@easyops-cn/docusaurus-search-local": "^0.46.1",
+    "@easyops-cn/docusaurus-search-local": "0.46.1",
     "@mdx-js/react": "^3.0.0",
     "clsx": "^2.1.1",
-    "prism-react-renderer": "^2.3.0",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "prism-react-renderer": "2.4.1",
+    "react": "18.3.1",
+    "react-dom": "18.3.1"
   },
   "devDependencies": {
     "@docusaurus/module-type-aliases": "^3.7.0",
     "@docusaurus/types": "^3.7.0",
     "docusaurus-plugin-sass": "^0.2.5",
-    "dotenv": "^17.3.1",
-    "sass": "^1.77.0",
+    "dotenv": "17.3.1",
+    "sass": "1.97.3",
     "typescript": "~5.5.0"
   },
   "browserslist": {

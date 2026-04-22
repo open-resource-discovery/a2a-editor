@@ -15,7 +15,7 @@ jobs:
 
       - uses: actions/setup-node@v6
         with:
-          node-version: "24"
+          node-version: "24.15.0"
 
       - name: Install NPM dependencies
         run: npm ci
@@ -34,7 +34,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: "24"
+          node-version: "24.15.0"
 
       - name: Install NPM dependencies
         run: npm ci
@@ -50,7 +50,7 @@ jobs:
 
       - uses: actions/setup-node@v6
         with:
-          node-version: "24"
+          node-version: "24.15.0"
 
       - name: Install NPM dependencies
         run: npm ci
@@ -68,7 +68,7 @@ jobs:
 
       - uses: actions/setup-node@v6
         with:
-          node-version: "24"
+          node-version: "24.15.0"
 
       - name: Install NPM dependencies
         run: npm ci
