@@ -12,6 +12,9 @@ export class PlaygroundPage {
   readonly addAgentUrl: Locator;
   readonly addAgentSubmit: Locator;
   readonly addAgentCancel: Locator;
+  readonly discoverOrdBtn: Locator;
+  readonly ordUrlInput: Locator;
+  readonly discoverOrdSubmit: Locator;
 
   // Editor
   readonly editorPanel: Locator;
@@ -61,6 +64,9 @@ export class PlaygroundPage {
     this.addAgentUrl = page.locator("[data-testid='add-agent-url']");
     this.addAgentSubmit = page.locator("[data-testid='add-agent-submit']");
     this.addAgentCancel = page.locator("[data-testid='add-agent-cancel']");
+    this.discoverOrdBtn = page.locator("[data-testid='discover-ord-btn']");
+    this.ordUrlInput = page.locator("[data-testid='ord-url-input']");
+    this.discoverOrdSubmit = page.locator("[data-testid='discover-ord-submit']");
 
     // Editor
     this.editorPanel = page.locator("[data-testid='editor-panel']");
