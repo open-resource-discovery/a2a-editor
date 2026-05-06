@@ -1,12 +1,14 @@
 import { create } from "zustand";
 import type { PredefinedAgent } from "@lib/types/connection";
 import { getStoredJson, setStoredJson } from "@lib/utils/local-storage";
+import { discoverAgentsFromOrd } from "@lib/utils/ord-discovery";
 
 interface PredefinedAgentsState {
   agents: PredefinedAgent[];
   selectedId: string | null;
 
   loadDefaults: () => Promise<void>;
+  loadFromOrd: (url: string, headers?: Record<string, string>) => Promise<number>;
   addCustomAgent: (agent: PredefinedAgent) => void;
   removeAgent: (id: string) => void;
   select: (id: string) => void;
@@ -16,6 +18,9 @@ interface PredefinedAgentsState {
 // Predefined agents can be provided as a JSON array via VITE_PREDEFINED_AGENTS
 // env var. When set, the store uses it directly instead of fetching the JSON file.
 const ENV_AGENTS = import.meta.env.VITE_PREDEFINED_AGENTS ?? "";
+
+// Optional ORD endpoint to auto-discover agents on startup.
+const ENV_ORD_URL = import.meta.env.VITE_AGENTS_ORD_URL ?? "";
 
 // Get base URL for assets at runtime so standalone bundles work when hosted
 // on any path. Derives the URL from the script tag that loaded the bundle.
@@ -58,7 +63,41 @@ export const usePredefinedAgentsStore = create<PredefinedAgentsState>(
       }
 
       const custom: PredefinedAgent[] = getStoredJson("a2a-custom-agents", []);
-      set({ agents: [...custom, ...defaults] });
+      const ord: PredefinedAgent[] = getStoredJson("a2a-ord-agents", []);
+
+      const allAgents = [...custom, ...ord, ...defaults];
+      set({ agents: allAgents });
+
+      if (ENV_ORD_URL) {
+        try {
+          const discovered = await discoverAgentsFromOrd(ENV_ORD_URL);
+          set((state) => {
+            const existingUrls = new Set(state.agents.map((a) => a.url));
+            const fresh = discovered.filter((a) => !existingUrls.has(a.url));
+            if (fresh.length === 0) return state;
+            const newAgents = [...state.agents, ...fresh];
+            persistOrd(newAgents);
+            return { agents: newAgents };
+          });
+        } catch {
+          // Silent fail - ORD discovery is optional
+        }
+      }
+    },
+
+    loadFromOrd: async (url, headers) => {
+      const discovered = await discoverAgentsFromOrd(url, headers);
+      let added = 0;
+      set((state) => {
+        const existingUrls = new Set(state.agents.map((a) => a.url));
+        const fresh = discovered.filter((a) => !existingUrls.has(a.url));
+        added = fresh.length;
+        if (fresh.length === 0) return state;
+        const newAgents = [...state.agents, ...fresh];
+        persistOrd(newAgents);
+        return { agents: newAgents };
+      });
+      return added;
     },
 
     addCustomAgent: (agent) => {
@@ -77,6 +116,7 @@ export const usePredefinedAgentsStore = create<PredefinedAgentsState>(
       set((state) => {
         const newAgents = state.agents.filter((a) => a.id !== id);
         persistCustom(newAgents);
+        persistOrd(newAgents);
         return { agents: newAgents };
       });
     },
@@ -90,6 +130,11 @@ export const usePredefinedAgentsStore = create<PredefinedAgentsState>(
 function persistCustom(agents: PredefinedAgent[]) {
   const custom = agents.filter((a) => a.id.startsWith("custom-"));
   setStoredJson("a2a-custom-agents", custom);
+}
+
+function persistOrd(agents: PredefinedAgent[]) {
+  const ord = agents.filter((a) => a.id.startsWith("ord-"));
+  setStoredJson("a2a-ord-agents", ord);
 }
 
 // Selector for selected agent
