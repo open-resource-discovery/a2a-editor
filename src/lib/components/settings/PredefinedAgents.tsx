@@ -128,6 +128,10 @@ export function PredefinedAgents() {
     try {
       const { normalizedUrl, fetchUrl } = parseAgentUrl(newAgentUrl);
 
+      if (agents.some((a) => a.url === normalizedUrl)) {
+        throw new Error("An agent with this URL already exists");
+      }
+
       const headers = buildAddHeaders(addAuthType, addUsername, addPassword, addToken, addApiKey);
       const res = await fetch(fetchUrl, headers ? { headers } : undefined);
       if (!res.ok) {
