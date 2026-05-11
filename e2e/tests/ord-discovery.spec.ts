@@ -5,7 +5,7 @@ const ORD_HOST = "https://ord-host.example.com";
 
 const ORD_CONFIG = {
   openResourceDiscoveryV1: {
-    documents: [{ url: "/open-resource-discovery/v1/documents/1" }],
+    documents: [{ url: "/ord/v1/documents/1" }],
   },
 };
 
@@ -43,7 +43,7 @@ async function mockOrdChain(page: Page) {
       body: JSON.stringify(ORD_CONFIG),
     }),
   );
-  await page.route(`${ORD_HOST}/open-resource-discovery/v1/documents/1`, (route) =>
+  await page.route(`${ORD_HOST}/ord/v1/documents/1`, (route) =>
     route.fulfill({
       status: 200,
       contentType: "application/json",

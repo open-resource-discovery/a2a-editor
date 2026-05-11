@@ -1,34 +1,5 @@
 import type { PredefinedAgent } from "@lib/types/connection";
-
-interface ORDConfig {
-  baseUrl?: string;
-  openResourceDiscoveryV1?: {
-    documents?: { url: string }[];
-  };
-}
-
-interface ORDApiResource {
-  ordId: string;
-  title?: string;
-  shortDescription?: string;
-  description?: string;
-  apiProtocol?: string;
-  resourceDefinitions?: Array<{
-    type?: string;
-    customType?: string;
-    url?: string;
-  }>;
-}
-
-interface ORDDocument {
-  agents?: Array<{
-    ordId: string;
-    title?: string;
-    shortDescription?: string;
-    exposedApiResources?: Array<{ ordId: string }>;
-  }>;
-  apiResources?: ORDApiResource[];
-}
+import type { OrdConfiguration, ApiResource, OrdDocument } from "@open-resource-discovery/specification";
 
 interface AgentCardJson {
   name?: string;
@@ -65,7 +36,7 @@ export async function discoverAgentsFromOrd(
   if (!configRes.ok) {
     throw new Error(`ORD config fetch failed: ${configRes.status} ${configRes.statusText}`);
   }
-  const config: ORDConfig = await configRes.json();
+  const config: OrdConfiguration = await configRes.json();
 
   const providerOrigin = new URL(configUrl).origin;
   const baseUrl = (config.baseUrl || providerOrigin).replace(/\/$/, "");
@@ -81,7 +52,7 @@ export async function discoverAgentsFromOrd(
     const docUrl = docPath.startsWith("http") ? docPath : `${baseUrl}${docPath}`;
     const docRes = await fetch(docUrl, fetchOpts);
     if (!docRes.ok) continue;
-    const doc: ORDDocument = await docRes.json();
+    const doc: OrdDocument = await docRes.json();
 
     const docProviderOrigin = new URL(docUrl).origin;
 
@@ -130,7 +101,7 @@ export async function discoverAgentsFromOrd(
 }
 
 async function buildAgentFromApiResource(
-  apiResource: ORDApiResource,
+  apiResource: ApiResource,
   fallbackName: string,
   fallbackDescription: string,
   providerOrigin: string,
