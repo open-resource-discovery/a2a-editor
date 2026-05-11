@@ -10,7 +10,7 @@ import { selectPredefinedAgent } from "@lib/utils/agent-selection";
 import { detectProtocolVersion, normalizeAgentCard } from "@lib/utils/a2a-protocol";
 import { buildAddHeaders, mapAddAuth, buildPredefinedConnHeaders } from "@lib/utils/predefined-auth";
 import type { AddAuthType } from "@lib/utils/predefined-auth";
-import { Search, Plus, X, Loader2 } from "lucide-react";
+import { Search, Plus, X, Loader2, Globe } from "lucide-react";
 import type { PredefinedAgent } from "@lib/types/connection";
 
 function parseAgentUrl(input: string): { normalizedUrl: string; fetchUrl: string } {
@@ -38,7 +38,7 @@ function parseAgentUrl(input: string): { normalizedUrl: string; fetchUrl: string
 }
 
 export function PredefinedAgents() {
-  const { agents, selectedId, loadDefaults, deselect, addCustomAgent, removeAgent } =
+  const { agents, selectedId, loadDefaults, deselect, addCustomAgent, removeAgent, loadFromOrd } =
     usePredefinedAgentsStore();
 
   const [search, setSearch] = useState("");
@@ -52,15 +52,23 @@ export function PredefinedAgents() {
   const [addToken, setAddToken] = useState("");
   const [addApiKey, setAddApiKey] = useState("");
 
+  const [showOrdForm, setShowOrdForm] = useState(false);
+  const [ordUrl, setOrdUrl] = useState("");
+  const [isDiscovering, setIsDiscovering] = useState(false);
+  const [discoverError, setDiscoverError] = useState("");
+  const [discoverMessage, setDiscoverMessage] = useState("");
+
   useEffect(() => {
     loadDefaults();
   }, [loadDefaults]);
 
-  // Separate custom and predefined agents
   const customAgents = useMemo(() => agents.filter((a) => a.id.startsWith("custom-")), [agents]);
-  const predefinedAgents = useMemo(() => agents.filter((a) => !a.id.startsWith("custom-")), [agents]);
+  const ordAgents = useMemo(() => agents.filter((a) => a.id.startsWith("ord-")), [agents]);
+  const predefinedAgents = useMemo(
+    () => agents.filter((a) => !a.id.startsWith("custom-") && !a.id.startsWith("ord-")),
+    [agents],
+  );
 
-  // Filter agents by search (name, description, tags)
   const filterAgents = (agentList: PredefinedAgent[]) => {
     if (!search) return agentList;
     const query = search.toLowerCase();
@@ -73,6 +81,7 @@ export function PredefinedAgents() {
   };
 
   const filteredCustom = filterAgents(customAgents);
+  const filteredOrd = filterAgents(ordAgents);
   const filteredPredefined = filterAgents(predefinedAgents);
   const isValidNewAgentUrl = (() => {
     if (!newAgentUrl.trim()) return false;
@@ -161,6 +170,21 @@ export function PredefinedAgents() {
     }
   };
 
+  const handleDiscover = async () => {
+    if (!ordUrl.trim()) return;
+    setIsDiscovering(true);
+    setDiscoverError("");
+    setDiscoverMessage("");
+    try {
+      const added = await loadFromOrd(ordUrl.trim());
+      setDiscoverMessage(added === 0 ? "No new agents found" : `Added ${added} agent${added !== 1 ? "s" : ""}`);
+    } catch (err) {
+      setDiscoverError(err instanceof Error ? err.message : "Discovery failed");
+    } finally {
+      setIsDiscovering(false);
+    }
+  };
+
   const renderAgentCard = (agent: PredefinedAgent, isCustom: boolean) => (
     <div
       key={agent.id}
@@ -211,125 +235,170 @@ export function PredefinedAgents() {
       <div className="sticky top-0 z-10 bg-sidebar pt-8 pb-3 space-y-3">
         <div className="flex items-center justify-between">
           <span className="text-sm font-medium">Agents</span>
-          <Button variant="ghost" size="sm" className="h-7 gap-1" onClick={() => setShowAddForm(!showAddForm)} data-testid="add-agent-btn">
-            <Plus className="h-3.5 w-3.5" />
-            Add
-          </Button>
-        </div>
-
-        {/* Add agent form */}
-        {showAddForm && (
-        <div className="rounded-lg border p-3 space-y-2 bg-muted/50">
-          <Input
-            placeholder="Enter agent URL..."
-            data-testid="add-agent-url"
-            value={newAgentUrl}
-            onChange={(e) => {
-              setNewAgentUrl(e.target.value);
-              if (addError) {
-                setAddError("");
-              }
-            }}
-            className="h-8 text-sm"
-            type="url"
-            inputMode="url"
-            autoComplete="url"
-            onKeyDown={(e) => e.key === "Enter" && handleAddAgent()}
-          />
-          {addError && <p className="text-xs text-destructive">{addError}</p>}
-          {!addError && newAgentUrl.trim() && !isValidNewAgentUrl && (
-            <p className="text-xs text-destructive">Please enter a valid absolute http:// or https:// URL.</p>
-          )}
-
-          {/* Auth for secured agent card endpoints */}
-          <Select value={addAuthType} onValueChange={(v) => setAddAuthType(v as AddAuthType)}>
-            <SelectTrigger className="h-8 text-xs">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="none">No Authentication</SelectItem>
-              <SelectItem value="basic">Basic Auth</SelectItem>
-              <SelectItem value="bearer">Bearer Token</SelectItem>
-              <SelectItem value="apiKey">API Key</SelectItem>
-            </SelectContent>
-          </Select>
-
-          {addAuthType === "basic" && (
-            <div className="space-y-2">
-              <Input
-                placeholder="Username"
-                value={addUsername}
-                onChange={(e) => setAddUsername(e.target.value)}
-                className="h-8 text-sm"
-                autoComplete="off"
-              />
-              <PasswordInput
-                placeholder="Password"
-                value={addPassword}
-                onChange={(e) => setAddPassword(e.target.value)}
-                className="h-8 text-sm"
-                autoComplete="off"
-              />
-            </div>
-          )}
-
-          {addAuthType === "bearer" && (
-            <PasswordInput
-              placeholder="Bearer Token"
-              value={addToken}
-              onChange={(e) => setAddToken(e.target.value)}
-              className="h-8 text-sm"
-              autoComplete="off"
-            />
-          )}
-
-          {addAuthType === "apiKey" && (
-            <PasswordInput
-              placeholder="API Key"
-              value={addApiKey}
-              onChange={(e) => setAddApiKey(e.target.value)}
-              className="h-8 text-sm"
-              autoComplete="off"
-            />
-          )}
-
-          <div className="flex flex-wrap justify-end gap-2">
+          <div className="flex items-center gap-1">
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => {
-                setShowAddForm(false);
-                setNewAgentUrl("");
-                setAddError("");
-              }}
-              data-testid="add-agent-cancel">
-              Cancel
+              className="h-7 gap-1"
+              onClick={() => { setShowOrdForm(!showOrdForm); setShowAddForm(false); }}
+              data-testid="discover-ord-btn">
+              <Globe className="h-3.5 w-3.5" />
+              Discover
             </Button>
-            <Button size="sm" onClick={handleAddAgent} disabled={isAdding || !isValidNewAgentUrl} data-testid="add-agent-submit">
-              {isAdding ? (
-                <>
-                  <Loader2 className="h-3 w-3 mr-1 animate-spin" />
-                  Adding...
-                </>
-              ) : (
-                "Add Agent"
-              )}
+            <Button variant="ghost" size="sm" className="h-7 gap-1" onClick={() => { setShowAddForm(!showAddForm); setShowOrdForm(false); }} data-testid="add-agent-btn">
+              <Plus className="h-3.5 w-3.5" />
+              Add
             </Button>
           </div>
         </div>
-      )}
 
-      {/* Search */}
-      <div className="relative">
-        <Search className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
-        <Input
-          placeholder="Search agents..."
-          data-testid="agent-search"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="h-8 pl-8 text-sm"
-        />
-      </div>
+        {/* ORD discovery form */}
+        {showOrdForm && (
+          <div className="rounded-lg border p-3 space-y-2 bg-muted/50">
+            <p className="text-xs text-muted-foreground">Enter an ORD endpoint to discover A2A agents.</p>
+            <Input
+              placeholder="https://example.com/.well-known/open-resource-discovery"
+              data-testid="ord-url-input"
+              value={ordUrl}
+              onChange={(e) => {
+                setOrdUrl(e.target.value);
+                if (discoverError) setDiscoverError("");
+                if (discoverMessage) setDiscoverMessage("");
+              }}
+              className="h-8 text-sm"
+              type="url"
+              inputMode="url"
+              autoComplete="url"
+              onKeyDown={(e) => e.key === "Enter" && handleDiscover()}
+            />
+            {discoverError && <p className="text-xs text-destructive">{discoverError}</p>}
+            {discoverMessage && <p className="text-xs text-muted-foreground">{discoverMessage}</p>}
+            <div className="flex justify-end">
+              <Button size="sm" onClick={handleDiscover} disabled={isDiscovering || !ordUrl.trim()} data-testid="discover-ord-submit">
+                {isDiscovering ? (
+                  <>
+                    <Loader2 className="h-3 w-3 mr-1 animate-spin" />
+                    Discovering...
+                  </>
+                ) : (
+                  "Discover"
+                )}
+              </Button>
+            </div>
+          </div>
+        )}
+
+        {/* Add agent form */}
+        {showAddForm && (
+          <div className="rounded-lg border p-3 space-y-2 bg-muted/50">
+            <Input
+              placeholder="Enter agent URL..."
+              data-testid="add-agent-url"
+              value={newAgentUrl}
+              onChange={(e) => {
+                setNewAgentUrl(e.target.value);
+                if (addError) setAddError("");
+              }}
+              className="h-8 text-sm"
+              type="url"
+              inputMode="url"
+              autoComplete="url"
+              onKeyDown={(e) => e.key === "Enter" && handleAddAgent()}
+            />
+            {addError && <p className="text-xs text-destructive">{addError}</p>}
+            {!addError && newAgentUrl.trim() && !isValidNewAgentUrl && (
+              <p className="text-xs text-destructive">Please enter a valid absolute http:// or https:// URL.</p>
+            )}
+
+            {/* Auth for secured agent card endpoints */}
+            <Select value={addAuthType} onValueChange={(v) => setAddAuthType(v as AddAuthType)}>
+              <SelectTrigger className="h-8 text-xs">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="none">No Authentication</SelectItem>
+                <SelectItem value="basic">Basic Auth</SelectItem>
+                <SelectItem value="bearer">Bearer Token</SelectItem>
+                <SelectItem value="apiKey">API Key</SelectItem>
+              </SelectContent>
+            </Select>
+
+            {addAuthType === "basic" && (
+              <div className="space-y-2">
+                <Input
+                  placeholder="Username"
+                  value={addUsername}
+                  onChange={(e) => setAddUsername(e.target.value)}
+                  className="h-8 text-sm"
+                  autoComplete="off"
+                />
+                <PasswordInput
+                  placeholder="Password"
+                  value={addPassword}
+                  onChange={(e) => setAddPassword(e.target.value)}
+                  className="h-8 text-sm"
+                  autoComplete="off"
+                />
+              </div>
+            )}
+
+            {addAuthType === "bearer" && (
+              <PasswordInput
+                placeholder="Bearer Token"
+                value={addToken}
+                onChange={(e) => setAddToken(e.target.value)}
+                className="h-8 text-sm"
+                autoComplete="off"
+              />
+            )}
+
+            {addAuthType === "apiKey" && (
+              <PasswordInput
+                placeholder="API Key"
+                value={addApiKey}
+                onChange={(e) => setAddApiKey(e.target.value)}
+                className="h-8 text-sm"
+                autoComplete="off"
+              />
+            )}
+
+            <div className="flex flex-wrap justify-end gap-2">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  setShowAddForm(false);
+                  setNewAgentUrl("");
+                  setAddError("");
+                }}
+                data-testid="add-agent-cancel">
+                Cancel
+              </Button>
+              <Button size="sm" onClick={handleAddAgent} disabled={isAdding || !isValidNewAgentUrl} data-testid="add-agent-submit">
+                {isAdding ? (
+                  <>
+                    <Loader2 className="h-3 w-3 mr-1 animate-spin" />
+                    Adding...
+                  </>
+                ) : (
+                  "Add Agent"
+                )}
+              </Button>
+            </div>
+          </div>
+        )}
+
+        {/* Search */}
+        <div className="relative">
+          <Search className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
+          <Input
+            placeholder="Search agents..."
+            data-testid="agent-search"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="h-8 pl-8 text-sm"
+          />
+        </div>
       </div>
 
       {/* Custom agents section */}
@@ -340,15 +409,25 @@ export function PredefinedAgents() {
         </div>
       )}
 
+      {/* ORD agents section */}
+      {filteredOrd.length > 0 && (
+        <div className="space-y-2">
+          <p className="text-xs text-muted-foreground font-medium">ORD Agents</p>
+          {filteredOrd.map((agent) => renderAgentCard(agent, true))}
+        </div>
+      )}
+
       {/* Predefined agents section */}
       {filteredPredefined.length > 0 && (
         <div className="space-y-2">
-          {filteredCustom.length > 0 && <p className="text-xs text-muted-foreground font-medium">Examples</p>}
+          {(filteredCustom.length > 0 || filteredOrd.length > 0) && (
+            <p className="text-xs text-muted-foreground font-medium">Examples</p>
+          )}
           {filteredPredefined.map((agent) => renderAgentCard(agent, false))}
         </div>
       )}
 
-      {filteredCustom.length === 0 && filteredPredefined.length === 0 && (
+      {filteredCustom.length === 0 && filteredOrd.length === 0 && filteredPredefined.length === 0 && (
         <p className="text-xs text-muted-foreground text-center py-4">No agents found</p>
       )}
     </div>

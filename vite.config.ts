@@ -16,6 +16,7 @@ export default defineConfig(({ mode }) => {
     test: {
       include: ["src/**/*.test.ts", "src/**/*.test.tsx"],
       environment: "jsdom",
+      pool: "forks",
     },
     plugins: [
       react(),
