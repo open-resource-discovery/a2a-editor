@@ -60,3 +60,9 @@ export async function selectPredefinedAgent(
     });
   }
 }
+
+export function clearAgentState() {
+  usePredefinedAgentsStore.getState().deselect();
+  useConnectionStore.getState().reset();
+  useAgentCardStore.getState().reset();
+}

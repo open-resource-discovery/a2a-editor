@@ -6,7 +6,7 @@ import { Input } from "@lib/components/ui/input";
 import { PasswordInput } from "@lib/components/ui/PasswordInput";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@lib/components/ui/select";
 import { cn } from "@lib/utils/cn";
-import { selectPredefinedAgent } from "@lib/utils/agent-selection";
+import { selectPredefinedAgent, clearAgentState } from "@lib/utils/agent-selection";
 import { detectProtocolVersion, normalizeAgentCard } from "@lib/utils/a2a-protocol";
 import { buildAddHeaders, mapAddAuth, buildPredefinedConnHeaders } from "@lib/utils/predefined-auth";
 import type { AddAuthType } from "@lib/utils/predefined-auth";
@@ -76,7 +76,8 @@ export function PredefinedAgents() {
       const matchesName = agent.name.toLowerCase().includes(query);
       const matchesDescription = agent.description?.toLowerCase().includes(query);
       const matchesTags = agent.tags?.some((tag) => tag.toLowerCase().includes(query));
-      return matchesName || matchesDescription || matchesTags;
+      const matchesUrl = agent.url.toLowerCase().includes(query);
+      return matchesName || matchesDescription || matchesTags || matchesUrl;
     });
   };
 
@@ -111,7 +112,7 @@ export function PredefinedAgents() {
   const handleRemoveAgent = (e: React.MouseEvent, id: string) => {
     e.stopPropagation();
     if (selectedId === id) {
-      deselect();
+      clearAgentState();
     }
     removeAgent(id);
   };
@@ -146,7 +147,7 @@ export function PredefinedAgents() {
         url: normalizedUrl,
         authType,
         ...(authConfig ? { authConfig } : {}),
-        tags: ["Custom"],
+        tags: [...new Set([...(normalizedCard.skills?.flatMap((s) => s.tags ?? []) ?? []), "Custom"])],
         mocked: false,
         protocolVersion,
       };
@@ -219,7 +220,12 @@ export function PredefinedAgents() {
               Mocked LLM
             </Badge>
           )}
-          {agent.tags.slice(0, 3).map((tag) => (
+          {agent.tags.filter((t) => t === "Custom" || t === "ORD").map((tag) => (
+            <Badge key={tag} variant="outline" className="text-xs h-5 border-warning/50 text-warning">
+              {tag}
+            </Badge>
+          ))}
+          {agent.tags.filter((t) => t !== "Custom" && t !== "ORD").slice(0, 3).map((tag) => (
             <Badge key={tag} variant="secondary" className="text-xs h-5">
               {tag}
             </Badge>
