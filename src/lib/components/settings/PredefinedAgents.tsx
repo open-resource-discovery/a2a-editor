@@ -97,11 +97,6 @@ export function PredefinedAgents() {
     const agent = agents.find((a) => a.id === id);
     if (!agent) return;
 
-    if (selectedId === id) {
-      deselect();
-      return;
-    }
-
     // Build connection-specific auth headers if available
     const connectHeaders = agent.connectionAuthType && agent.connectionAuthConfig
       ? buildPredefinedConnHeaders(agent.connectionAuthType, agent.connectionAuthConfig)

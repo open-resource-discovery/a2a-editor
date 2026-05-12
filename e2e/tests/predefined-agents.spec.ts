@@ -32,10 +32,10 @@ test.describe("Predefined Agents", () => {
     await expect(playground.agentCard("mock-echo")).toHaveClass(/border-primary/);
   });
 
-  test("should deselect agent on second click", async ({ playground }) => {
+  test("should remain selected on second click", async ({ playground }) => {
     await playground.selectAgent("mock-echo");
     await expect(playground.agentCard("mock-echo")).toHaveClass(/border-primary/);
     await playground.agentCard("mock-echo").click();
-    await expect(playground.agentCard("mock-echo")).not.toHaveClass(/border-primary/);
+    await expect(playground.agentCard("mock-echo")).toHaveClass(/border-primary/);
   });
 });
