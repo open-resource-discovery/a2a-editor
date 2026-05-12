@@ -38,7 +38,7 @@ function parseAgentUrl(input: string): { normalizedUrl: string; fetchUrl: string
 }
 
 export function PredefinedAgents() {
-  const { agents, selectedId, loadDefaults, deselect, addCustomAgent, removeAgent, loadFromOrd } =
+  const { agents, selectedId, loadDefaults, addCustomAgent, removeAgent, loadFromOrd } =
     usePredefinedAgentsStore();
 
   const [search, setSearch] = useState("");
