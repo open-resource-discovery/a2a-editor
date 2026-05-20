@@ -1,7 +1,6 @@
 import { useEffect, useState, useMemo } from "react";
 import { usePredefinedAgentsStore } from "@lib/stores/predefinedAgentsStore";
-import { Badge } from "@lib/components/ui/badge";
-import { Button } from "@lib/components/ui/button";
+import { Badge, Button, Card } from "@open-resource-discovery/ui-components";
 import { Input } from "@lib/components/ui/input";
 import { PasswordInput } from "@lib/components/ui/PasswordInput";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@lib/components/ui/select";
@@ -186,13 +185,13 @@ export function PredefinedAgents() {
   };
 
   const renderAgentCard = (agent: PredefinedAgent, isCustom: boolean) => (
-    <div
+    <Card
       key={agent.id}
       role="listitem"
       data-testid={`agent-card-${agent.id}`}
       tabIndex={0}
       className={cn(
-        "rounded-lg border p-3 cursor-pointer transition-colors relative group",
+        "p-3 cursor-pointer transition-colors relative group",
         selectedId === agent.id ? "border-primary bg-accent" : "hover:bg-accent/50",
       )}
       onClick={() => handleSelectAgent(agent.id)}
@@ -216,18 +215,18 @@ export function PredefinedAgents() {
       {agent.tags && agent.tags.length > 0 && (
         <div className="flex flex-wrap gap-1 mt-2">
           {agent.mocked !== false && (
-            <Badge variant="outline" className="text-xs h-5 border-warning/50 text-warning">
+            <Badge variant="warning">
               Mocked LLM
             </Badge>
           )}
           {agent.tags.slice(0, 3).map((tag) => (
-            <Badge key={tag} variant="secondary" className="text-xs h-5">
+            <Badge key={tag} variant="secondary">
               {tag}
             </Badge>
           ))}
         </div>
       )}
-    </div>
+    </Card>
   );
 
   return (

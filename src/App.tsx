@@ -6,6 +6,8 @@ import { DocumentationPage } from "./demo/pages/DocumentationPage";
 import { AppHeader } from "./demo/layout/AppHeader";
 import { OAuthCallback } from "./lib/components/OAuthCallback";
 import { ThemeRoot } from "./lib/components/ThemeRoot";
+import { ThemeRoot as OrdThemeRoot } from "@open-resource-discovery/ui-components";
+import "@open-resource-discovery/ui-components/styles";
 import "./index.css";
 
 // Base path for GitHub Pages - must match vite.config.ts base
@@ -14,6 +16,7 @@ const basename = import.meta.env.BASE_URL;
 function App() {
   return (
     <BrowserRouter basename={basename}>
+      <OrdThemeRoot defaultTheme="system">
       <ThemeRoot className="flex h-screen flex-col">
         <Routes>
           {/* OAuth callback route - no header for popup */}
@@ -37,6 +40,7 @@ function App() {
         </Routes>
         <Toaster />
       </ThemeRoot>
+      </OrdThemeRoot>
     </BrowserRouter>
   );
 }
