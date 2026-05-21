@@ -32,10 +32,42 @@ test.describe("Predefined Agents", () => {
     await expect(playground.agentCard("mock-echo")).toHaveClass(/border-primary/);
   });
 
-  test("should deselect agent on second click", async ({ playground }) => {
+  test("should remain selected on second click", async ({ playground }) => {
     await playground.selectAgent("mock-echo");
     await expect(playground.agentCard("mock-echo")).toHaveClass(/border-primary/);
     await playground.agentCard("mock-echo").click();
-    await expect(playground.agentCard("mock-echo")).not.toHaveClass(/border-primary/);
+    await expect(playground.agentCard("mock-echo")).toHaveClass(/border-primary/);
+  });
+
+  test("should filter agents by URL", async ({ playground, page }) => {
+    await page.route("**/unique-agent.example.com/.well-known/agent.json", (route) => {
+      route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify({
+          name: "URL Search Agent",
+          description: "",
+          url: "https://unique-agent.example.com",
+          version: "1.0.0",
+          capabilities: {},
+          skills: [],
+          defaultInputModes: ["text"],
+          defaultOutputModes: ["text"],
+        }),
+      });
+    });
+
+    await playground.addAgentBtn.click();
+    await playground.addAgentUrl.fill("https://unique-agent.example.com");
+    await playground.addAgentSubmit.click();
+    await expect(
+      page.locator("[data-testid^='agent-card-custom-']"),
+    ).toBeVisible({ timeout: 10000 });
+
+    await playground.agentSearch.fill("unique-agent.example");
+    await expect(
+      page.locator("[data-testid^='agent-card-custom-']"),
+    ).toBeVisible();
+    await expect(playground.agentCard("mock-echo")).toBeHidden();
   });
 });

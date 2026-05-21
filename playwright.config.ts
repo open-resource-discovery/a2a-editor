@@ -27,7 +27,7 @@ export default defineConfig({
       name: "docusaurus",
       use: {
         ...devices["Desktop Chrome"],
-        baseURL: "http://localhost:3001",
+        baseURL: "http://localhost:3000",
       },
     },
   ],
@@ -40,7 +40,7 @@ export default defineConfig({
     },
     {
       command: "npm run prepare:website-assets && cd website && npx docusaurus start --port 3001",
-      port: 3001,
+      port: 3000,
       reuseExistingServer: !process.env.CI,
       timeout: 120000,
     },
