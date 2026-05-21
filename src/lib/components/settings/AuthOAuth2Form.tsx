@@ -1,8 +1,6 @@
 import { useConnectionStore } from "@lib/stores/connectionStore";
-import { Input } from "@lib/components/ui/input";
-import { PasswordInput } from "@lib/components/ui/PasswordInput";
-import { Button } from "@lib/components/ui/button";
-import { Loader2, LogIn, X } from "lucide-react";
+import { Input, PasswordInput, Button, Spinner } from "@open-resource-discovery/ui-components";
+import { LogIn, X } from "lucide-react";
 
 export function AuthOAuth2Form() {
   const {
@@ -33,7 +31,7 @@ export function AuthOAuth2Form() {
                 className="flex-1"
                 disabled
               >
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                <Spinner size="sm" className="mr-2" />
                 Waiting for authorization...
               </Button>
               <Button
@@ -128,7 +126,7 @@ export function AuthOAuth2Form() {
         >
           {isTokenLoading ? (
             <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              <Spinner size="sm" className="mr-2" />
               Getting Token...
             </>
           ) : (

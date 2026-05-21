@@ -1,15 +1,12 @@
 import { useEffect, useState, useMemo } from "react";
 import { usePredefinedAgentsStore } from "@lib/stores/predefinedAgentsStore";
-import { Badge, Button, Card } from "@open-resource-discovery/ui-components";
-import { Input } from "@lib/components/ui/input";
-import { PasswordInput } from "@lib/components/ui/PasswordInput";
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@lib/components/ui/select";
+import { Badge, Button, Card, Input, PasswordInput, SimpleSelect, Spinner } from "@open-resource-discovery/ui-components";
 import { cn } from "@lib/utils/cn";
 import { selectPredefinedAgent, clearAgentState } from "@lib/utils/agent-selection";
 import { detectProtocolVersion, normalizeAgentCard } from "@lib/utils/a2a-protocol";
 import { buildAddHeaders, mapAddAuth, buildPredefinedConnHeaders } from "@lib/utils/predefined-auth";
 import type { AddAuthType } from "@lib/utils/predefined-auth";
-import { Search, Plus, X, Loader2, Globe } from "lucide-react";
+import { Search, Plus, X, Globe } from "lucide-react";
 import type { PredefinedAgent } from "@lib/types/connection";
 
 function parseAgentUrl(input: string): { normalizedUrl: string; fetchUrl: string } {
@@ -276,7 +273,7 @@ export function PredefinedAgents() {
               <Button size="sm" onClick={handleDiscover} disabled={isDiscovering || !ordUrl.trim()} data-testid="discover-ord-submit">
                 {isDiscovering ? (
                   <>
-                    <Loader2 className="h-3 w-3 mr-1 animate-spin" />
+                    <Spinner className="h-3 w-3 mr-1" />
                     Discovering...
                   </>
                 ) : (
@@ -310,17 +307,16 @@ export function PredefinedAgents() {
             )}
 
             {/* Auth for secured agent card endpoints */}
-            <Select value={addAuthType} onValueChange={(v) => setAddAuthType(v as AddAuthType)}>
-              <SelectTrigger className="h-8 text-xs">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="none">No Authentication</SelectItem>
-                <SelectItem value="basic">Basic Auth</SelectItem>
-                <SelectItem value="bearer">Bearer Token</SelectItem>
-                <SelectItem value="apiKey">API Key</SelectItem>
-              </SelectContent>
-            </Select>
+            <SimpleSelect
+              value={addAuthType}
+              onChange={(v) => setAddAuthType(v as AddAuthType)}
+              items={[
+                { value: "none", label: "No Authentication" },
+                { value: "basic", label: "Basic Auth" },
+                { value: "bearer", label: "Bearer Token" },
+                { value: "apiKey", label: "API Key" },
+              ]}
+            />
 
             {addAuthType === "basic" && (
               <div className="space-y-2">
@@ -376,7 +372,7 @@ export function PredefinedAgents() {
               <Button size="sm" onClick={handleAddAgent} disabled={isAdding || !isValidNewAgentUrl} data-testid="add-agent-submit">
                 {isAdding ? (
                   <>
-                    <Loader2 className="h-3 w-3 mr-1 animate-spin" />
+                    <Spinner className="h-3 w-3 mr-1" />
                     Adding...
                   </>
                 ) : (

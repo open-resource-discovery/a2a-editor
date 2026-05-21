@@ -1,7 +1,6 @@
 import { useChatStore } from "@lib/stores/chatStore";
 import { useConnectionStore, selectEffectiveUrl } from "@lib/stores/connectionStore";
-import { Button } from "@lib/components/ui/button";
-import { Input } from "@lib/components/ui/input";
+import { Button, Input } from "@open-resource-discovery/ui-components";
 import { Send, Square } from "lucide-react";
 
 interface ChatInputProps {

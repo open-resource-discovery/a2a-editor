@@ -1,7 +1,6 @@
 import { useMemo, useState } from "react";
 import type { AgentSkill } from "@lib/types/a2a";
-import { Card, CardContent, CardHeader, CardTitle } from "@lib/components/ui/card";
-import { Badge } from "@lib/components/ui/badge";
+import { Card, Badge } from "@open-resource-discovery/ui-components";
 import { SkillCard } from "../SkillCard";
 
 interface SkillsSectionProps {
@@ -34,11 +33,11 @@ export function SkillsSection({ skills, disableExamplePrompts = false, readOnly 
 
   return (
     <Card className="overflow-hidden">
-      <CardHeader className="py-3">
+      <Card.Header className="py-3">
         <div className="flex flex-wrap items-center gap-1.5">
-          <CardTitle className="text-sm mr-1">
+          <Card.Title className="text-sm mr-1">
             Skills {selectedTags.size > 0 ? `(${filteredSkills.length}/${skills.length})` : `(${skills.length})`}
-          </CardTitle>
+          </Card.Title>
           {allTags.map((tag) => (
             <Badge
               key={tag}
@@ -50,15 +49,15 @@ export function SkillsSection({ skills, disableExamplePrompts = false, readOnly 
             </Badge>
           ))}
         </div>
-      </CardHeader>
-      <CardContent className="pt-0 space-y-2">
+      </Card.Header>
+      <Card.Content className="pt-0 space-y-2">
         {filteredSkills.map((skill) => (
           <SkillCard key={skill.id} skill={skill} disableExamplePrompts={disableExamplePrompts} readOnly={readOnly} />
         ))}
         {filteredSkills.length === 0 && (
           <p className="text-sm text-muted-foreground text-center py-4">No skills match the selected tags.</p>
         )}
-      </CardContent>
+      </Card.Content>
     </Card>
   );
 }

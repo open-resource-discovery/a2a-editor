@@ -1,6 +1,6 @@
 import { useHttpLogStore } from "@lib/stores/httpLogStore";
 import { HttpLogEntry } from "./HttpLogEntry";
-import { Button } from "@lib/components/ui/button";
+import { Button } from "@open-resource-discovery/ui-components";
 import { Trash2, Network } from "lucide-react";
 
 export function RawHttpPanel() {

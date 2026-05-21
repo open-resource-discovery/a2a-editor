@@ -3,9 +3,8 @@ import ReactMarkdown from "react-markdown";
 import type { ChatMessage as ChatMessageType } from "@lib/types/chat";
 import { isTextPart, isDataPart, isFilePart } from "@lib/types/a2a";
 import { cn } from "@lib/utils/cn";
-import { Copy, Check, RotateCcw, FileText, CheckCircle, AlertCircle, ChevronDown, ChevronUp, Loader2 } from "lucide-react";
-import { Badge } from "@lib/components/ui/badge";
-import { Button } from "@lib/components/ui/button";
+import { Copy, Check, RotateCcw, FileText, CheckCircle, AlertCircle, ChevronDown, ChevronUp } from "lucide-react";
+import { Badge, Button, Spinner } from "@open-resource-discovery/ui-components";
 import { JsonHighlight } from "@lib/components/ui/JsonHighlight";
 import { CodeBlock, PreBlock } from "@lib/components/ui/CodeBlock";
 import { useUIStore } from "@lib/stores/uiStore";
@@ -139,7 +138,7 @@ export function ChatMessage({ message, onRetry }: ChatMessageProps) {
             <div className="flex items-center gap-1.5 mb-2">
               <Badge
                 variant={
-                  message.status === "completed" ? "default" : message.status === "failed" ? "error" : message.status === "auth-required" ? "error" : "secondary"
+                  message.status === "completed" ? "default" : message.status === "failed" ? "destructive" : message.status === "auth-required" ? "destructive" : "secondary"
                 }>
                 {message.status}
               </Badge>
@@ -224,7 +223,7 @@ export function ChatMessage({ message, onRetry }: ChatMessageProps) {
 
           {/* Streaming indicator */}
           {message.isStreaming && (
-            <Loader2 className="h-3 w-3 mt-1 animate-spin text-muted-foreground" />
+          <Spinner className="h-3 w-3 mt-1 text-muted-foreground" />
           )}
 
           <time className="mt-1 block text-[10px] opacity-50">{message.timestamp.toLocaleTimeString()}</time>

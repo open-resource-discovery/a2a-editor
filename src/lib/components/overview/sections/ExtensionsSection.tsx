@@ -1,6 +1,5 @@
 import type { AgentExtension } from "@lib/types/a2a";
-import { Card, CardContent, CardHeader, CardTitle } from "@lib/components/ui/card";
-import { Badge } from "@lib/components/ui/badge";
+import { Card, Badge } from "@open-resource-discovery/ui-components";
 import { ExternalLink, Puzzle } from "lucide-react";
 
 interface ExtensionsSectionProps {
@@ -12,10 +11,10 @@ export function ExtensionsSection({ extensions }: ExtensionsSectionProps) {
 
   return (
     <Card>
-      <CardHeader className="py-3">
-        <CardTitle className="text-sm">Extensions ({extensions.length})</CardTitle>
-      </CardHeader>
-      <CardContent className="pt-0 space-y-2">
+      <Card.Header className="py-3">
+        <Card.Title className="text-sm">Extensions ({extensions.length})</Card.Title>
+      </Card.Header>
+      <Card.Content className="pt-0 space-y-2">
         {extensions.map((ext) => (
           <div key={ext.uri} className="flex items-start gap-2 rounded-lg border bg-card p-3">
             <Puzzle className="h-4 w-4 text-muted-foreground mt-0.5 shrink-0" />
@@ -48,7 +47,7 @@ export function ExtensionsSection({ extensions }: ExtensionsSectionProps) {
             </div>
           </div>
         ))}
-      </CardContent>
+      </Card.Content>
     </Card>
   );
 }

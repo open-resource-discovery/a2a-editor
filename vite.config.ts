@@ -39,6 +39,7 @@ export default defineConfig(({ mode }) => {
         "@lib": resolve(__dirname, "./src/lib"),
         "@demo": resolve(__dirname, "./src/demo"),
       },
+      dedupe: ["react", "react-dom", "react/jsx-runtime"],
     },
     build: isLib
       ? {

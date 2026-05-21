@@ -1,8 +1,6 @@
 import { useState, useEffect, useRef } from "react";
-import { ChevronDown, Copy, Check, Clock, AlertCircle, CheckCircle, Play, X, GitBranch, Loader2 } from "lucide-react";
-import { Badge } from "@lib/components/ui/badge";
-import { Button } from "@lib/components/ui/button";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@lib/components/ui/collapsible";
+import { ChevronDown, Copy, Check, Clock, AlertCircle, CheckCircle, Play, X, GitBranch } from "lucide-react";
+import { Badge, Button, CollapsibleSection, Spinner } from "@open-resource-discovery/ui-components";
 import { JsonHighlight } from "@lib/components/ui/JsonHighlight";
 import { cn } from "@lib/utils/cn";
 import type { HttpLogEntry as HttpLogEntryType } from "@lib/types/httpLog";
@@ -156,8 +154,8 @@ export function HttpLogEntry({ entry, isHighlighted }: HttpLogEntryProps) {
         "rounded-lg border bg-card overflow-hidden transition-colors cursor-pointer",
         isHighlighted && "ring-2 ring-primary",
       )}>
-      <Collapsible open={open} onOpenChange={setOpen}>
-        <CollapsibleTrigger className="flex w-full items-center justify-between p-3 text-left hover:bg-accent/50 cursor-pointer">
+      <CollapsibleSection.Root open={open} onOpenChange={setOpen}>
+        <button className="flex w-full items-center justify-between p-3 text-left hover:bg-accent/50 cursor-pointer" onClick={() => setOpen(!open)}>
           <div className="flex flex-wrap items-center gap-2 flex-1 min-w-0">
             <div className="flex items-center gap-2 min-w-0 flex-1">
               {isSuccess && <CheckCircle className="h-4 w-4 text-success shrink-0" />}
@@ -165,7 +163,7 @@ export function HttpLogEntry({ entry, isHighlighted }: HttpLogEntryProps) {
               {!isSuccess &&
                 !isError &&
                 (entry.response === null && !entry.error ? (
-                  <Loader2 className="h-4 w-4 shrink-0 animate-spin text-muted-foreground" />
+                  <Spinner className="h-4 w-4 shrink-0 text-muted-foreground" />
                 ) : (
                   <div className="h-4 w-4 shrink-0" />
                 ))}
@@ -202,9 +200,9 @@ export function HttpLogEntry({ entry, isHighlighted }: HttpLogEntryProps) {
             </div>
             <ChevronDown className={cn("h-4 w-4 transition-transform", open && "rotate-180")} />
           </div>
-        </CollapsibleTrigger>
+        </button>
 
-        <CollapsibleContent>
+        <CollapsibleSection.Content className="mt-0">
           <div className="border-t p-3 space-y-4">
             <div className="flex justify-end gap-2">
               {!isEditing && (
@@ -318,8 +316,8 @@ export function HttpLogEntry({ entry, isHighlighted }: HttpLogEntryProps) {
               </>
             )}
           </div>
-        </CollapsibleContent>
-      </Collapsible>
+        </CollapsibleSection.Content>
+      </CollapsibleSection.Root>
     </div>
   );
 }

@@ -2,8 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import ReactMarkdown from "react-markdown";
 import type { AgentCard } from "@lib/types/a2a";
 import { cn } from "@lib/utils/cn";
-import { Badge } from "@lib/components/ui/badge";
-import { Button } from "@lib/components/ui/button";
+import { Badge, Button } from "@open-resource-discovery/ui-components";
 import { ExternalLink, User, Building, ChevronDown, ChevronUp, Globe } from "lucide-react";
 
 interface AgentHeaderProps {

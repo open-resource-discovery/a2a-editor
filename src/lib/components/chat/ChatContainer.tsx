@@ -1,10 +1,8 @@
-import { useEffect, useRef } from "react";
 import { useChatStore } from "@lib/stores/chatStore";
 import { useConnectionStore, selectEffectiveUrl } from "@lib/stores/connectionStore";
 import { useAgentCardStore } from "@lib/stores/agentCardStore";
 import { useIsLargeScreen } from "@lib/hooks/useMediaQuery";
-import { ScrollArea } from "@lib/components/ui/scroll-area";
-import { Button } from "@lib/components/ui/button";
+import { ScrollArea, Button } from "@open-resource-discovery/ui-components";
 import { ChatMessage } from "./ChatMessage";
 import { ChatInput } from "./ChatInput";
 import { TypingIndicator } from "./TypingIndicator";
@@ -21,17 +19,6 @@ export function ChatContainer({ maxExamplePrompts = 2, disableExamplePrompts = f
   const effectiveUrl = useConnectionStore(selectEffectiveUrl);
   const parsedCard = useAgentCardStore((state) => state.parsedCard);
   const isLargeScreen = useIsLargeScreen();
-  const scrollViewportRef = useRef<HTMLDivElement>(null);
-
-  // Auto-scroll to bottom on new messages (using direct scroll, not scrollIntoView)
-  useEffect(() => {
-    if (scrollViewportRef.current) {
-      scrollViewportRef.current.scrollTo({
-        top: scrollViewportRef.current.scrollHeight,
-        behavior: "smooth",
-      });
-    }
-  }, [messages, isStreaming]);
 
   const isConnected = connectionStatus === "connected";
 
@@ -71,7 +58,7 @@ export function ChatContainer({ maxExamplePrompts = 2, disableExamplePrompts = f
         </div>
       )}
 
-      <ScrollArea className="min-h-0 flex-1" viewportRef={scrollViewportRef}>
+      <ScrollArea className="min-h-0 flex-1" autoScroll>
         <div className="p-4" data-testid="chat-messages">
           {messages.length === 0 ? (
             <div className="flex h-full flex-col items-center justify-center gap-4 text-center">

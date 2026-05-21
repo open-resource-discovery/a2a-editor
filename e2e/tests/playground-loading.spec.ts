@@ -22,6 +22,6 @@ test.describe("Playground Loading", () => {
 
   test("should default to Overview tab", async ({ playground }) => {
     await playground.goto();
-    await expect(playground.tabOverview).toHaveAttribute("data-state", "active");
+    await expect(playground.tabOverview).toHaveAttribute("data-active");
   });
 });

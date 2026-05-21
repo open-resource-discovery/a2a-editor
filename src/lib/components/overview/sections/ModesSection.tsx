@@ -1,6 +1,5 @@
 import type { AgentCard } from "@lib/types/a2a";
-import { Card, CardContent, CardHeader, CardTitle } from "@lib/components/ui/card";
-import { Badge } from "@lib/components/ui/badge";
+import { Card, Badge } from "@open-resource-discovery/ui-components";
 
 interface ModesSectionProps {
   card: AgentCard;
@@ -16,10 +15,10 @@ export function ModesSection({ card }: ModesSectionProps) {
 
   return (
     <Card>
-      <CardHeader className="py-3">
-        <CardTitle className="text-sm">Input/Output Modes</CardTitle>
-      </CardHeader>
-      <CardContent className="pt-0">
+      <Card.Header className="py-3">
+        <Card.Title className="text-sm">Input/Output Modes</Card.Title>
+      </Card.Header>
+      <Card.Content className="pt-0">
         <div className="flex flex-wrap gap-x-6 gap-y-2">
           {inputModes.length > 0 && (
             <div className="flex items-center gap-2">
@@ -46,7 +45,7 @@ export function ModesSection({ card }: ModesSectionProps) {
             </div>
           )}
         </div>
-      </CardContent>
+      </Card.Content>
     </Card>
   );
 }

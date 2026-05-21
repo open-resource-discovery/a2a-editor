@@ -1,6 +1,5 @@
 import type { AgentCapabilities } from "@lib/types/a2a";
-import { Card, CardContent, CardHeader, CardTitle } from "@lib/components/ui/card";
-import { Badge } from "@lib/components/ui/badge";
+import { Card, Badge } from "@open-resource-discovery/ui-components";
 import { Zap, Bell, History, FileText } from "lucide-react";
 
 interface CapabilitiesSectionProps {
@@ -44,10 +43,10 @@ export function CapabilitiesSection({ capabilities }: CapabilitiesSectionProps) 
 
   return (
     <Card>
-      <CardHeader className="py-3">
-        <CardTitle className="text-sm">Capabilities</CardTitle>
-      </CardHeader>
-      <CardContent className="pt-0">
+      <Card.Header className="py-3">
+        <Card.Title className="text-sm">Capabilities</Card.Title>
+      </Card.Header>
+      <Card.Content className="pt-0">
         <div className="flex flex-wrap gap-2">
           {items.map(({ key, label, icon: Icon }) => (
             <Badge
@@ -60,7 +59,7 @@ export function CapabilitiesSection({ capabilities }: CapabilitiesSectionProps) 
             </Badge>
           ))}
         </div>
-      </CardContent>
+      </Card.Content>
     </Card>
   );
 }

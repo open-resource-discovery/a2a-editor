@@ -1,8 +1,7 @@
 import { Menu, Code, FileText } from "lucide-react";
-import { Button } from "@lib/components/ui/button";
+import { Button, Badge } from "@open-resource-discovery/ui-components";
 import { useUIStore } from "@lib/stores/uiStore";
 import { useValidationStore } from "@lib/stores/validationStore";
-import { Badge } from "@lib/components/ui/badge";
 import { cn } from "@lib/utils/cn";
 
 interface MobileBottomBarProps {
@@ -37,7 +36,7 @@ export function MobileBottomBar({ showSettings = true }: MobileBottomBarProps) {
         <span className="ml-1 text-xs">Agent Card</span>
         {summary.fail > 0 && (
           <Badge
-            variant="error"
+            variant="destructive"
             className="absolute -top-1 -right-1 h-4 min-w-4 justify-center p-0 text-[10px]"
             aria-hidden="true"
           >

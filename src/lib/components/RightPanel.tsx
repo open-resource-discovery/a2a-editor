@@ -1,10 +1,9 @@
 import { useEffect, useRef, useState, useCallback } from "react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@lib/components/ui/tabs";
-import { ScrollArea } from "@lib/components/ui/scroll-area";
+import { Tabs, Badge } from "@open-resource-discovery/ui-components";
+import { ScrollArea } from "@open-resource-discovery/ui-components";
 import { useUIStore } from "@lib/stores/uiStore";
 import { useValidationStore } from "@lib/stores/validationStore";
 import { useHttpLogStore } from "@lib/stores/httpLogStore";
-import { Badge } from "@lib/components/ui/badge";
 import { AgentOverview } from "@lib/components/overview/AgentOverview";
 import { ChatContainer } from "@lib/components/chat/ChatContainer";
 import { ValidationPanel } from "@lib/components/validation/ValidationPanel";
@@ -70,32 +69,32 @@ export function RightPanel({
 
   return (
     <div className="flex h-full flex-col overflow-hidden border-l bg-background" data-testid="right-panel">
-      <Tabs value={localTab} onValueChange={handleTabChange} className="flex h-full flex-col">
+      <Tabs.Root value={localTab} onValueChange={handleTabChange} className="flex h-full flex-col">
         <div className="border-b">
-          <TabsList className="h-10 w-full justify-start rounded-none border-b-0 bg-background px-2">
-            <TabsTrigger value="overview" className="text-xs" data-testid="tab-overview">
+          <Tabs.List className="h-10 w-full justify-start rounded-none border-b-0 bg-background px-2">
+            <Tabs.Tab value="overview" className="text-xs" data-testid="tab-overview">
               Overview
-            </TabsTrigger>
+            </Tabs.Tab>
             {showChat && (
-              <TabsTrigger value="chat" className="text-xs" data-testid="tab-chat">
+              <Tabs.Tab value="chat" className="text-xs" data-testid="tab-chat">
                 Chat
-              </TabsTrigger>
+              </Tabs.Tab>
             )}
             {showRawHttp && (
-              <TabsTrigger value="rawhttp" className="text-xs" data-testid="tab-rawhttp">
+              <Tabs.Tab value="rawhttp" className="text-xs" data-testid="tab-rawhttp">
                 Raw HTTP
                 {logCount > 0 && (
                   <Badge variant="secondary" className="ml-1 h-5 min-w-5 justify-center p-0 px-1 text-xs">
                     {logCount}
                   </Badge>
                 )}
-              </TabsTrigger>
+              </Tabs.Tab>
             )}
             {showValidation && (
-              <TabsTrigger value="validation" className="relative text-xs" data-testid="tab-validation">
+              <Tabs.Tab value="validation" className="relative text-xs" data-testid="tab-validation">
                 Validation
                 {summary.fail > 0 && (
-                  <Badge variant="error" className="ml-1 h-5 min-w-5 justify-center p-0 px-1 text-xs">
+                  <Badge variant="destructive" className="ml-1 h-5 min-w-5 justify-center p-0 px-1 text-xs">
                     {summary.fail}
                   </Badge>
                 )}
@@ -104,12 +103,12 @@ export function RightPanel({
                     {summary.warning}
                   </Badge>
                 )}
-              </TabsTrigger>
+              </Tabs.Tab>
             )}
-          </TabsList>
+          </Tabs.List>
         </div>
 
-        <TabsContent value="overview" className="flex-1 overflow-hidden mt-0">
+        <Tabs.Panel value="overview" className="flex-1 overflow-hidden mt-0">
           <ScrollArea className="h-full">
             <AgentOverview
               disableExamplePrompts={disableExamplePrompts}
@@ -117,30 +116,30 @@ export function RightPanel({
               showConnection={showConnection}
             />
           </ScrollArea>
-        </TabsContent>
+        </Tabs.Panel>
 
         {showChat && (
-          <TabsContent value="chat" className="flex-1 overflow-hidden mt-0">
+          <Tabs.Panel value="chat" className="flex-1 overflow-hidden mt-0">
             <ChatContainer maxExamplePrompts={maxExamplePrompts} disableExamplePrompts={disableExamplePrompts} />
-          </TabsContent>
+          </Tabs.Panel>
         )}
 
         {showRawHttp && (
-          <TabsContent value="rawhttp" className="flex-1 overflow-hidden mt-0">
+          <Tabs.Panel value="rawhttp" className="flex-1 overflow-hidden mt-0">
             <ScrollArea className="h-full">
               <RawHttpPanel />
             </ScrollArea>
-          </TabsContent>
+          </Tabs.Panel>
         )}
 
         {showValidation && (
-          <TabsContent value="validation" className="flex-1 overflow-hidden mt-0">
+          <Tabs.Panel value="validation" className="flex-1 overflow-hidden mt-0">
             <ScrollArea className="h-full">
               <ValidationPanel />
             </ScrollArea>
-          </TabsContent>
+          </Tabs.Panel>
         )}
-      </Tabs>
+      </Tabs.Root>
     </div>
   );
 }

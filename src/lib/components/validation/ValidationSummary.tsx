@@ -1,6 +1,6 @@
 import type { ValidationSummary as ValidationSummaryType } from "@lib/types/validation";
-import { Badge } from "@lib/components/ui/badge";
-import { CheckCircle, XCircle, AlertTriangle, Loader2 } from "lucide-react";
+import { Badge, Spinner } from "@open-resource-discovery/ui-components";
+import { CheckCircle, XCircle, AlertTriangle } from "lucide-react";
 
 interface ValidationSummaryProps {
   summary: ValidationSummaryType;
@@ -18,7 +18,7 @@ export function ValidationSummary({
       <div className="flex items-center gap-2">
         {isValidating ? (
           <>
-            <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+            <Spinner size="sm" className="text-muted-foreground" />
             <span className="text-sm text-muted-foreground">Validating...</span>
           </>
         ) : (
@@ -36,7 +36,7 @@ export function ValidationSummary({
               </Badge>
             )}
             {summary.fail > 0 && (
-              <Badge variant="error" className="flex items-center gap-1">
+              <Badge variant="destructive" className="flex items-center gap-1">
                 <XCircle className="h-3 w-3" />
                 {summary.fail} failed
               </Badge>

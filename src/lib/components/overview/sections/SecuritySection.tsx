@@ -2,18 +2,12 @@ import { useState, useEffect } from "react";
 import type { SecurityScheme } from "@lib/types/a2a";
 import { useConnectionStore } from "@lib/stores/connectionStore";
 import { useAgentCardStore } from "@lib/stores/agentCardStore";
-import { Card, CardContent, CardHeader, CardTitle } from "@lib/components/ui/card";
-import { Badge } from "@lib/components/ui/badge";
-import { Input } from "@lib/components/ui/input";
-import { PasswordInput } from "@lib/components/ui/PasswordInput";
-import { Button } from "@lib/components/ui/button";
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@lib/components/ui/select";
+import { Card, Badge, Input, PasswordInput, Button, SimpleSelect, Spinner } from "@open-resource-discovery/ui-components";
 import {
   Shield,
   Key,
   Lock,
   User,
-  Loader2,
   Check,
   ChevronDown,
   ChevronUp,
@@ -186,7 +180,7 @@ export function SecuritySection({ schemes, readOnly = false }: SecuritySectionPr
             {isAuthFlowInProgress ? (
               <div className="flex items-center gap-2">
                 <Button variant="outline" className="flex-1 h-8 text-xs" disabled>
-                  <Loader2 className="mr-1 h-3 w-3 animate-spin" />
+                  <Spinner className="mr-1 h-3 w-3" />
                   Waiting for authorization...
                 </Button>
                 <Button variant="ghost" size="icon" onClick={cancelAuthFlow} title="Cancel" className="h-8 w-8">
@@ -230,7 +224,7 @@ export function SecuritySection({ schemes, readOnly = false }: SecuritySectionPr
               className="h-6 text-xs"
               onClick={refreshOAuth2Token}
               disabled={isTokenLoading}>
-              {isTokenLoading ? <Loader2 className="h-3 w-3 animate-spin" /> : <RefreshCw className="h-3 w-3 mr-1" />}
+              {isTokenLoading ? <Spinner className="h-3 w-3" /> : <RefreshCw className="h-3 w-3 mr-1" />}
               Refresh
             </Button>
           </div>
@@ -339,7 +333,7 @@ export function SecuritySection({ schemes, readOnly = false }: SecuritySectionPr
               }
               className="h-7 text-xs">
               {isTokenLoading ? (
-                <Loader2 className="h-3 w-3 mr-1 animate-spin" />
+                <Spinner className="h-3 w-3 mr-1" />
               ) : hasAccessToken ? (
                 <Check className="h-3 w-3 mr-1 text-success" />
               ) : (
@@ -394,7 +388,7 @@ export function SecuritySection({ schemes, readOnly = false }: SecuritySectionPr
             <code className="text-lg font-mono font-bold tracking-wider">{deviceCodeState.userCode}</code>
           </div>
           <div className="flex items-center gap-2">
-            <Loader2 className="h-3 w-3 animate-spin text-muted-foreground" />
+            <Spinner className="h-3 w-3 text-muted-foreground" />
             <span className="text-xs text-muted-foreground">Waiting for authorization...</span>
           </div>
           <Button variant="ghost" size="sm" className="h-6 text-xs" onClick={cancelDeviceCodeFlow}>
@@ -411,7 +405,7 @@ export function SecuritySection({ schemes, readOnly = false }: SecuritySectionPr
         className="w-full h-8 text-xs"
         onClick={() => startDeviceCodeFlow(deviceFlow.deviceAuthorizationUrl, deviceFlow.tokenUrl)}
         disabled={isTokenLoading || !oauth2Credentials.clientId}>
-        {isTokenLoading ? <Loader2 className="h-3 w-3 mr-1 animate-spin" /> : <LogIn className="h-3 w-3 mr-1" />}
+        {isTokenLoading ? <Spinner className="h-3 w-3 mr-1" /> : <LogIn className="h-3 w-3 mr-1" />}
         Authorize with Device Code
       </Button>
     );
@@ -452,7 +446,7 @@ export function SecuritySection({ schemes, readOnly = false }: SecuritySectionPr
     if (isOidcDiscovering) {
       return (
         <div className="flex items-center gap-2 pt-2">
-          <Loader2 className="h-3 w-3 animate-spin" />
+          <Spinner className="h-3 w-3" />
           <span className="text-xs text-muted-foreground">Discovering OpenID Connect endpoints...</span>
         </div>
       );
@@ -485,7 +479,7 @@ export function SecuritySection({ schemes, readOnly = false }: SecuritySectionPr
             {isAuthFlowInProgress ? (
               <div className="flex items-center gap-2">
                 <Button variant="outline" className="flex-1 h-8 text-xs" disabled>
-                  <Loader2 className="mr-1 h-3 w-3 animate-spin" />
+                  <Spinner className="mr-1 h-3 w-3" />
                   Waiting for authorization...
                 </Button>
                 <Button variant="ghost" size="icon" onClick={cancelAuthFlow} className="h-8 w-8">
@@ -526,7 +520,7 @@ export function SecuritySection({ schemes, readOnly = false }: SecuritySectionPr
               className="h-6 text-xs"
               onClick={refreshOAuth2Token}
               disabled={isTokenLoading}>
-              {isTokenLoading ? <Loader2 className="h-3 w-3 animate-spin" /> : <RefreshCw className="h-3 w-3 mr-1" />}
+              {isTokenLoading ? <Spinner className="h-3 w-3" /> : <RefreshCw className="h-3 w-3 mr-1" />}
               Refresh
             </Button>
           </div>
@@ -592,10 +586,10 @@ export function SecuritySection({ schemes, readOnly = false }: SecuritySectionPr
   if (readOnly) {
     return (
       <Card>
-        <CardHeader className="py-3">
-          <CardTitle className="text-sm">Authentication</CardTitle>
-        </CardHeader>
-        <CardContent className="pt-0 space-y-3">
+        <Card.Header className="py-3">
+          <Card.Title className="text-sm">Authentication</Card.Title>
+        </Card.Header>
+        <Card.Content className="pt-0 space-y-3">
           {schemeEntries.map(([name, scheme]) => {
             const Icon = schemeIcons[scheme.type] || Shield;
             return (
@@ -632,31 +626,24 @@ export function SecuritySection({ schemes, readOnly = false }: SecuritySectionPr
               </div>
             );
           })}
-        </CardContent>
+        </Card.Content>
       </Card>
     );
   }
 
   return (
     <Card>
-      <CardHeader className="py-3">
-        <CardTitle className="text-sm">Authentication</CardTitle>
-      </CardHeader>
-      <CardContent className="pt-0 space-y-3">
+      <Card.Header className="py-3">
+        <Card.Title className="text-sm">Authentication</Card.Title>
+      </Card.Header>
+      <Card.Content className="pt-0 space-y-3">
         {/* Scheme selector — shown when multiple schemes available */}
         {schemeEntries.length > 1 ? (
-          <Select value={selectedScheme} onValueChange={handleSchemeChange}>
-            <SelectTrigger className="h-8 text-xs">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {schemeEntries.map(([name, scheme]) => (
-                <SelectItem key={name} value={name}>
-                  {schemeLabel(name, scheme)}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <SimpleSelect
+            value={selectedScheme}
+            onChange={handleSchemeChange}
+            items={schemeEntries.map(([name, scheme]) => ({ value: name, label: schemeLabel(name, scheme) }))}
+          />
         ) : (
           schemeEntries.map(([name, scheme]) => {
             const Icon = schemeIcons[scheme.type] || Shield;
@@ -681,7 +668,7 @@ export function SecuritySection({ schemes, readOnly = false }: SecuritySectionPr
         )}
 
         {renderAuthForm()}
-      </CardContent>
+      </Card.Content>
     </Card>
   );
 }
