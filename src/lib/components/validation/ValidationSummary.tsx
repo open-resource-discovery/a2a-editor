@@ -24,19 +24,19 @@ export function ValidationSummary({
         ) : (
           <>
             {summary.pass > 0 && (
-              <Badge variant="success" className="flex items-center gap-1">
+              <Badge variant="success" className="gap-1">
                 <CheckCircle className="h-3 w-3" />
                 {summary.pass} passed
               </Badge>
             )}
             {summary.warning > 0 && (
-              <Badge variant="warning" className="flex items-center gap-1">
+              <Badge variant="warning" className="gap-1">
                 <AlertTriangle className="h-3 w-3" />
                 {summary.warning} warnings
               </Badge>
             )}
             {summary.fail > 0 && (
-              <Badge variant="destructive" className="flex items-center gap-1">
+              <Badge variant="destructive" className="gap-1">
                 <XCircle className="h-3 w-3" />
                 {summary.fail} failed
               </Badge>

@@ -33,12 +33,12 @@ export function SkillCard({ skill, disableExamplePrompts = false, readOnly = fal
             {skill.tags && skill.tags.length > 0 && (
               <div className="flex flex-wrap gap-1">
                 {(open ? skill.tags : skill.tags.slice(0, 2)).map((tag) => (
-                  <Badge key={tag} variant="secondary" className="text-xs h-5">
+                  <Badge key={tag} variant="secondary">
                     {tag}
                   </Badge>
                 ))}
                 {!open && skill.tags.length > 2 && (
-                  <Badge variant="outline" className="text-xs h-5 text-muted-foreground">
+                  <Badge variant="outline" className="text-muted-foreground">
                     +{skill.tags.length - 2}
                   </Badge>
                 )}

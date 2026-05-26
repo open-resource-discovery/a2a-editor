@@ -1,5 +1,5 @@
 import type { AgentExtension } from "@lib/types/a2a";
-import { Card, Badge } from "@open-resource-discovery/ui-components";
+import { SectionCard, Badge } from "@open-resource-discovery/ui-components";
 import { ExternalLink, Puzzle } from "lucide-react";
 
 interface ExtensionsSectionProps {
@@ -10,11 +10,9 @@ export function ExtensionsSection({ extensions }: ExtensionsSectionProps) {
   if (extensions.length === 0) return null;
 
   return (
-    <Card>
-      <Card.Header className="py-3">
-        <Card.Title className="text-sm">Extensions ({extensions.length})</Card.Title>
-      </Card.Header>
-      <Card.Content className="pt-0 space-y-2">
+    <SectionCard.Root>
+      <SectionCard.Header title={`Extensions (${extensions.length})`} icon={<Puzzle />} />
+      <SectionCard.Content className="space-y-2">
         {extensions.map((ext) => (
           <div key={ext.uri} className="flex items-start gap-2 rounded-lg border bg-card p-3">
             <Puzzle className="h-4 w-4 text-muted-foreground mt-0.5 shrink-0" />
@@ -29,7 +27,7 @@ export function ExtensionsSection({ extensions }: ExtensionsSectionProps) {
                   <ExternalLink className="h-3 w-3 shrink-0" />
                 </a>
                 {ext.version && (
-                  <Badge variant="outline" className="text-xs shrink-0">
+                  <Badge variant="outline" className="shrink-0">
                     v{ext.version}
                   </Badge>
                 )}
@@ -38,7 +36,7 @@ export function ExtensionsSection({ extensions }: ExtensionsSectionProps) {
                 <div className="flex flex-wrap gap-1">
                   <span className="text-xs text-muted-foreground">Required fields:</span>
                   {ext.requiredFields.map((field) => (
-                    <Badge key={field} variant="secondary" className="text-xs">
+                    <Badge key={field} variant="secondary">
                       {field}
                     </Badge>
                   ))}
@@ -47,7 +45,7 @@ export function ExtensionsSection({ extensions }: ExtensionsSectionProps) {
             </div>
           </div>
         ))}
-      </Card.Content>
-    </Card>
+      </SectionCard.Content>
+    </SectionCard.Root>
   );
 }

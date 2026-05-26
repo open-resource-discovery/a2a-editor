@@ -94,8 +94,9 @@ export class PlaygroundPage {
     this.connectionStatus = page.locator("[data-testid='connection-status']");
 
     // Chat
-    this.chatInput = page.locator("[data-testid='chat-input']");
-    this.chatSend = page.locator("[data-testid='chat-send']");
+    const chatForm = page.locator("[data-testid='chat-form']");
+    this.chatInput = chatForm.locator("textarea");
+    this.chatSend = chatForm.getByRole("button", { name: "Send" });
     this.chatMessages = page.locator("[data-testid='chat-messages']");
     this.chatClear = page.locator("[data-testid='chat-clear']");
     this.userMessages = page.locator("[data-testid='message-user']");

@@ -71,37 +71,31 @@ export function RightPanel({
     <div className="flex h-full flex-col overflow-hidden border-l bg-background" data-testid="right-panel">
       <Tabs.Root value={localTab} onValueChange={handleTabChange} className="flex h-full flex-col">
         <div className="border-b">
-          <Tabs.List className="h-10 w-full justify-start rounded-none border-b-0 bg-background px-2">
-            <Tabs.Tab value="overview" className="text-xs" data-testid="tab-overview">
+          <Tabs.List>
+            <Tabs.Tab value="overview" data-testid="tab-overview">
               Overview
             </Tabs.Tab>
             {showChat && (
-              <Tabs.Tab value="chat" className="text-xs" data-testid="tab-chat">
+              <Tabs.Tab value="chat" data-testid="tab-chat">
                 Chat
               </Tabs.Tab>
             )}
             {showRawHttp && (
-              <Tabs.Tab value="rawhttp" className="text-xs" data-testid="tab-rawhttp">
+              <Tabs.Tab value="rawhttp" data-testid="tab-rawhttp">
                 Raw HTTP
                 {logCount > 0 && (
-                  <Badge variant="secondary" className="ml-1 h-5 min-w-5 justify-center p-0 px-1 text-xs">
-                    {logCount}
-                  </Badge>
+                  <Badge variant="secondary">{logCount}</Badge>
                 )}
               </Tabs.Tab>
             )}
             {showValidation && (
-              <Tabs.Tab value="validation" className="relative text-xs" data-testid="tab-validation">
+              <Tabs.Tab value="validation" data-testid="tab-validation">
                 Validation
                 {summary.fail > 0 && (
-                  <Badge variant="destructive" className="ml-1 h-5 min-w-5 justify-center p-0 px-1 text-xs">
-                    {summary.fail}
-                  </Badge>
+                  <Badge variant="destructive">{summary.fail}</Badge>
                 )}
                 {summary.fail === 0 && summary.warning > 0 && (
-                  <Badge variant="warning" className="ml-1 h-5 min-w-5 justify-center p-0 px-1 text-xs">
-                    {summary.warning}
-                  </Badge>
+                  <Badge variant="warning">{summary.warning}</Badge>
                 )}
               </Tabs.Tab>
             )}

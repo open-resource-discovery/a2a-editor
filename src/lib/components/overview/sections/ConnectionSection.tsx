@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect } from "react";
 import { useConnectionStore } from "@lib/stores/connectionStore";
 import { useAgentCardStore } from "@lib/stores/agentCardStore";
-import { Card, Input, PasswordInput, Button, SimpleSelect, Spinner } from "@open-resource-discovery/ui-components";
+import { SectionCard, Input, PasswordInput, Button, SimpleSelect, Spinner } from "@open-resource-discovery/ui-components";
 import { Plug, Unplug } from "lucide-react";
 import { type ConnAuthType, mapStoreAuthType, buildConnHeaders } from "@lib/utils/connection-auth";
 
@@ -63,20 +63,19 @@ export function ConnectionSection() {
     error: "bg-destructive",
   }[connectionStatus];
 
+  const statusBadge = (
+    <div className="flex items-center gap-2">
+      <div className={`h-2 w-2 rounded-full ${statusColor}`} />
+      <span className="text-xs text-muted-foreground capitalize" data-testid="connection-status">
+        {connectionStatus}
+      </span>
+    </div>
+  );
+
   return (
-    <Card>
-      <Card.Header className="py-3">
-        <div className="flex items-center justify-between">
-          <Card.Title className="text-sm">Connection</Card.Title>
-          <div className="flex items-center gap-2">
-            <div className={`h-2 w-2 rounded-full ${statusColor}`} />
-            <span className="text-xs text-muted-foreground capitalize" data-testid="connection-status">
-              {connectionStatus}
-            </span>
-          </div>
-        </div>
-      </Card.Header>
-      <Card.Content className="pt-0 space-y-3">
+    <SectionCard.Root>
+      <SectionCard.Header title="Connection" badges={statusBadge} />
+      <SectionCard.Content className="space-y-3">
         <div>
           <label className="text-xs text-muted-foreground">Agent URL</label>
           <div className="flex gap-2">
@@ -180,7 +179,7 @@ export function ConnectionSection() {
         {errorMessage && (
           <p className="text-xs text-destructive">{errorMessage}</p>
         )}
-      </Card.Content>
-    </Card>
+      </SectionCard.Content>
+    </SectionCard.Root>
   );
 }

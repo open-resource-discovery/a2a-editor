@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useConnectionStore } from "@lib/stores/connectionStore";
+import { Spinner, Card, Button } from "@open-resource-discovery/ui-components";
 
 /**
  * OAuth callback component that handles the redirect from OAuth provider.
@@ -101,76 +102,75 @@ export function OAuthCallback() {
 
   return (
     <div className="flex h-screen items-center justify-center bg-background">
-      <div className="max-w-md rounded-lg border bg-card p-6 text-center shadow-lg">
-        {status === "processing" && (
-          <>
-            <div className="mb-4">
-              <div className="mx-auto h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
-            </div>
-            <h2 className="text-lg font-semibold">Completing Sign In...</h2>
-            <p className="mt-2 text-sm text-muted-foreground">
-              Please wait while we complete the authentication process.
-            </p>
-          </>
-        )}
+      <Card className="max-w-md w-full mx-4 text-center">
+        <Card.Content className="p-6">
+          {status === "processing" && (
+            <>
+              <div className="mb-4 flex justify-center">
+                <Spinner className="h-8 w-8" />
+              </div>
+              <h2 className="text-lg font-semibold">Completing Sign In...</h2>
+              <p className="mt-2 text-sm text-muted-foreground">
+                Please wait while we complete the authentication process.
+              </p>
+            </>
+          )}
 
-        {status === "success" && (
-          <div role="alert">
-            <div className="mb-4 text-success">
-              <svg
-                className="mx-auto h-12 w-12"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                aria-hidden="true"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M5 13l4 4L19 7"
-                />
-              </svg>
+          {status === "success" && (
+            <div role="alert">
+              <div className="mb-4 text-success">
+                <svg
+                  className="mx-auto h-12 w-12"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  aria-hidden="true"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M5 13l4 4L19 7"
+                  />
+                </svg>
+              </div>
+              <h2 className="text-lg font-semibold text-success">Success!</h2>
+              <p className="mt-2 text-sm text-muted-foreground">
+                You have been successfully authenticated. This window will close
+                automatically.
+              </p>
             </div>
-            <h2 className="text-lg font-semibold text-success">Success!</h2>
-            <p className="mt-2 text-sm text-muted-foreground">
-              You have been successfully authenticated. This window will close
-              automatically.
-            </p>
-          </div>
-        )}
+          )}
 
-        {status === "error" && (
-          <div role="alert">
-            <div className="mb-4 text-destructive">
-              <svg
-                className="mx-auto h-12 w-12"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                aria-hidden="true"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
+          {status === "error" && (
+            <div role="alert">
+              <div className="mb-4 text-destructive">
+                <svg
+                  className="mx-auto h-12 w-12"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  aria-hidden="true"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </div>
+              <h2 className="text-lg font-semibold text-destructive">
+                Authentication Failed
+              </h2>
+              <p className="mt-2 text-sm text-muted-foreground">{error}</p>
+              <Button className="mt-4" onClick={() => window.close()}>
+                Close Window
+              </Button>
             </div>
-            <h2 className="text-lg font-semibold text-destructive">
-              Authentication Failed
-            </h2>
-            <p className="mt-2 text-sm text-muted-foreground">{error}</p>
-            <button
-              className="mt-4 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
-              onClick={() => window.close()}
-            >
-              Close Window
-            </button>
-          </div>
-        )}
-      </div>
+          )}
+        </Card.Content>
+      </Card>
     </div>
   );
 }

@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import type { SecurityScheme } from "@lib/types/a2a";
 import { useConnectionStore } from "@lib/stores/connectionStore";
 import { useAgentCardStore } from "@lib/stores/agentCardStore";
-import { Card, Badge, Input, PasswordInput, Button, SimpleSelect, Spinner } from "@open-resource-discovery/ui-components";
+import { SectionCard, Badge, Input, PasswordInput, Button, SimpleSelect, Spinner } from "@open-resource-discovery/ui-components";
 import {
   Shield,
   Key,
@@ -585,11 +585,9 @@ export function SecuritySection({ schemes, readOnly = false }: SecuritySectionPr
 
   if (readOnly) {
     return (
-      <Card>
-        <Card.Header className="py-3">
-          <Card.Title className="text-sm">Authentication</Card.Title>
-        </Card.Header>
-        <Card.Content className="pt-0 space-y-3">
+      <SectionCard.Root>
+        <SectionCard.Header title="Authentication" />
+        <SectionCard.Content className="space-y-3">
           {schemeEntries.map(([name, scheme]) => {
             const Icon = schemeIcons[scheme.type] || Shield;
             return (
@@ -597,7 +595,7 @@ export function SecuritySection({ schemes, readOnly = false }: SecuritySectionPr
                 <div className="flex items-center gap-2">
                   <Icon className="h-4 w-4 text-muted-foreground" />
                   <span className="font-medium text-sm">{name}</span>
-                  <Badge variant="outline" className="text-xs">
+                  <Badge variant="outline">
                     {scheme.type}
                   </Badge>
                 </div>
@@ -605,7 +603,7 @@ export function SecuritySection({ schemes, readOnly = false }: SecuritySectionPr
                 {scheme.type === "oauth2" && scheme.flows && (
                   <div className="pl-6 flex flex-wrap gap-1">
                     {Object.keys(scheme.flows).map((flow) => (
-                      <Badge key={flow} variant="secondary" className="text-xs">
+                      <Badge key={flow} variant="secondary">
                         {flow}
                       </Badge>
                     ))}
@@ -626,17 +624,15 @@ export function SecuritySection({ schemes, readOnly = false }: SecuritySectionPr
               </div>
             );
           })}
-        </Card.Content>
-      </Card>
+        </SectionCard.Content>
+      </SectionCard.Root>
     );
   }
 
   return (
-    <Card>
-      <Card.Header className="py-3">
-        <Card.Title className="text-sm">Authentication</Card.Title>
-      </Card.Header>
-      <Card.Content className="pt-0 space-y-3">
+    <SectionCard.Root>
+      <SectionCard.Header title="Authentication" />
+      <SectionCard.Content className="space-y-3">
         {/* Scheme selector — shown when multiple schemes available */}
         {schemeEntries.length > 1 ? (
           <SimpleSelect
@@ -652,7 +648,7 @@ export function SecuritySection({ schemes, readOnly = false }: SecuritySectionPr
                 <div className="flex items-center gap-2">
                   <Icon className="h-4 w-4 text-muted-foreground" />
                   <span className="font-medium text-sm">{name}</span>
-                  <Badge variant="outline" className="text-xs">
+                  <Badge variant="outline">
                     {scheme.type}
                   </Badge>
                 </div>
@@ -668,7 +664,7 @@ export function SecuritySection({ schemes, readOnly = false }: SecuritySectionPr
         )}
 
         {renderAuthForm()}
-      </Card.Content>
-    </Card>
+      </SectionCard.Content>
+    </SectionCard.Root>
   );
 }

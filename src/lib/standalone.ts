@@ -469,12 +469,12 @@ function createInstance(element: HTMLElement, options: A2APlaygroundOptions): A2
 
     saveState() {
       const { rawJson, parsedCard, parseError, isDirty, isLoading } = useAgentCardStore.getState();
-      const { messages, isStreaming, currentTaskId, contextId, inputText } = useChatStore.getState();
+      const { messages, isStreaming, currentTaskId, contextId } = useChatStore.getState();
       const { logs, highlightedLogId } = useHttpLogStore.getState();
       const connState = useConnectionStore.getState();
       return {
         agentCard: { rawJson, parsedCard, parseError, isDirty, isLoading },
-        chat: { messages, isStreaming, currentTaskId, contextId, inputText },
+        chat: { messages, isStreaming, currentTaskId, contextId },
         httpLog: { logs, highlightedLogId },
         connection: {
           url: connState.url,

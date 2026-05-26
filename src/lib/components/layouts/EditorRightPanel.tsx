@@ -47,22 +47,18 @@ export function EditorRightPanel({ showValidation = true, defaultTab = "overview
     <div className="flex h-full flex-col overflow-hidden border-l bg-background">
       <Tabs.Root value={localTab} onValueChange={handleTabChange} className="flex h-full flex-col">
         <div className="border-b">
-          <Tabs.List className="h-10 w-full justify-start rounded-none border-b-0 bg-background px-2">
-            <Tabs.Tab value="overview" className="text-xs">
+          <Tabs.List>
+            <Tabs.Tab value="overview">
               Overview
             </Tabs.Tab>
             {showValidation && (
-              <Tabs.Tab value="validation" className="relative text-xs">
+              <Tabs.Tab value="validation">
                 Validation
                 {summary.fail > 0 && (
-                  <Badge variant="destructive" className="ml-1 h-5 min-w-5 justify-center p-0 px-1 text-xs">
-                    {summary.fail}
-                  </Badge>
+                  <Badge variant="destructive">{summary.fail}</Badge>
                 )}
                 {summary.fail === 0 && summary.warning > 0 && (
-                  <Badge variant="warning" className="ml-1 h-5 min-w-5 justify-center p-0 px-1 text-xs">
-                    {summary.warning}
-                  </Badge>
+                  <Badge variant="warning">{summary.warning}</Badge>
                 )}
               </Tabs.Tab>
             )}

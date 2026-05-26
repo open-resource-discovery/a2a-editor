@@ -212,11 +212,16 @@ export function PredefinedAgents() {
       {agent.tags && agent.tags.length > 0 && (
         <div className="flex flex-wrap gap-1 mt-2">
           {agent.mocked !== false && (
-            <Badge variant="warning">
+            <Badge variant="highlight">
               Mocked LLM
             </Badge>
           )}
-          {agent.tags.slice(0, 3).map((tag) => (
+          {agent.tags.filter((t) => t === "Custom" || t === "ORD").map((tag) => (
+            <Badge key={tag} variant="highlight">
+              {tag}
+            </Badge>
+          ))}
+          {agent.tags.filter((t) => t !== "Custom" && t !== "ORD").slice(0, 3).map((tag) => (
             <Badge key={tag} variant="secondary">
               {tag}
             </Badge>

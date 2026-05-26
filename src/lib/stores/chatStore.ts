@@ -150,9 +150,7 @@ interface ChatState {
   isStreaming: boolean;
   currentTaskId: string | null;
   contextId: string | null;
-  inputText: string;
 
-  setInputText: (text: string) => void;
   sendMessage: (parts: Part[], agentUrl: string, authHeaders: Record<string, string>) => Promise<void>;
   sendRawRequest: (
     body: string,
@@ -530,9 +528,6 @@ export const useChatStore = create<ChatState>((set, get) => {
     isStreaming: false,
     currentTaskId: null,
     contextId: null,
-    inputText: "",
-
-    setInputText: (text) => set({ inputText: text }),
 
     sendMessage: async (parts, agentUrl, authHeaders) => {
       if (get().isStreaming) return; // prevent concurrent sends
@@ -550,7 +545,6 @@ export const useChatStore = create<ChatState>((set, get) => {
 
       set((s) => ({
         messages: appendMessage(s.messages, userMessage),
-        inputText: "",
         isStreaming: true,
       }));
 
@@ -637,7 +631,6 @@ export const useChatStore = create<ChatState>((set, get) => {
 
       set((s) => ({
         messages: appendMessage(s.messages, userMessage),
-        inputText: "",
         isStreaming: true,
       }));
 
@@ -724,7 +717,6 @@ export const useChatStore = create<ChatState>((set, get) => {
         messages: [],
         currentTaskId: null,
         contextId: null,
-        inputText: "",
         isStreaming: false,
       }),
 

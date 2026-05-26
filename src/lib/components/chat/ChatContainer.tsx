@@ -2,11 +2,10 @@ import { useChatStore } from "@lib/stores/chatStore";
 import { useConnectionStore, selectEffectiveUrl } from "@lib/stores/connectionStore";
 import { useAgentCardStore } from "@lib/stores/agentCardStore";
 import { useIsLargeScreen } from "@lib/hooks/useMediaQuery";
-import { ScrollArea, Button } from "@open-resource-discovery/ui-components";
+import { ScrollArea, Button, ChatInput, TypingIndicator } from "@open-resource-discovery/ui-components";
 import { ChatMessage } from "./ChatMessage";
-import { ChatInput } from "./ChatInput";
-import { TypingIndicator } from "./TypingIndicator";
 import { Trash2, Play } from "lucide-react";
+import type { Part } from "@lib/types/a2a";
 
 interface ChatContainerProps {
   maxExamplePrompts?: number;
@@ -14,7 +13,7 @@ interface ChatContainerProps {
 }
 
 export function ChatContainer({ maxExamplePrompts = 2, disableExamplePrompts = false }: ChatContainerProps) {
-  const { messages, isStreaming, sendMessage, retryMessage, clearChat } = useChatStore();
+  const { messages, isStreaming, sendMessage, cancelStream, retryMessage, clearChat } = useChatStore();
   const { connectionStatus, authHeaders } = useConnectionStore();
   const effectiveUrl = useConnectionStore(selectEffectiveUrl);
   const parsedCard = useAgentCardStore((state) => state.parsedCard);
@@ -22,7 +21,6 @@ export function ChatContainer({ maxExamplePrompts = 2, disableExamplePrompts = f
 
   const isConnected = connectionStatus === "connected";
 
-  // Get all example prompts from skills
   const allExamplePrompts: string[] = [];
   if (parsedCard?.skills) {
     for (const skill of parsedCard.skills) {
@@ -32,10 +30,19 @@ export function ChatContainer({ maxExamplePrompts = 2, disableExamplePrompts = f
     }
   }
 
-  // Limit examples based on maxExamplePrompts prop (further reduced on mobile)
   const desktopLimit = maxExamplePrompts;
   const mobileLimit = Math.min(maxExamplePrompts, 2);
   const examplePrompts = allExamplePrompts.slice(0, isLargeScreen ? desktopLimit : mobileLimit);
+
+  const handleSend = (value: string) => {
+    let parts: Part[];
+    try {
+      parts = [{ data: JSON.parse(value) }];
+    } catch {
+      parts = [{ text: value }];
+    }
+    sendMessage(parts, effectiveUrl, authHeaders);
+  };
 
   const handleExampleClick = (example: string) => {
     if (!isConnected || isStreaming) return;
@@ -48,7 +55,6 @@ export function ChatContainer({ maxExamplePrompts = 2, disableExamplePrompts = f
 
   return (
     <div className="flex h-full flex-col">
-      {/* Clear button when there are messages */}
       {messages.length > 0 && (
         <div className="flex items-center justify-end border-b px-4 py-1.5">
           <Button variant="ghost" size="sm" onClick={clearChat} data-testid="chat-clear">
@@ -98,7 +104,6 @@ export function ChatContainer({ maxExamplePrompts = 2, disableExamplePrompts = f
         </div>
       </ScrollArea>
 
-      {/* Prompt badges above input (always shown when there are examples and messages) */}
       {messages.length > 0 && examplePrompts.length > 0 && (
         <div className="border-t px-3 py-2">
           <div className="flex flex-wrap gap-1.5">
@@ -116,7 +121,14 @@ export function ChatContainer({ maxExamplePrompts = 2, disableExamplePrompts = f
         </div>
       )}
 
-      <ChatInput disabled={!isConnected} />
+      <ChatInput
+        data-testid="chat-form"
+        onSubmit={handleSend}
+        loading={isStreaming}
+        onCancel={cancelStream}
+        disabled={!isConnected}
+        placeholder={isConnected ? "Type a message or JSON..." : "Connect to an agent to chat..."}
+      />
     </div>
   );
 }
