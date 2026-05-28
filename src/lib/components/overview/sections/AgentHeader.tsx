@@ -8,14 +8,14 @@ interface AgentHeaderProps {
 
 export function AgentHeader({ card }: AgentHeaderProps) {
   return (
-    <div className="space-y-3" data-testid="agent-header">
+    <div className="space-y-3 text-foreground" data-testid="agent-header">
       <div className="flex items-start gap-3">
         {card.iconUrl && <img src={card.iconUrl} alt={card.name} className="h-12 w-12 rounded-lg object-cover" />}
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
-            <span className="text-xl font-bold truncate leading-none" data-testid="agent-name">{card.name}</span>
+            <span className="text-xl font-bold truncate leading-none py-1" data-testid="agent-name">{card.name}</span>
             {card.version && (
-              <Badge variant="outline" className="shrink-0 translate-y-px" data-testid="agent-version">
+              <Badge variant="outline" className="shrink-0 translate-y-px py-1" data-testid="agent-version">
                 v{card.version}
               </Badge>
             )}

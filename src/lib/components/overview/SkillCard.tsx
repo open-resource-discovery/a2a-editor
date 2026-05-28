@@ -26,7 +26,7 @@ export function SkillCard({ skill, disableExamplePrompts = false, readOnly = fal
 
   return (
     <CollapsibleSection.Root bordered open={open} onOpenChange={setOpen}>
-      <button className="flex w-full items-start justify-between text-left cursor-pointer" onClick={() => setOpen(!open)}>
+      <button className="flex w-full items-start justify-between text-left cursor-pointer bg-popover text-popover-foreground rounded-lg border-0 p-2" onClick={() => setOpen(!open)}>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
             <span className="font-medium text-sm">{skill.name}</span>

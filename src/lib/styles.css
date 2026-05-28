@@ -41,6 +41,30 @@
   --sidebar-accent-foreground: oklch(0.21 0.034 264.665);
   --sidebar-border: oklch(0.928 0.006 264.531);
   --sidebar-ring: oklch(0.707 0.022 261.325);
+  /* Bridge: map --ord-* vars (from ui-components) to host design tokens */
+  --ord-background: var(--background);
+  --ord-foreground: var(--foreground);
+  --ord-card: var(--card);
+  --ord-card-foreground: var(--card-foreground);
+  --ord-popover: var(--popover);
+  --ord-popover-foreground: var(--popover-foreground);
+  --ord-primary: var(--primary);
+  --ord-primary-foreground: var(--primary-foreground);
+  --ord-secondary: var(--secondary);
+  --ord-secondary-foreground: var(--secondary-foreground);
+  --ord-muted: var(--muted);
+  --ord-muted-foreground: var(--muted-foreground);
+  --ord-accent: var(--accent);
+  --ord-accent-foreground: var(--accent-foreground);
+  --ord-destructive: var(--destructive);
+  --ord-border: var(--border);
+  --ord-input: var(--input);
+  --ord-ring: var(--ring);
+  --ord-radius: var(--radius);
+  --ord-success: #22c55e;
+  --ord-success-foreground: #ffffff;
+  --ord-warning: #ff9800;
+  --ord-warning-foreground: #ffffff;
   /* Syntax highlighting tokens (light) */
   --hljs-attr: #881391;
   --hljs-string: #a31515;

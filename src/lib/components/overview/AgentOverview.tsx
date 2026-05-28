@@ -29,7 +29,7 @@ export function AgentOverview({
   // Show last valid card in read-only mode when current JSON is invalid
   if (!card && lastValidCard && parseError) {
     return (
-      <div className="space-y-4 p-4">
+      <div className="space-y-4 p-4 bg-background">
         <div className="flex items-start gap-2 rounded-md border border-destructive/50 bg-destructive/10 px-3 py-2 text-sm text-destructive">
           <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
           <span>{parseError}</span>
@@ -91,7 +91,7 @@ export function AgentOverview({
   }
 
   return (
-    <div className="space-y-4 p-4">
+    <div className="space-y-4 p-4 bg-background text-foreground h-full">
       <AgentHeader card={card} />
       {!readOnly && showConnection && <ConnectionSection />}
       {card.securitySchemes && Object.keys(card.securitySchemes).length > 0 && (
