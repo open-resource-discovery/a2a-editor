@@ -31,7 +31,7 @@ export function AgentHeader({ card }: AgentHeaderProps) {
               className="shrink-0"
               data-testid="agent-version"
             >
-              vv{card.version}
+              v{card.version}
             </Badge>
           )}
         </div>
