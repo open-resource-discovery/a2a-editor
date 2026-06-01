@@ -15,7 +15,7 @@ jobs:
 
       - uses: actions/setup-node@v6
         with:
-          node-version: "24.15.0"
+          node-version: "24.16.0"
 
       - name: Install NPM dependencies
         run: npm ci
@@ -34,7 +34,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: "24.15.0"
+          node-version: "24.16.0"
 
       - name: Install NPM dependencies
         run: npm ci
@@ -50,7 +50,7 @@ jobs:
 
       - uses: actions/setup-node@v6
         with:
-          node-version: "24.15.0"
+          node-version: "24.16.0"
 
       - name: Install NPM dependencies
         run: npm ci
@@ -62,13 +62,13 @@ jobs:
     name: E2E Tests
     runs-on: ubuntu-latest
     container:
-      image: mcr.microsoft.com/playwright:v1.58.2-noble
+      image: mcr.microsoft.com/playwright:v1.60.0-noble
     steps:
       - uses: actions/checkout@v6
 
       - uses: actions/setup-node@v6
         with:
-          node-version: "24.15.0"
+          node-version: "24.16.0"
 
       - name: Install NPM dependencies
         run: npm ci
