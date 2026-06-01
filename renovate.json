@@ -8,51 +8,73 @@
   "schedule": ["every weekend"],
   "prHourlyLimit": 0,
   "prConcurrentLimit": 0,
+  "vulnerabilityAlerts": {
+    "schedule": [],
+    "automerge": false,
+    "groupName": null
+  },
   "packageRules": [
+    {
+      "matchUpdateTypes": ["patch"],
+      "groupName": "all patches"
+    },
+    {
+      "matchUpdateTypes": ["minor"],
+      "groupName": "all minor updates"
+    },
     {
       "groupName": "Radix UI",
       "matchManagers": ["npm"],
-      "matchPackageNames": ["/^@radix-ui\\//"]
+      "matchPackageNames": ["/^@radix-ui\\//"],
+      "matchUpdateTypes": ["patch", "minor"]
     },
     {
       "groupName": "Vite Build Tools",
       "matchManagers": ["npm"],
-      "matchPackageNames": ["vite", "@vitejs/plugin-react", "vite-plugin-dts", "@tailwindcss/vite"]
+      "matchPackageNames": ["vite", "@vitejs/plugin-react", "vite-plugin-dts", "@tailwindcss/vite"],
+      "matchUpdateTypes": ["patch", "minor"]
     },
     {
       "groupName": "Tailwind CSS",
       "matchManagers": ["npm"],
-      "matchPackageNames": ["tailwindcss", "@tailwindcss/typography", "tailwind-merge"]
+      "matchPackageNames": ["tailwindcss", "@tailwindcss/typography", "tailwind-merge"],
+      "matchUpdateTypes": ["patch", "minor"]
     },
     {
       "groupName": "Linting Tools",
       "matchManagers": ["npm"],
-      "matchPackageNames": ["eslint", "@eslint/js", "/^eslint-plugin/", "typescript-eslint", "prettier"]
+      "matchPackageNames": ["eslint", "@eslint/js", "/^eslint-plugin/", "typescript-eslint", "prettier"],
+      "matchUpdateTypes": ["patch", "minor"]
     },
     {
       "groupName": "TypeScript",
       "matchManagers": ["npm"],
-      "matchPackageNames": ["typescript", "@types/node", "@types/react", "@types/react-dom"]
+      "matchPackageNames": ["typescript", "@types/node", "@types/react", "@types/react-dom"],
+      "matchUpdateTypes": ["patch", "minor"]
     },
     {
       "groupName": "Testing",
       "matchManagers": ["npm"],
-      "matchPackageNames": ["vitest", "jsdom", "@playwright/test"]
+      "matchPackageNames": ["vitest", "jsdom", "@playwright/test"],
+      "matchUpdateTypes": ["patch", "minor"]
     },
     {
       "groupName": "Docusaurus",
       "matchManagers": ["npm"],
-      "matchPackageNames": ["/^@docusaurus\\//", "@mdx-js/react", "docusaurus-plugin-sass"]
+      "matchPackageNames": ["/^@docusaurus\\//", "@mdx-js/react", "docusaurus-plugin-sass"],
+      "matchUpdateTypes": ["patch", "minor"]
     },
     {
       "groupName": "Monaco Editor",
       "matchManagers": ["npm"],
-      "matchPackageNames": ["@monaco-editor/react"]
+      "matchPackageNames": ["@monaco-editor/react"],
+      "matchUpdateTypes": ["patch", "minor"]
     },
     {
       "groupName": "UI Utilities",
       "matchManagers": ["npm"],
-      "matchPackageNames": ["class-variance-authority", "clsx", "lucide-react", "sonner"]
+      "matchPackageNames": ["class-variance-authority", "clsx", "lucide-react", "sonner"],
+      "matchUpdateTypes": ["patch", "minor"]
     },
     {
       "groupName": "GitHub Actions",
@@ -65,8 +87,17 @@
       "matchManagers": ["npm"],
       "matchDepTypes": ["dependencies", "devDependencies"],
       "matchDatasources": ["npm"],
+      "matchUpdateTypes": ["patch", "minor"],
       "semanticCommitType": "chore",
       "automerge": true
+    },
+    {
+      "matchManagers": ["npm"],
+      "matchDepTypes": ["dependencies", "devDependencies"],
+      "matchDatasources": ["npm"],
+      "matchUpdateTypes": ["major"],
+      "semanticCommitType": "chore",
+      "automerge": false
     }
   ]
 }
