@@ -23,57 +23,45 @@
       "groupName": "all minor updates"
     },
     {
-      "groupName": "Radix UI",
+      "groupName": "Dev Toolchain",
       "matchManagers": ["npm"],
-      "matchPackageNames": ["/^@radix-ui\\//"],
+      "matchPackageNames": [
+        "vite",
+        "@vitejs/plugin-react",
+        "vite-plugin-dts",
+        "@tailwindcss/vite",
+        "tailwindcss",
+        "@tailwindcss/typography",
+        "tailwind-merge",
+        "eslint",
+        "@eslint/js",
+        "/^eslint-plugin/",
+        "typescript-eslint",
+        "prettier",
+        "typescript",
+        "@types/node",
+        "@types/react",
+        "@types/react-dom",
+        "vitest",
+        "jsdom",
+        "@playwright/test",
+        "/^@docusaurus\\//",
+        "@mdx-js/react",
+        "docusaurus-plugin-sass"
+      ],
       "matchUpdateTypes": ["patch", "minor"]
     },
     {
-      "groupName": "Vite Build Tools",
+      "groupName": "UI Components",
       "matchManagers": ["npm"],
-      "matchPackageNames": ["vite", "@vitejs/plugin-react", "vite-plugin-dts", "@tailwindcss/vite"],
-      "matchUpdateTypes": ["patch", "minor"]
-    },
-    {
-      "groupName": "Tailwind CSS",
-      "matchManagers": ["npm"],
-      "matchPackageNames": ["tailwindcss", "@tailwindcss/typography", "tailwind-merge"],
-      "matchUpdateTypes": ["patch", "minor"]
-    },
-    {
-      "groupName": "Linting Tools",
-      "matchManagers": ["npm"],
-      "matchPackageNames": ["eslint", "@eslint/js", "/^eslint-plugin/", "typescript-eslint", "prettier"],
-      "matchUpdateTypes": ["patch", "minor"]
-    },
-    {
-      "groupName": "TypeScript",
-      "matchManagers": ["npm"],
-      "matchPackageNames": ["typescript", "@types/node", "@types/react", "@types/react-dom"],
-      "matchUpdateTypes": ["patch", "minor"]
-    },
-    {
-      "groupName": "Testing",
-      "matchManagers": ["npm"],
-      "matchPackageNames": ["vitest", "jsdom", "@playwright/test"],
-      "matchUpdateTypes": ["patch", "minor"]
-    },
-    {
-      "groupName": "Docusaurus",
-      "matchManagers": ["npm"],
-      "matchPackageNames": ["/^@docusaurus\\//", "@mdx-js/react", "docusaurus-plugin-sass"],
-      "matchUpdateTypes": ["patch", "minor"]
-    },
-    {
-      "groupName": "Monaco Editor",
-      "matchManagers": ["npm"],
-      "matchPackageNames": ["@monaco-editor/react"],
-      "matchUpdateTypes": ["patch", "minor"]
-    },
-    {
-      "groupName": "UI Utilities",
-      "matchManagers": ["npm"],
-      "matchPackageNames": ["class-variance-authority", "clsx", "lucide-react", "sonner"],
+      "matchPackageNames": [
+        "@monaco-editor/react",
+        "class-variance-authority",
+        "clsx",
+        "lucide-react",
+        "sonner",
+        "/^@radix-ui\\//"
+      ],
       "matchUpdateTypes": ["patch", "minor"]
     },
     {
