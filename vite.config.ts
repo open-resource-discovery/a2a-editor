@@ -17,6 +17,7 @@ export default defineConfig(({ mode }) => {
       include: ["src/**/*.test.ts", "src/**/*.test.tsx"],
       environment: "jsdom",
       pool: "forks",
+      execArgv: ["--no-experimental-webstorage"],
     },
     plugins: [
       react(),

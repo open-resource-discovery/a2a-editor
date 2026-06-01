@@ -1,6 +1,6 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import type { SecurityScheme } from "@lib/types/a2a";
-import { useConnectionStore } from "@lib/stores/connectionStore";
+import { useConnectionStore, selectIsTokenExpired } from "@lib/stores/connectionStore";
 import { useAgentCardStore } from "@lib/stores/agentCardStore";
 import { Card, CardContent, CardHeader, CardTitle } from "@lib/components/ui/card";
 import { Badge } from "@lib/components/ui/badge";
@@ -99,10 +99,7 @@ export function SecuritySection({ schemes, readOnly = false }: SecuritySectionPr
   const activeEntry = schemeEntries.find(([n]) => n === selectedScheme);
   const activeScheme = activeEntry?.[1];
 
-  const isTokenExpired = useMemo(
-    () => (oauth2Credentials.expiresAt ? Date.now() > oauth2Credentials.expiresAt : false),
-    [oauth2Credentials.expiresAt],
-  );
+  const isTokenExpired = useConnectionStore(selectIsTokenExpired);
 
   const handleSchemeChange = (name: string) => {
     setSelectedScheme(name);
