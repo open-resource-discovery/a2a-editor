@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import type { SecurityScheme } from "@lib/types/a2a";
-import { useConnectionStore } from "@lib/stores/connectionStore";
+import { useConnectionStore, selectIsTokenExpired } from "@lib/stores/connectionStore";
 import { useAgentCardStore } from "@lib/stores/agentCardStore";
 import { Card, CardContent, CardHeader, CardTitle } from "@lib/components/ui/card";
 import { Badge } from "@lib/components/ui/badge";
@@ -99,6 +99,8 @@ export function SecuritySection({ schemes, readOnly = false }: SecuritySectionPr
   const activeEntry = schemeEntries.find(([n]) => n === selectedScheme);
   const activeScheme = activeEntry?.[1];
 
+  const isTokenExpired = useConnectionStore(selectIsTokenExpired);
+
   const handleSchemeChange = (name: string) => {
     setSelectedScheme(name);
     if (parsedCard) {
@@ -176,7 +178,6 @@ export function SecuritySection({ schemes, readOnly = false }: SecuritySectionPr
     const hasClientCredentials = !!activeScheme.flows?.clientCredentials;
     const hasAccessToken = !!oauth2Credentials.accessToken;
     const hasRefreshToken = !!oauth2Credentials.refreshToken;
-    const isTokenExpired = oauth2Credentials.expiresAt ? Date.now() > oauth2Credentials.expiresAt : false;
 
     return (
       <div className="space-y-3 pt-2">
@@ -475,7 +476,6 @@ export function SecuritySection({ schemes, readOnly = false }: SecuritySectionPr
     const hasAuthorizationUrl = !!oauth2Credentials.authorizationUrl;
     const hasAccessToken = !!oauth2Credentials.accessToken;
     const hasRefreshToken = !!oauth2Credentials.refreshToken;
-    const isTokenExpired = oauth2Credentials.expiresAt ? Date.now() > oauth2Credentials.expiresAt : false;
 
     return (
       <>

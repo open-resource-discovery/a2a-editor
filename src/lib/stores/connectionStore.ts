@@ -1255,6 +1255,9 @@ export const selectAuthHeaders = (state: ConnectionState): Record<string, string
 // Selector for effective messaging URL (messagingUrl from card, falling back to user-entered url)
 export const selectEffectiveUrl = (state: ConnectionState): string => state.messagingUrl || state.url;
 
+export const selectIsTokenExpired = (state: ConnectionState): boolean =>
+  state.oauth2Credentials.expiresAt ? Date.now() > state.oauth2Credentials.expiresAt : false;
+
 // Hook to get auth headers
 export const useAuthHeaders = () => {
   return useConnectionStore((state) => state.authHeaders);
