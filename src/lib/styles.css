@@ -61,10 +61,6 @@
   --ord-input: var(--input);
   --ord-ring: var(--ring);
   --ord-radius: var(--radius);
-  --ord-success: #22c55e;
-  --ord-success-foreground: #ffffff;
-  --ord-warning: #ff9800;
-  --ord-warning-foreground: #ffffff;
   /* Syntax highlighting tokens (light) */
   --hljs-attr: #881391;
   --hljs-string: #a31515;
