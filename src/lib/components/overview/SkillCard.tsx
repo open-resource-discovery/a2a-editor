@@ -1,10 +1,9 @@
-import { useState } from "react";
 import type { AgentSkill } from "@lib/types/a2a";
-import { Badge, Button, CollapsibleSection, MarkdownText } from "@open-resource-discovery/ui-components";
+import { Badge, Button, CollapsibleSection, MarkdownText} from "@open-resource-discovery/ui-components";
 import { useChatStore } from "@lib/stores/chatStore";
 import { useConnectionStore, selectEffectiveUrl } from "@lib/stores/connectionStore";
 import { useUIStore } from "@lib/stores/uiStore";
-import { Play, ChevronDown } from "lucide-react";
+import { Play/*, ChevronDown*/ } from "lucide-react";
 
 interface SkillCardProps {
   skill: AgentSkill;
@@ -13,7 +12,6 @@ interface SkillCardProps {
 }
 
 export function SkillCard({ skill, disableExamplePrompts = false, readOnly = false }: SkillCardProps) {
-  const [open, setOpen] = useState(false);
   const { sendMessage, isStreaming } = useChatStore();
   const { authHeaders } = useConnectionStore();
   const effectiveUrl = useConnectionStore(selectEffectiveUrl);
@@ -25,34 +23,26 @@ export function SkillCard({ skill, disableExamplePrompts = false, readOnly = fal
   };
 
   return (
-    <CollapsibleSection.Root bordered open={open} onOpenChange={setOpen}>
-      <button className="flex w-full items-start justify-between text-left cursor-pointer bg-popover text-popover-foreground rounded-lg border-0 p-2" onClick={() => setOpen(!open)}>
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 flex-wrap">
-            <span className="font-medium text-sm">{skill.name}</span>
-            {skill.tags && skill.tags.length > 0 && (
+    <CollapsibleSection.Root>
+      <CollapsibleSection.Trigger
+      badges={skill.tags && skill.tags.length > 0 && (
               <div className="flex flex-wrap gap-1">
-                {(open ? skill.tags : skill.tags.slice(0, 2)).map((tag) => (
+                {skill.tags.map((tag) => (
                   <Badge key={tag} variant="secondary">
                     {tag}
                   </Badge>
                 ))}
-                {!open && skill.tags.length > 2 && (
-                  <Badge variant="outline" className="text-muted-foreground">
-                    +{skill.tags.length - 2}
-                  </Badge>
-                )}
               </div>
             )}
-          </div>
-          <MarkdownText text={skill.description ?? ""} className="text-xs text-muted-foreground mt-1.5" />
-        </div>
-        <ChevronDown
-          className={`h-4 w-4 shrink-0 text-muted-foreground transition-transform ${open ? "rotate-180" : ""}`}
-        />
-      </button>
+      description={skill.description}
+      >
+      {skill.name}
+      </CollapsibleSection.Trigger>
+
+
 
       <CollapsibleSection.Content className="mt-0">
+      {skill.description && (<MarkdownText text={skill.description} className="text-xs text-muted-foreground"></MarkdownText>)}
         <div className="mt-3 pt-3 border-t">
           {skill.inputModes?.length || skill.outputModes?.length ? (
             <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs mb-2">

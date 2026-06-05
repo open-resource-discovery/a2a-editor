@@ -1,4 +1,8 @@
-@import "tailwindcss";
+@layer theme, base, components, utilities;
+
+@import "@open-resource-discovery/ui-components/styles";
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css" layer(utilities);
 @plugin "@tailwindcss/typography";
 
 @custom-variant dark (&:is(.dark *));
@@ -162,6 +166,145 @@
 }
 
 @layer base {
+  /*
+   * Scoped preflight — Tailwind v4's element resets applied only inside .a2a-root
+   * so the host page (e.g. Docusaurus/Infima) is never affected.
+   *
+   * Element selectors use :where() to keep specificity at (0,1,0) — matching
+   * Tailwind utilities. Since utilities come later in source order, they win.
+   * When @layer wrappers are stripped for the standalone bundle, this also
+   * ensures the preflight doesn't beat utilities via specificity.
+   */
+  .a2a-root :where(*),
+  .a2a-root :where(::after),
+  .a2a-root :where(::before),
+  .a2a-root :where(::backdrop) {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    border: 0 solid;
+  }
+
+  .a2a-root {
+    line-height: 1.5;
+    -webkit-text-size-adjust: 100%;
+    tab-size: 4;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .a2a-root :where(hr) {
+    height: 0;
+    color: inherit;
+    border-top-width: 1px;
+  }
+
+  .a2a-root :where(abbr[title]) {
+    -webkit-text-decoration: underline dotted;
+    text-decoration: underline dotted;
+  }
+
+  .a2a-root :where(h1, h2, h3, h4, h5, h6) {
+    font-size: inherit;
+    font-weight: inherit;
+  }
+
+  .a2a-root :where(a) {
+    color: inherit;
+    -webkit-text-decoration: inherit;
+    text-decoration: inherit;
+  }
+
+  .a2a-root :where(b, strong) {
+    font-weight: bolder;
+  }
+
+  .a2a-root :where(code, kbd, samp, pre) {
+    font-family:
+      ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
+      "Courier New", monospace;
+    font-size: inherit;
+  }
+
+  .a2a-root :where(small) {
+    font-size: 80%;
+  }
+
+  .a2a-root :where(sub, sup) {
+    font-size: 75%;
+    line-height: 0;
+    position: relative;
+    vertical-align: baseline;
+  }
+
+  .a2a-root :where(sub) {
+    bottom: -0.25em;
+  }
+
+  .a2a-root :where(sup) {
+    top: -0.5em;
+  }
+
+  .a2a-root :where(table) {
+    text-indent: 0;
+    border-color: inherit;
+    border-collapse: collapse;
+  }
+
+  .a2a-root :where(summary) {
+    display: list-item;
+  }
+
+  .a2a-root :where(ol, ul, menu) {
+    list-style: none;
+  }
+
+  .a2a-root :where(img, svg, video, canvas, audio, iframe, embed, object) {
+    display: block;
+    vertical-align: middle;
+  }
+
+  .a2a-root :where(img, video) {
+    max-width: 100%;
+    height: auto;
+  }
+
+  .a2a-root :where(button, input, select, optgroup, textarea) {
+    font: inherit;
+    font-feature-settings: inherit;
+    font-variation-settings: inherit;
+    letter-spacing: inherit;
+    color: inherit;
+    border-radius: 0;
+    background-color: transparent;
+    opacity: 1;
+  }
+
+  .a2a-root :where(textarea) {
+    resize: vertical;
+  }
+
+  .a2a-root :where(::placeholder) {
+    opacity: 1;
+  }
+
+  @supports (not (-webkit-appearance: -apple-pay-button)) or
+    (contain-intrinsic-size: 1px) {
+    .a2a-root :where(::placeholder) {
+      color: color-mix(in oklab, currentcolor 50%, transparent);
+    }
+  }
+
+  .a2a-root :where(button),
+  .a2a-root
+    :where(input[type="button"], input[type="reset"], input[type="submit"]) {
+    appearance: button;
+  }
+
+  .a2a-root :where([hidden]:not([hidden="until-found"])) {
+    display: none !important;
+  }
+
+  /* Library base styles */
   .a2a-root,
   .a2a-root * {
     @apply border-border outline-ring/50;
