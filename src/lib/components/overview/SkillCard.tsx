@@ -34,7 +34,6 @@ export function SkillCard({ skill, disableExamplePrompts = false, readOnly = fal
                 ))}
               </div>
             )}
-      description={skill.description}
       >
       {skill.name}
       </CollapsibleSection.Trigger>
@@ -42,7 +41,7 @@ export function SkillCard({ skill, disableExamplePrompts = false, readOnly = fal
 
 
       <CollapsibleSection.Content className="mt-0">
-      {skill.description && (<MarkdownText text={skill.description} className="text-xs text-muted-foreground"></MarkdownText>)}
+      {skill.description && (<MarkdownText text={skill.description} className="text-xs pl-[18px] font-normal text-muted-foreground"></MarkdownText>)}
         <div className="mt-3 pt-3 border-t">
           {skill.inputModes?.length || skill.outputModes?.length ? (
             <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs mb-2">
