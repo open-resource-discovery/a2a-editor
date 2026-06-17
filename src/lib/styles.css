@@ -1,8 +1,8 @@
-@layer theme, base, components, utilities;
+@layer theme, base, components;
 
 @import "@open-resource-discovery/ui-components/styles";
 @import "tailwindcss/theme.css" layer(theme);
-@import "tailwindcss/utilities.css" layer(utilities);
+@import "tailwindcss/utilities.css";
 @plugin "@tailwindcss/typography";
 
 @custom-variant dark (&:is(.dark *));
