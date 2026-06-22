@@ -8,14 +8,10 @@ interface AgentHeaderProps {
 
 export function AgentHeader({ card }: AgentHeaderProps) {
   return (
-    <InfoCard.Header>
+    <InfoCard.Header data-testid="agent-header">
       <InfoCard.Icon>
         {card.iconUrl ? (
-          <img
-            src={card.iconUrl}
-            alt={card.name}
-            className="h-full w-full rounded-lg object-cover"
-          />
+          <img src={card.iconUrl} alt={card.name} className="h-full w-full rounded-lg object-cover" />
         ) : (
           <User className="h-5 w-5 text-muted-foreground" />
         )}
@@ -26,26 +22,17 @@ export function AgentHeader({ card }: AgentHeaderProps) {
             {card.name}
           </InfoCard.Title>
           {card.version && (
-            <Badge
-              variant="outline"
-              className="shrink-0"
-              data-testid="agent-version"
-            >
+            <Badge variant="outline" className="shrink-0" data-testid="agent-version">
               v{card.version}
             </Badge>
           )}
         </div>
         {card.supportedInterfaces && card.supportedInterfaces.length > 0 ? (
           <InfoCard.Subtitle>
-            Protocol:{" "}
-            {card.supportedInterfaces
-              .map((i) => `${i.protocolVersion} (${i.protocolBinding})`)
-              .join(", ")}
+            Protocol: {card.supportedInterfaces.map((i) => `${i.protocolVersion} (${i.protocolBinding})`).join(", ")}
           </InfoCard.Subtitle>
         ) : card.protocolVersions && card.protocolVersions.length > 0 ? (
-          <InfoCard.Subtitle>
-            Protocol: {card.protocolVersions.join(", ")}
-          </InfoCard.Subtitle>
+          <InfoCard.Subtitle>Protocol: {card.protocolVersions.join(", ")}</InfoCard.Subtitle>
         ) : null}
       </div>
     </InfoCard.Header>

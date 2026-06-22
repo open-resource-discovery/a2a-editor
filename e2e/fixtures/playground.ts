@@ -34,6 +34,7 @@ export class PlaygroundPage {
   readonly agentHeader: Locator;
   readonly agentName: Locator;
   readonly agentVersion: Locator;
+  readonly agentDescription: Locator;
 
   // Connection (Overview)
   readonly connectionUrl: Locator;
@@ -86,6 +87,7 @@ export class PlaygroundPage {
     this.agentHeader = page.locator("[data-testid='agent-header']");
     this.agentName = page.locator("[data-testid='agent-name']");
     this.agentVersion = page.locator("[data-testid='agent-version']");
+    this.agentDescription = page.locator("[data-testid='agent-description']");
 
     // Connection
     this.connectionUrl = page.locator("[data-testid='connection-url']");

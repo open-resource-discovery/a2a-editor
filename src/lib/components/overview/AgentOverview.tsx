@@ -40,37 +40,24 @@ export function AgentOverview({
           <AgentHeader card={lastValidCard} />
           <InfoCard.Content>
             <AgentInfoSections card={lastValidCard} />
-            {lastValidCard.securitySchemes &&
-              Object.keys(lastValidCard.securitySchemes).length > 0 && (
-                <SecuritySection
-                  schemes={lastValidCard.securitySchemes}
-                  readOnly
-                />
-              )}
+            {lastValidCard.securitySchemes && Object.keys(lastValidCard.securitySchemes).length > 0 && (
+              <SecuritySection schemes={lastValidCard.securitySchemes} readOnly />
+            )}
             {lastValidCard.capabilities &&
               typeof lastValidCard.capabilities === "object" &&
               !Array.isArray(lastValidCard.capabilities) && (
-                <CapabilitiesSection
-                  capabilities={lastValidCard.capabilities}
-                />
+                <CapabilitiesSection capabilities={lastValidCard.capabilities} />
               )}
             <ModesSection card={lastValidCard} />
             {lastValidCard.skills && lastValidCard.skills.length > 0 && (
-              <SkillsSection
-                skills={lastValidCard.skills}
-                disableExamplePrompts
-                readOnly
-              />
+              <SkillsSection skills={lastValidCard.skills} disableExamplePrompts readOnly />
             )}
             {lastValidCard.security && lastValidCard.security.length > 0 && (
-              <SecurityRequirementsSection
-                requirements={lastValidCard.security}
-              />
+              <SecurityRequirementsSection requirements={lastValidCard.security} />
             )}
-            {lastValidCard.extensions &&
-              lastValidCard.extensions.length > 0 && (
-                <ExtensionsSection extensions={lastValidCard.extensions} />
-              )}
+            {lastValidCard.extensions && lastValidCard.extensions.length > 0 && (
+              <ExtensionsSection extensions={lastValidCard.extensions} />
+            )}
           </InfoCard.Content>
         </InfoCard>
       </div>
@@ -96,10 +83,7 @@ export function AgentOverview({
         <div className="space-y-4 p-4">
           <ConnectionSection />
           <div className="text-center text-muted-foreground">
-            <p className="text-sm">
-              Could not load agent card. The endpoint may require
-              authentication.
-            </p>
+            <p className="text-sm">Could not load agent card. The endpoint may require authentication.</p>
           </div>
         </div>
       );
@@ -109,10 +93,7 @@ export function AgentOverview({
       <div className="flex h-full items-center justify-center p-8 text-center text-muted-foreground">
         <div>
           <p className="text-lg font-medium">No Agent Card</p>
-          <p className="text-sm">
-            Enter valid JSON in the editor or connect to an agent to see the
-            overview.
-          </p>
+          <p className="text-sm">Enter valid JSON in the editor or connect to an agent to see the overview.</p>
         </div>
       </div>
     );
@@ -125,32 +106,18 @@ export function AgentOverview({
         <InfoCard.Content>
           <AgentInfoSections card={card} />
           {!readOnly && showConnection && <ConnectionSection />}
-          {card.securitySchemes &&
-            Object.keys(card.securitySchemes).length > 0 && (
-              <SecuritySection
-                schemes={card.securitySchemes}
-                readOnly={readOnly}
-              />
-            )}
-          {card.capabilities &&
-            typeof card.capabilities === "object" &&
-            !Array.isArray(card.capabilities) && (
-              <CapabilitiesSection capabilities={card.capabilities} />
-            )}
+          {card.securitySchemes && Object.keys(card.securitySchemes).length > 0 && (
+            <SecuritySection schemes={card.securitySchemes} readOnly={readOnly} />
+          )}
+          {card.capabilities && typeof card.capabilities === "object" && !Array.isArray(card.capabilities) && (
+            <CapabilitiesSection capabilities={card.capabilities} />
+          )}
           <ModesSection card={card} />
           {card.skills && card.skills.length > 0 && (
-            <SkillsSection
-              skills={card.skills}
-              disableExamplePrompts={disableExamplePrompts}
-              readOnly={readOnly}
-            />
+            <SkillsSection skills={card.skills} disableExamplePrompts={disableExamplePrompts} readOnly={readOnly} />
           )}
-          {card.security && card.security.length > 0 && (
-            <SecurityRequirementsSection requirements={card.security} />
-          )}
-          {card.extensions && card.extensions.length > 0 && (
-            <ExtensionsSection extensions={card.extensions} />
-          )}
+          {card.security && card.security.length > 0 && <SecurityRequirementsSection requirements={card.security} />}
+          {card.extensions && card.extensions.length > 0 && <ExtensionsSection extensions={card.extensions} />}
         </InfoCard.Content>
       </InfoCard>
     </div>
@@ -161,12 +128,8 @@ function AgentInfoSections({ card }: { card: AgentCard }) {
   return (
     <>
       {card.description && (
-        <InfoCard.Section>
-          <MarkdownText
-            text={card.description}
-            clampLines={3}
-            className="text-sm text-muted-foreground"
-          />
+        <InfoCard.Section data-testid="agent-description">
+          <MarkdownText text={card.description} clampLines={3} className="text-sm text-muted-foreground" />
         </InfoCard.Section>
       )}
 
@@ -189,8 +152,7 @@ function AgentInfoSections({ card }: { card: AgentCard }) {
               href={card.provider.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-primary"
-            >
+              className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-primary">
               <ExternalLink className="h-4 w-4" />
               {(() => {
                 try {
@@ -211,8 +173,7 @@ function AgentInfoSections({ card }: { card: AgentCard }) {
               href={card.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-primary truncate"
-            >
+              className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-primary truncate">
               <Globe className="h-3 w-3 shrink-0" />
               {card.url}
             </a>
@@ -222,8 +183,7 @@ function AgentInfoSections({ card }: { card: AgentCard }) {
               href={card.documentationUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 text-sm text-primary hover:underline"
-            >
+              className="inline-flex items-center gap-1 text-sm text-primary hover:underline">
               <ExternalLink className="h-3 w-3" />
               Documentation
             </a>

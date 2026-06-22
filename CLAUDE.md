@@ -48,12 +48,12 @@ npx playwright test e2e/tests/chat.spec.ts --project=vite
 
 The project produces four distinct build artifacts:
 
-| Command | Output | Format | Use case |
-|---|---|---|---|
-| `build:lib` | `dist/` | ES modules, multiple entry points | npm consumers |
-| `build:standalone` | `dist-standalone/` | IIFE, React bundled | CDN / script tag |
-| `build:demo` | `dist-demo/` | SPA | GitHub Pages demo |
-| `website:build` | `website/build/` | Static | Docusaurus docs |
+| Command            | Output             | Format                            | Use case          |
+| ------------------ | ------------------ | --------------------------------- | ----------------- |
+| `build:lib`        | `dist/`            | ES modules, multiple entry points | npm consumers     |
+| `build:standalone` | `dist-standalone/` | IIFE, React bundled               | CDN / script tag  |
+| `build:demo`       | `dist-demo/`       | SPA                               | GitHub Pages demo |
+| `website:build`    | `website/build/`   | Static                            | Docusaurus docs   |
 
 The lib build exports five separate entry points for tree-shaking: `index`, `playground-lite`, `viewer`, `editor`, `card-view`. The standalone build bundles everything into a single `a2a-playground.js` that exposes `window.A2APlayground` and `window.A2AEditor`.
 
@@ -85,6 +85,7 @@ The outer `ThemeRoot` component provides the CSS custom property scope (`.a2a-ro
 ### A2A protocol handling
 
 `src/lib/utils/a2a-protocol.ts` bridges A2A versions 0.3.0 and 1.0.0:
+
 - `detectProtocolVersion()` — infers version from card structure
 - `normalizeAgentCard()` — produces a canonical internal representation
 
@@ -107,6 +108,7 @@ Located alongside source in `src/lib/**/__tests__/`. Run with Vitest (jsdom envi
 ### E2E tests
 
 `e2e/tests/` — Playwright tests targeting two servers simultaneously:
+
 - `vite` project → `localhost:5173`
 - `docusaurus` project → `localhost:3000`
 
@@ -115,6 +117,7 @@ Custom fixtures in `e2e/fixtures/playground.ts` provide helpers (`selectAgent`, 
 ## Dependency on ui-components
 
 This project depends on `@open-resource-discovery/ui-components` via `file:../ui-components`. When that library changes:
+
 1. Run `npm run build` in `../ui-components`
 2. Re-run `npm install` here if the package interface changed
 
