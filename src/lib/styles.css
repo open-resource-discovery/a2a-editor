@@ -219,9 +219,7 @@
   }
 
   .a2a-root :where(code, kbd, samp, pre) {
-    font-family:
-      ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
-      "Courier New", monospace;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
     font-size: inherit;
   }
 
@@ -287,16 +285,14 @@
     opacity: 1;
   }
 
-  @supports (not (-webkit-appearance: -apple-pay-button)) or
-    (contain-intrinsic-size: 1px) {
+  @supports (not (-webkit-appearance: -apple-pay-button)) or (contain-intrinsic-size: 1px) {
     .a2a-root :where(::placeholder) {
       color: color-mix(in oklab, currentcolor 50%, transparent);
     }
   }
 
   .a2a-root :where(button),
-  .a2a-root
-    :where(input[type="button"], input[type="reset"], input[type="submit"]) {
+  .a2a-root :where(input[type="button"], input[type="reset"], input[type="submit"]) {
     appearance: button;
   }
 
