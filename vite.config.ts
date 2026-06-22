@@ -27,7 +27,6 @@ export default defineConfig(({ mode }) => {
             dts({
               include: ["src/lib/**/*.ts", "src/lib/**/*.tsx"],
               exclude: ["src/lib/components/ui/**"],
-              rollupTypes: false,
               outDirs: ["dist"],
               tsconfigPath: "./tsconfig.app.json",
               copyDtsFiles: true,
