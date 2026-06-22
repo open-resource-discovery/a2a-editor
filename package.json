@@ -112,6 +112,7 @@
   "dependencies": {
     "@monaco-editor/react": "^4.7.0",
     "@open-resource-discovery/specification": "^1.14.5",
+    "@open-resource-discovery/ui-components": "^0.1.2",
     "@radix-ui/react-accordion": "^1.2.12",
     "@radix-ui/react-collapsible": "^1.1.12",
     "@radix-ui/react-dialog": "^1.1.15",
@@ -120,7 +121,6 @@
     "@radix-ui/react-switch": "^1.2.6",
     "@radix-ui/react-tabs": "^1.1.13",
     "@radix-ui/react-tooltip": "^1.2.8",
-    "@open-resource-discovery/ui-components": "file:../ui-components",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "highlight.js": "11.11.1",
