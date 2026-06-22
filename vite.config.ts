@@ -17,6 +17,7 @@ export default defineConfig(({ mode }) => {
       include: ["src/**/*.test.ts", "src/**/*.test.tsx"],
       environment: "jsdom",
       pool: "forks",
+      execArgv: ["--no-experimental-webstorage"],
     },
     plugins: [
       react(),
@@ -26,8 +27,8 @@ export default defineConfig(({ mode }) => {
             dts({
               include: ["src/lib/**/*.ts", "src/lib/**/*.tsx"],
               exclude: ["src/lib/components/ui/**"],
-              outDir: "dist",
               rollupTypes: false,
+              outDirs: ["dist"],
               tsconfigPath: "./tsconfig.app.json",
               copyDtsFiles: true,
             }),

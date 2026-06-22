@@ -158,7 +158,7 @@ export default defineConfig({
     outDir: "dist-standalone",
     cssCodeSplit: false,
     // Optimize for size
-    minify: "esbuild",
+    minify: "oxc",
     sourcemap: true,
   },
 });
