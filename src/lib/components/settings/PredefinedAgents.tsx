@@ -196,7 +196,7 @@ export function PredefinedAgents() {
       data-testid={`agent-card-${agent.id}`}
       tabIndex={0}
       className={cn(
-        "p-3 cursor-pointer transition-colors relative group",
+        "p-3 cursor-pointer transition-colors relative group shadow-none",
         selectedId === agent.id ? "border-primary bg-accent" : "hover:bg-accent/50",
       )}
       onClick={() => handleSelectAgent(agent.id)}
