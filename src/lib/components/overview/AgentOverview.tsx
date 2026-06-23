@@ -173,9 +173,9 @@ function AgentInfoSections({ card }: { card: AgentCard }) {
               href={card.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-primary truncate">
+              className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-primary hover:underline truncate">
               <Globe className="h-3 w-3 shrink-0" />
-              {card.url}
+              <span className="truncate">{card.url}</span>
             </a>
           )}
           {card.documentationUrl && (
@@ -183,8 +183,8 @@ function AgentInfoSections({ card }: { card: AgentCard }) {
               href={card.documentationUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 text-sm text-primary hover:underline">
-              <ExternalLink className="h-3 w-3" />
+              className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-primary hover:underline">
+              <ExternalLink className="h-3 w-3 truncate" />
               Documentation
             </a>
           )}

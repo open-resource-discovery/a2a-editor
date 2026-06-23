@@ -1,6 +1,14 @@
 import { useEffect, useState, useMemo } from "react";
 import { usePredefinedAgentsStore } from "@lib/stores/predefinedAgentsStore";
-import { Badge, Button, Card, Input, PasswordInput, SimpleSelect, Spinner } from "@open-resource-discovery/ui-components";
+import {
+  Badge,
+  Button,
+  Card,
+  Input,
+  PasswordInput,
+  SimpleSelect,
+  Spinner,
+} from "@open-resource-discovery/ui-components";
 import { cn } from "@lib/utils/cn";
 import { selectPredefinedAgent, clearAgentState } from "@lib/utils/agent-selection";
 import { detectProtocolVersion, normalizeAgentCard } from "@lib/utils/a2a-protocol";
@@ -34,8 +42,7 @@ function parseAgentUrl(input: string): { normalizedUrl: string; fetchUrl: string
 }
 
 export function PredefinedAgents() {
-  const { agents, selectedId, loadDefaults, addCustomAgent, removeAgent, loadFromOrd } =
-    usePredefinedAgentsStore();
+  const { agents, selectedId, loadDefaults, addCustomAgent, removeAgent, loadFromOrd } = usePredefinedAgentsStore();
 
   const [search, setSearch] = useState("");
   const [showAddForm, setShowAddForm] = useState(false);
@@ -95,9 +102,10 @@ export function PredefinedAgents() {
     if (!agent) return;
 
     // Build connection-specific auth headers if available
-    const connectHeaders = agent.connectionAuthType && agent.connectionAuthConfig
-      ? buildPredefinedConnHeaders(agent.connectionAuthType, agent.connectionAuthConfig)
-      : undefined;
+    const connectHeaders =
+      agent.connectionAuthType && agent.connectionAuthConfig
+        ? buildPredefinedConnHeaders(agent.connectionAuthType, agent.connectionAuthConfig)
+        : undefined;
 
     await selectPredefinedAgent(agent, {
       connectHeaders,
@@ -211,21 +219,22 @@ export function PredefinedAgents() {
       {agent.description && <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{agent.description}</p>}
       {agent.tags && agent.tags.length > 0 && (
         <div className="flex flex-wrap gap-1 mt-2">
-          {agent.mocked !== false && (
-            <Badge variant="highlight">
-              Mocked LLM
-            </Badge>
-          )}
-          {agent.tags.filter((t) => t === "Custom" || t === "ORD").map((tag) => (
-            <Badge key={tag} variant="highlight">
-              {tag}
-            </Badge>
-          ))}
-          {agent.tags.filter((t) => t !== "Custom" && t !== "ORD").slice(0, 3).map((tag) => (
-            <Badge key={tag} variant="secondary">
-              {tag}
-            </Badge>
-          ))}
+          {agent.mocked !== false && <Badge variant="highlight">Mocked LLM</Badge>}
+          {agent.tags
+            .filter((t) => t === "Custom" || t === "ORD")
+            .map((tag) => (
+              <Badge key={tag} variant="highlight">
+                {tag}
+              </Badge>
+            ))}
+          {agent.tags
+            .filter((t) => t !== "Custom" && t !== "ORD")
+            .slice(0, 3)
+            .map((tag) => (
+              <Badge key={tag} variant="secondary">
+                {tag}
+              </Badge>
+            ))}
         </div>
       )}
     </Card>
@@ -233,7 +242,7 @@ export function PredefinedAgents() {
 
   return (
     <div className="space-y-3">
-      <div className="sticky top-0 z-10 bg-sidebar pt-8 pb-3 space-y-3">
+      <div className="sticky top-0 z-10 bg-sidebar pt-2 pb-3 space-y-3">
         <div className="flex items-center justify-between">
           <span className="text-sm font-medium">Agents</span>
           <div className="flex items-center gap-1">
@@ -241,12 +250,23 @@ export function PredefinedAgents() {
               variant="ghost"
               size="sm"
               className="h-7 gap-1"
-              onClick={() => { setShowOrdForm(!showOrdForm); setShowAddForm(false); }}
+              onClick={() => {
+                setShowOrdForm(!showOrdForm);
+                setShowAddForm(false);
+              }}
               data-testid="discover-ord-btn">
               <Globe className="h-3.5 w-3.5" />
               Discover
             </Button>
-            <Button variant="ghost" size="sm" className="h-7 gap-1" onClick={() => { setShowAddForm(!showAddForm); setShowOrdForm(false); }} data-testid="add-agent-btn">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-7 gap-1"
+              onClick={() => {
+                setShowAddForm(!showAddForm);
+                setShowOrdForm(false);
+              }}
+              data-testid="add-agent-btn">
               <Plus className="h-3.5 w-3.5" />
               Add
             </Button>
@@ -275,7 +295,11 @@ export function PredefinedAgents() {
             {discoverError && <p className="text-xs text-destructive">{discoverError}</p>}
             {discoverMessage && <p className="text-xs text-muted-foreground">{discoverMessage}</p>}
             <div className="flex justify-end">
-              <Button size="sm" onClick={handleDiscover} disabled={isDiscovering || !ordUrl.trim()} data-testid="discover-ord-submit">
+              <Button
+                size="sm"
+                onClick={handleDiscover}
+                disabled={isDiscovering || !ordUrl.trim()}
+                data-testid="discover-ord-submit">
                 {isDiscovering ? (
                   <>
                     <Spinner className="h-3 w-3 mr-1" />
@@ -374,7 +398,11 @@ export function PredefinedAgents() {
                 data-testid="add-agent-cancel">
                 Cancel
               </Button>
-              <Button size="sm" onClick={handleAddAgent} disabled={isAdding || !isValidNewAgentUrl} data-testid="add-agent-submit">
+              <Button
+                size="sm"
+                onClick={handleAddAgent}
+                disabled={isAdding || !isValidNewAgentUrl}
+                data-testid="add-agent-submit">
                 {isAdding ? (
                   <>
                     <Spinner className="h-3 w-3 mr-1" />
