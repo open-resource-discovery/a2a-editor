@@ -1,7 +1,13 @@
 import { useState } from "react";
 import type { ChatMessage as ChatMessageType } from "@lib/types/chat";
 import { isTextPart, isDataPart, isFilePart } from "@lib/types/a2a";
-import { ChatMessage as ChatMessageShell, Badge, Spinner, CodeBlock, MarkdownText } from "@open-resource-discovery/ui-components";
+import {
+  ChatMessage as ChatMessageShell,
+  Badge,
+  Spinner,
+  CodeBlock,
+  MarkdownText,
+} from "@open-resource-discovery/ui-components";
 import { FileText, CheckCircle, AlertCircle, ChevronDown, ChevronUp } from "lucide-react";
 import { cn } from "@lib/utils/cn";
 import { useUIStore } from "@lib/stores/uiStore";
@@ -27,10 +33,19 @@ function mediaTypeToLang(mediaType?: string): string | null {
 function isJsonLike(text: string): boolean {
   const trimmed = text.trim();
   if (!(trimmed.startsWith("{") || trimmed.startsWith("["))) return false;
-  try { JSON.parse(trimmed); return true; } catch { return false; }
+  try {
+    JSON.parse(trimmed);
+    return true;
+  } catch {
+    return false;
+  }
 }
 
-function FilePartView({ file: filePart }: { file: { uri: string; mimeType?: string; mediaType?: string; name?: string } }) {
+function FilePartView({
+  file: filePart,
+}: {
+  file: { uri: string; mimeType?: string; mediaType?: string; name?: string };
+}) {
   const mime = (filePart.mimeType || filePart.mediaType || "").toLowerCase();
 
   if (mime.startsWith("image/")) {
@@ -119,10 +134,13 @@ export function ChatMessage({ message, onRetry }: ChatMessageProps) {
     <div className="flex items-center gap-1.5">
       <Badge
         variant={
-          message.status === "completed" ? "default"
-          : message.status === "failed" ? "destructive"
-          : message.status === "auth-required" ? "destructive"
-          : "secondary"
+          message.status === "completed"
+            ? "default"
+            : message.status === "failed"
+              ? "destructive"
+              : message.status === "auth-required"
+                ? "destructive"
+                : "secondary"
         }>
         {message.status}
       </Badge>
@@ -130,22 +148,22 @@ export function ChatMessage({ message, onRetry }: ChatMessageProps) {
         <button
           type="button"
           className="inline-flex items-center gap-0.5 text-xs text-success hover:underline cursor-pointer"
-          onClick={() => setShowCompliance((v) => !v)}
-        >
+          onClick={() => setShowCompliance((v) => !v)}>
           <CheckCircle className="h-3.5 w-3.5" />
           compliant
-          {message.complianceDetails && (showCompliance ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />)}
+          {message.complianceDetails &&
+            (showCompliance ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />)}
         </button>
       )}
       {!isUser && message.compliant === false && (
         <button
           type="button"
           className="inline-flex items-center gap-0.5 text-xs text-orange-600 dark:text-orange-400 hover:underline cursor-pointer"
-          onClick={() => setShowCompliance((v) => !v)}
-        >
+          onClick={() => setShowCompliance((v) => !v)}>
           <AlertCircle className="h-3.5 w-3.5" />
           non-compliant
-          {message.complianceDetails && (showCompliance ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />)}
+          {message.complianceDetails &&
+            (showCompliance ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />)}
         </button>
       )}
     </div>
@@ -159,8 +177,7 @@ export function ChatMessage({ message, onRetry }: ChatMessageProps) {
       onRetry={isUser && onRetry ? onRetry : undefined}
       status={statusNode}
       data-testid={isUser ? "message-user" : "message-agent"}
-      className="mb-3"
-    >
+      className="mb-3">
       {showCompliance && message.complianceDetails && (
         <div className="mb-2 rounded bg-background/50 p-2 text-xs space-y-0.5">
           {message.complianceDetails.map((result, i) => (
@@ -170,18 +187,20 @@ export function ChatMessage({ message, onRetry }: ChatMessageProps) {
               ) : (
                 <AlertCircle className="h-3 w-3 mt-0.5 shrink-0 text-orange-600 dark:text-orange-400" />
               )}
-              <span className={cn(!result.passed && "text-orange-600 dark:text-orange-400")}>
-                {result.message}
-              </span>
+              <span className={cn(!result.passed && "text-orange-600 dark:text-orange-400")}>{result.message}</span>
             </div>
           ))}
         </div>
       )}
 
-      {fullText && (
-        isUser ? (
+      {fullText &&
+        (isUser ? (
           isJsonLike(fullText) ? (
-            <CodeBlock code={JSON.stringify(JSON.parse(fullText.trim()), null, 2)} language="json" className="text-[11px]" />
+            <CodeBlock
+              code={JSON.stringify(JSON.parse(fullText.trim()), null, 2)}
+              language="json"
+              className="text-[11px]"
+            />
           ) : (
             <p className="text-sm whitespace-pre-wrap break-words">{fullText}</p>
           )
@@ -189,8 +208,7 @@ export function ChatMessage({ message, onRetry }: ChatMessageProps) {
           <p className="text-sm whitespace-pre-wrap break-words">{fullText}</p>
         ) : (
           <MarkdownText text={fullText} />
-        )
-      )}
+        ))}
 
       {dataParts.map((part, index) => (
         <CodeBlock
@@ -206,16 +224,13 @@ export function ChatMessage({ message, onRetry }: ChatMessageProps) {
         return <FilePartView key={`file-${index}`} file={file} />;
       })}
 
-      {message.isStreaming && (
-        <Spinner className="h-3 w-3 mt-1 text-muted-foreground" />
-      )}
+      {message.isStreaming && <Spinner className="h-3 w-3 mt-1 text-muted-foreground" />}
 
       {httpLog && (
         <button
           type="button"
           onClick={handleViewHttp}
-          className="mt-1 text-[10px] text-muted-foreground hover:text-foreground underline cursor-pointer"
-        >
+          className="mt-1 text-[10px] text-accent-foreground hover:underline cursor-pointer">
           View HTTP log ↗
         </button>
       )}
