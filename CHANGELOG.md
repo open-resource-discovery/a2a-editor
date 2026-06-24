@@ -24,6 +24,23 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 - Registered `@tailwindcss/typography` plugin for Tailwind v4 (prose classes were silently ignored)
 - Agent card description uses CSS `line-clamp-3` instead of character-count truncation
 
+### Changed
+
+- Migrate all UI components (`Button`, `Badge`, `Card`, `Input`, `PasswordInput`, `Switch`, `Separator`, `Select`, `Sheet`, `ScrollArea`, `Tabs`, `Collapsible`, `CodeBlock`, `MarkdownText`, `ValidationPass`, `ValidationEntry`) to re-export from `@open-resource-discovery/ui-components`, removing local shadcn-based implementations.
+- Refactor all overview sections (`AgentHeader`, `CapabilitiesSection`, `ConnectionSection`, `ExtensionsSection`, `ModesSection`, `SecuritySection`, `SecurityRequirementsSection`, `SkillsSection`), settings panels, chat components, and validation UI to use library components (`InfoCard`, `SectionCard`, `CollapsibleSection`, `HttpLogEntry`, `ChatMessage`, `ChatInput`, `TypingIndicator`).
+- Align CSS layer setup and Tailwind import style with `@open-resource-discovery/ui-components` conventions.
+- Strip `@layer` wrappers from the standalone IIFE bundle so Tailwind utilities take precedence over unlayered host-page styles (e.g. Docusaurus Infima).
+- Upgrade `vite-plugin-dts` to v5 (`outDirs`, `copyDtsFiles`, `tsconfigPath` API).
+
+### Fixed
+
+- E2E tests: added `data-testid` attributes to `AgentHeader` and agent description elements; corrected locator for agent description assertion.
+- Standalone bundle styles now render correctly when embedded in Docusaurus (CSS layer order fixed).
+- Long URLs in the connection panel are now truncated to prevent layout overflow.
+- Removed drop shadows from agent list items to prevent visual artifacts when scrolling long lists.
+- Broken link color in chat messages corrected.
+- Left panel header vertical alignment fixed.
+
 ## [[0.3.0](https://github.com/open-resource-discovery/a2a-editor/releases/tag/v0.3.0)] - 2026-03-20
 
 ### Added
