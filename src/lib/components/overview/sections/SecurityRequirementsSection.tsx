@@ -1,6 +1,5 @@
 import type { SecurityRequirement } from "@lib/types/a2a";
-import { Card, CardContent, CardHeader, CardTitle } from "@lib/components/ui/card";
-import { Badge } from "@lib/components/ui/badge";
+import { SectionCard, Badge } from "@open-resource-discovery/ui-components";
 import { ShieldCheck } from "lucide-react";
 
 interface SecurityRequirementsSectionProps {
@@ -17,11 +16,9 @@ export function SecurityRequirementsSection({ requirements }: SecurityRequiremen
   if (requirements.length === 0) return null;
 
   return (
-    <Card>
-      <CardHeader className="py-3">
-        <CardTitle className="text-sm">Security Requirements</CardTitle>
-      </CardHeader>
-      <CardContent className="pt-0 space-y-2">
+    <SectionCard.Root>
+      <SectionCard.Header title="Security Requirements" icon={<ShieldCheck />} />
+      <SectionCard.Content className="space-y-2">
         {requirements.map((req, index) => {
           const entries = Object.entries(req);
           return (
@@ -42,7 +39,7 @@ export function SecurityRequirementsSection({ requirements }: SecurityRequiremen
                       {scopes.length > 0 && (
                         <div className="flex flex-wrap gap-1 mt-1">
                           {scopes.map((scope) => (
-                            <Badge key={scope} variant="outline" className="text-xs">
+                            <Badge key={scope} variant="outline">
                               {scope}
                             </Badge>
                           ))}
@@ -60,7 +57,7 @@ export function SecurityRequirementsSection({ requirements }: SecurityRequiremen
             </div>
           );
         })}
-      </CardContent>
-    </Card>
+      </SectionCard.Content>
+    </SectionCard.Root>
   );
 }

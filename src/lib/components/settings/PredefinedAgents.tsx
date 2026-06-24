@@ -1,16 +1,20 @@
 import { useEffect, useState, useMemo } from "react";
 import { usePredefinedAgentsStore } from "@lib/stores/predefinedAgentsStore";
-import { Badge } from "@lib/components/ui/badge";
-import { Button } from "@lib/components/ui/button";
-import { Input } from "@lib/components/ui/input";
-import { PasswordInput } from "@lib/components/ui/PasswordInput";
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@lib/components/ui/select";
+import {
+  Badge,
+  Button,
+  Card,
+  Input,
+  PasswordInput,
+  SimpleSelect,
+  Spinner,
+} from "@open-resource-discovery/ui-components";
 import { cn } from "@lib/utils/cn";
 import { selectPredefinedAgent, clearAgentState } from "@lib/utils/agent-selection";
 import { detectProtocolVersion, normalizeAgentCard } from "@lib/utils/a2a-protocol";
 import { buildAddHeaders, mapAddAuth, buildPredefinedConnHeaders } from "@lib/utils/predefined-auth";
 import type { AddAuthType } from "@lib/utils/predefined-auth";
-import { Search, Plus, X, Loader2, Globe } from "lucide-react";
+import { Search, Plus, X, Globe } from "lucide-react";
 import type { PredefinedAgent } from "@lib/types/connection";
 
 function parseAgentUrl(input: string): { normalizedUrl: string; fetchUrl: string } {
@@ -38,8 +42,7 @@ function parseAgentUrl(input: string): { normalizedUrl: string; fetchUrl: string
 }
 
 export function PredefinedAgents() {
-  const { agents, selectedId, loadDefaults, addCustomAgent, removeAgent, loadFromOrd } =
-    usePredefinedAgentsStore();
+  const { agents, selectedId, loadDefaults, addCustomAgent, removeAgent, loadFromOrd } = usePredefinedAgentsStore();
 
   const [search, setSearch] = useState("");
   const [showAddForm, setShowAddForm] = useState(false);
@@ -99,9 +102,10 @@ export function PredefinedAgents() {
     if (!agent) return;
 
     // Build connection-specific auth headers if available
-    const connectHeaders = agent.connectionAuthType && agent.connectionAuthConfig
-      ? buildPredefinedConnHeaders(agent.connectionAuthType, agent.connectionAuthConfig)
-      : undefined;
+    const connectHeaders =
+      agent.connectionAuthType && agent.connectionAuthConfig
+        ? buildPredefinedConnHeaders(agent.connectionAuthType, agent.connectionAuthConfig)
+        : undefined;
 
     await selectPredefinedAgent(agent, {
       connectHeaders,
@@ -186,13 +190,13 @@ export function PredefinedAgents() {
   };
 
   const renderAgentCard = (agent: PredefinedAgent, isCustom: boolean) => (
-    <div
+    <Card
       key={agent.id}
       role="listitem"
       data-testid={`agent-card-${agent.id}`}
       tabIndex={0}
       className={cn(
-        "rounded-lg border p-3 cursor-pointer transition-colors relative group",
+        "p-3 cursor-pointer transition-colors relative group shadow-none",
         selectedId === agent.id ? "border-primary bg-accent" : "hover:bg-accent/50",
       )}
       onClick={() => handleSelectAgent(agent.id)}
@@ -215,29 +219,30 @@ export function PredefinedAgents() {
       {agent.description && <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{agent.description}</p>}
       {agent.tags && agent.tags.length > 0 && (
         <div className="flex flex-wrap gap-1 mt-2">
-          {agent.mocked !== false && (
-            <Badge variant="outline" className="text-xs h-5 border-warning/50 text-warning">
-              Mocked LLM
-            </Badge>
-          )}
-          {agent.tags.filter((t) => t === "Custom" || t === "ORD").map((tag) => (
-            <Badge key={tag} variant="outline" className="text-xs h-5 border-warning/50 text-warning">
-              {tag}
-            </Badge>
-          ))}
-          {agent.tags.filter((t) => t !== "Custom" && t !== "ORD").slice(0, 3).map((tag) => (
-            <Badge key={tag} variant="secondary" className="text-xs h-5">
-              {tag}
-            </Badge>
-          ))}
+          {agent.mocked !== false && <Badge variant="highlight">Mocked LLM</Badge>}
+          {agent.tags
+            .filter((t) => t === "Custom" || t === "ORD")
+            .map((tag) => (
+              <Badge key={tag} variant="highlight">
+                {tag}
+              </Badge>
+            ))}
+          {agent.tags
+            .filter((t) => t !== "Custom" && t !== "ORD")
+            .slice(0, 3)
+            .map((tag) => (
+              <Badge key={tag} variant="secondary">
+                {tag}
+              </Badge>
+            ))}
         </div>
       )}
-    </div>
+    </Card>
   );
 
   return (
     <div className="space-y-3">
-      <div className="sticky top-0 z-10 bg-sidebar pt-8 pb-3 space-y-3">
+      <div className="sticky top-0 z-10 bg-sidebar pt-2 pb-3 space-y-3">
         <div className="flex items-center justify-between">
           <span className="text-sm font-medium">Agents</span>
           <div className="flex items-center gap-1">
@@ -245,12 +250,23 @@ export function PredefinedAgents() {
               variant="ghost"
               size="sm"
               className="h-7 gap-1"
-              onClick={() => { setShowOrdForm(!showOrdForm); setShowAddForm(false); }}
+              onClick={() => {
+                setShowOrdForm(!showOrdForm);
+                setShowAddForm(false);
+              }}
               data-testid="discover-ord-btn">
               <Globe className="h-3.5 w-3.5" />
               Discover
             </Button>
-            <Button variant="ghost" size="sm" className="h-7 gap-1" onClick={() => { setShowAddForm(!showAddForm); setShowOrdForm(false); }} data-testid="add-agent-btn">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-7 gap-1"
+              onClick={() => {
+                setShowAddForm(!showAddForm);
+                setShowOrdForm(false);
+              }}
+              data-testid="add-agent-btn">
               <Plus className="h-3.5 w-3.5" />
               Add
             </Button>
@@ -279,10 +295,14 @@ export function PredefinedAgents() {
             {discoverError && <p className="text-xs text-destructive">{discoverError}</p>}
             {discoverMessage && <p className="text-xs text-muted-foreground">{discoverMessage}</p>}
             <div className="flex justify-end">
-              <Button size="sm" onClick={handleDiscover} disabled={isDiscovering || !ordUrl.trim()} data-testid="discover-ord-submit">
+              <Button
+                size="sm"
+                onClick={handleDiscover}
+                disabled={isDiscovering || !ordUrl.trim()}
+                data-testid="discover-ord-submit">
                 {isDiscovering ? (
                   <>
-                    <Loader2 className="h-3 w-3 mr-1 animate-spin" />
+                    <Spinner className="h-3 w-3 mr-1" />
                     Discovering...
                   </>
                 ) : (
@@ -316,17 +336,16 @@ export function PredefinedAgents() {
             )}
 
             {/* Auth for secured agent card endpoints */}
-            <Select value={addAuthType} onValueChange={(v) => setAddAuthType(v as AddAuthType)}>
-              <SelectTrigger className="h-8 text-xs">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="none">No Authentication</SelectItem>
-                <SelectItem value="basic">Basic Auth</SelectItem>
-                <SelectItem value="bearer">Bearer Token</SelectItem>
-                <SelectItem value="apiKey">API Key</SelectItem>
-              </SelectContent>
-            </Select>
+            <SimpleSelect
+              value={addAuthType}
+              onChange={(v) => setAddAuthType(v as AddAuthType)}
+              items={[
+                { value: "none", label: "No Authentication" },
+                { value: "basic", label: "Basic Auth" },
+                { value: "bearer", label: "Bearer Token" },
+                { value: "apiKey", label: "API Key" },
+              ]}
+            />
 
             {addAuthType === "basic" && (
               <div className="space-y-2">
@@ -379,10 +398,14 @@ export function PredefinedAgents() {
                 data-testid="add-agent-cancel">
                 Cancel
               </Button>
-              <Button size="sm" onClick={handleAddAgent} disabled={isAdding || !isValidNewAgentUrl} data-testid="add-agent-submit">
+              <Button
+                size="sm"
+                onClick={handleAddAgent}
+                disabled={isAdding || !isValidNewAgentUrl}
+                data-testid="add-agent-submit">
                 {isAdding ? (
                   <>
-                    <Loader2 className="h-3 w-3 mr-1 animate-spin" />
+                    <Spinner className="h-3 w-3 mr-1" />
                     Adding...
                   </>
                 ) : (

@@ -1,18 +1,11 @@
 import { useEffect, lazy, Suspense } from "react";
-import { Panel, Group as PanelGroup, Separator } from "react-resizable-panels";
-import { GripVertical } from "lucide-react";
+import { SplitPane, SimpleSheet } from "@open-resource-discovery/ui-components";
 import { useIsLargeScreen } from "@lib/hooks/useMediaQuery";
 import { useUIStore } from "@lib/stores/uiStore";
 import { useAutoValidate } from "@lib/hooks/useAutoValidate";
 import { AgentCardEditor } from "@lib/components/editor/AgentCardEditor";
 import { EditorRightPanel } from "@lib/components/layouts/EditorRightPanel";
 import { MobileBottomBar } from "@lib/components/MobileBottomBar";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-} from "@lib/components/ui/sheet";
 import { cn } from "@lib/utils/cn";
 
 // Lazy load full SettingsPanel (with PredefinedAgents) — only loaded when showSettings=true
@@ -37,16 +30,6 @@ interface PlaygroundLiteLayoutProps {
   readOnly?: boolean;
   defaultTab?: "overview" | "validation";
   className?: string;
-}
-
-function ResizeHandle() {
-  return (
-    <Separator className="group relative flex w-2 items-center justify-center bg-border/50 transition-colors hover:bg-border">
-      <div className="absolute z-10 flex h-8 w-4 items-center justify-center rounded-sm bg-border opacity-0 transition-opacity group-hover:opacity-100">
-        <GripVertical className="h-4 w-4 text-muted-foreground" />
-      </div>
-    </Separator>
-  );
 }
 
 /**
@@ -84,10 +67,10 @@ export function PlaygroundLiteLayout({
   if (isLargeScreen) {
     return (
       <div className={cn("h-full", className)}>
-        <PanelGroup orientation="horizontal">
+        <SplitPane orientation="horizontal">
           {showSettings && (
             <>
-              <Panel
+              <SplitPane.Panel
                 defaultSize={20}
                 minSize={15}
                 collapsible
@@ -96,21 +79,21 @@ export function PlaygroundLiteLayout({
                 <Suspense fallback={<SettingsPanelFallback />}>
                   <SettingsPanel />
                 </Suspense>
-              </Panel>
-              <ResizeHandle />
+              </SplitPane.Panel>
+              <SplitPane.Handle />
             </>
           )}
-          <Panel defaultSize={showSettings ? 45 : 55} minSize={30}>
+          <SplitPane.Panel defaultSize={showSettings ? 45 : 55} minSize={30}>
             <AgentCardEditor readOnly={readOnly} showToolbar={showToolbar} />
-          </Panel>
-          <ResizeHandle />
-          <Panel defaultSize={35} minSize={20}>
+          </SplitPane.Panel>
+          <SplitPane.Handle />
+          <SplitPane.Panel defaultSize={35} minSize={20}>
             <EditorRightPanel
               showValidation={showValidation}
               defaultTab={defaultTab}
             />
-          </Panel>
-        </PanelGroup>
+          </SplitPane.Panel>
+        </SplitPane>
       </div>
     );
   }
@@ -125,30 +108,30 @@ export function PlaygroundLiteLayout({
 
       {/* Settings Sheet (from left) */}
       {showSettings && (
-        <Sheet open={settingsPanelOpen} onOpenChange={setSettingsPanelOpen}>
-          <SheetContent side="left" className="w-[85%] max-w-md p-0">
-            <SheetHeader className="sr-only">
-              <SheetTitle>Settings</SheetTitle>
-            </SheetHeader>
-            <Suspense fallback={<SettingsPanelFallback />}>
-              <SettingsPanel />
-            </Suspense>
-          </SheetContent>
-        </Sheet>
+        <SimpleSheet
+          open={settingsPanelOpen}
+          onOpenChange={setSettingsPanelOpen}
+          side="left"
+          title="Settings"
+          className="w-[85%] max-w-md p-0">
+          <Suspense fallback={<SettingsPanelFallback />}>
+            <SettingsPanel />
+          </Suspense>
+        </SimpleSheet>
       )}
 
       {/* Right Panel Sheet (from bottom) */}
-      <Sheet open={validationPanelOpen} onOpenChange={setValidationPanelOpen}>
-        <SheetContent side="bottom" className="h-[70vh] max-h-[600px] p-0">
-          <SheetHeader className="sr-only">
-            <SheetTitle>Overview & Validation</SheetTitle>
-          </SheetHeader>
-          <EditorRightPanel
-            showValidation={showValidation}
-            defaultTab={defaultTab}
-          />
-        </SheetContent>
-      </Sheet>
+      <SimpleSheet
+        open={validationPanelOpen}
+        onOpenChange={setValidationPanelOpen}
+        side="bottom"
+        title="Overview & Validation"
+        className="h-[70vh] max-h-[600px] p-0">
+        <EditorRightPanel
+          showValidation={showValidation}
+          defaultTab={defaultTab}
+        />
+      </SimpleSheet>
     </div>
   );
 }

@@ -1,6 +1,5 @@
 import { useConnectionStore } from "@lib/stores/connectionStore";
-import { Input } from "@lib/components/ui/input";
-import { PasswordInput } from "@lib/components/ui/PasswordInput";
+import { Input, PasswordInput } from "@open-resource-discovery/ui-components";
 
 export function AuthApiKeyForm() {
   const { apiKeyCredentials, setApiKeyCredentials } = useConnectionStore();

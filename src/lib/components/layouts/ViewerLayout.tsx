@@ -1,33 +1,16 @@
-import { Panel, Group as PanelGroup, Separator } from "react-resizable-panels";
-import { GripVertical } from "lucide-react";
+import { SplitPane, SimpleSheet } from "@open-resource-discovery/ui-components";
 import { useIsLargeScreen } from "@lib/hooks/useMediaQuery";
 import { useUIStore } from "@lib/stores/uiStore";
 import { useAutoValidate } from "@lib/hooks/useAutoValidate";
 import { TextareaEditor } from "@lib/components/editor/TextareaEditor";
 import { useAgentCardStore } from "@lib/stores/agentCardStore";
 import { ViewerRightPanel } from "./ViewerRightPanel";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-} from "@lib/components/ui/sheet";
 import { cn } from "@lib/utils/cn";
 
 interface ViewerLayoutProps {
   showValidation?: boolean;
   defaultTab?: "overview" | "validation";
   className?: string;
-}
-
-function ResizeHandle() {
-  return (
-    <Separator className="group relative flex w-2 items-center justify-center bg-border/50 transition-colors hover:bg-border">
-      <div className="absolute z-10 flex h-8 w-4 items-center justify-center rounded-sm bg-border opacity-0 transition-opacity group-hover:opacity-100">
-        <GripVertical className="h-4 w-4 text-muted-foreground" />
-      </div>
-    </Separator>
-  );
 }
 
 /**
@@ -55,23 +38,23 @@ export function ViewerLayout({
   if (isLargeScreen) {
     return (
       <div className={cn("h-full", className)}>
-        <PanelGroup orientation="horizontal">
-          <Panel defaultSize={50} minSize={30}>
+        <SplitPane orientation="horizontal">
+          <SplitPane.Panel defaultSize={50} minSize={30}>
             <div className="h-full border-r">
               <TextareaEditor
                 value={rawJson}
                 onChange={setRawJson}
               />
             </div>
-          </Panel>
-          <ResizeHandle />
-          <Panel defaultSize={50} minSize={20}>
+          </SplitPane.Panel>
+          <SplitPane.Handle />
+          <SplitPane.Panel defaultSize={50} minSize={20}>
             <ViewerRightPanel
               showValidation={showValidation}
               defaultTab={defaultTab}
             />
-          </Panel>
-        </PanelGroup>
+          </SplitPane.Panel>
+        </SplitPane>
       </div>
     );
   }
@@ -84,17 +67,17 @@ export function ViewerLayout({
       </div>
 
       {/* Right Panel Sheet (from bottom) */}
-      <Sheet open={validationPanelOpen} onOpenChange={setValidationPanelOpen}>
-        <SheetContent side="bottom" className="h-[70vh] max-h-[600px] p-0">
-          <SheetHeader className="sr-only">
-            <SheetTitle>Overview & Validation</SheetTitle>
-          </SheetHeader>
-          <ViewerRightPanel
-            showValidation={showValidation}
-            defaultTab={defaultTab}
-          />
-        </SheetContent>
-      </Sheet>
+      <SimpleSheet
+        open={validationPanelOpen}
+        onOpenChange={setValidationPanelOpen}
+        side="bottom"
+        title="Overview & Validation"
+        className="h-[70vh] max-h-[600px] p-0">
+        <ViewerRightPanel
+          showValidation={showValidation}
+          defaultTab={defaultTab}
+        />
+      </SimpleSheet>
     </div>
   );
 }

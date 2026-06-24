@@ -1,8 +1,6 @@
 import { useEffect } from "react";
 import { usePredefinedAgentsStore } from "@lib/stores/predefinedAgentsStore";
-import { Card } from "@lib/components/ui/card";
-import { Badge } from "@lib/components/ui/badge";
-import { cn } from "@lib/utils/cn";
+import { ConnectionCard, Badge } from "@open-resource-discovery/ui-components";
 import { selectPredefinedAgent } from "@lib/utils/agent-selection";
 
 function getHostname(url: string): string {
@@ -50,15 +48,13 @@ export function AgentSelector() {
           </h2>
           <div className="grid grid-cols-2 gap-2" role="list">
             {agents.map((agent) => (
-              <Card
+              <ConnectionCard
                 key={agent.id}
                 role="listitem"
                 tabIndex={0}
                 aria-selected={selectedId === agent.id}
-                className={cn(
-                  "cursor-pointer p-3 text-center transition-colors hover:bg-accent/50",
-                  selectedId === agent.id && "border-primary bg-accent/30",
-                )}
+                selected={selectedId === agent.id}
+                className="text-center p-3"
                 onClick={() => handleSelectAgent(agent.id)}
                 onKeyDown={(e) => {
                   if (e.key === "Enter" || e.key === " ") {
@@ -67,16 +63,16 @@ export function AgentSelector() {
                   }
                 }}
               >
-                <p className="text-sm font-medium truncate">{agent.name}</p>
-                <p className="text-[10px] text-muted-foreground truncate mt-1">
-                  {getHostname(agent.url)}
-                </p>
+                <ConnectionCard.Header className="justify-center">
+                  <ConnectionCard.Title className="truncate">{agent.name}</ConnectionCard.Title>
+                </ConnectionCard.Header>
+                <ConnectionCard.Description className="truncate">{getHostname(agent.url)}</ConnectionCard.Description>
                 {agent.mocked !== false && (
-                  <Badge variant="outline" className="text-[10px] h-4 mt-1.5 border-warning/50 text-warning">
-                    Mocked LLM
-                  </Badge>
+                  <ConnectionCard.Tags className="justify-center">
+                    <Badge variant="warning" className="text-[10px] h-4">Mocked LLM</Badge>
+                  </ConnectionCard.Tags>
                 )}
-              </Card>
+              </ConnectionCard>
             ))}
           </div>
         </div>

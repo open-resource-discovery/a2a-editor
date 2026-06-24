@@ -5,7 +5,7 @@
   "scripts": {
     "prestart": "npm --prefix .. run prepare:website-assets",
     "docusaurus": "docusaurus",
-    "start": "docusaurus start",
+    "start": "docusaurus start --port 3002",
     "prebuild": "npm --prefix .. run prepare:website-assets",
     "build": "docusaurus build",
     "swizzle": "docusaurus swizzle",

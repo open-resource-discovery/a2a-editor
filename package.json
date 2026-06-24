@@ -1,6 +1,6 @@
 {
   "name": "@open-resource-discovery/a2a-editor",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Analyze, validate, and interact with Agent-to-Agent (A2A) protocol agent cards. Connect to agents, inspect their capabilities, and test communication in real-time.",
   "license": "Apache-2.0",
   "author": "SAP SE",
@@ -80,6 +80,7 @@
     "start": "npm run website:start",
     "build": "npm run build:lib && npm run build:standalone",
     "build:lib": "tsc -b && vite build --mode lib",
+    "build:lib:watch": "vite build --mode lib --watch",
     "build:standalone": "vite build --config vite.standalone.config.ts",
     "build:demo": "vite build",
     "copy:website-standalone": "node ./scripts/copy-standalone-to-website.mjs",
@@ -112,6 +113,7 @@
   "dependencies": {
     "@monaco-editor/react": "^4.7.0",
     "@open-resource-discovery/specification": "^1.15.0",
+    "@open-resource-discovery/ui-components": "^0.1.3",
     "@radix-ui/react-accordion": "^1.2.12",
     "@radix-ui/react-collapsible": "^1.1.12",
     "@radix-ui/react-dialog": "^1.1.15",
@@ -125,6 +127,7 @@
     "highlight.js": "11.11.1",
     "jsonc-parser": "3.3.1",
     "lucide-react": "^1.17.0",
+    "playwright": "^1.61.0",
     "react-markdown": "^10.1.0",
     "react-resizable-panels": "^4.11.2",
     "sonner": "^2.0.7",
@@ -144,7 +147,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
-    "@playwright/test": "^1.58.2",
+    "@playwright/test": "^1.61.0",
     "@resvg/resvg-js": "2.6.2",
     "@tailwindcss/typography": "^0.5.19",
     "@tailwindcss/vite": "^4.2.1",

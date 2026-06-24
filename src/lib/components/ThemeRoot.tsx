@@ -42,7 +42,7 @@ export function ThemeRoot({ className, children }: ThemeRootProps) {
   return (
     <div
       ref={setContainer}
-      className={cn("a2a-root", resolvedTheme === "dark" && "dark", className)}
+      className={cn("a2a-root ord-ui", resolvedTheme === "dark" && "dark", className)}
     >
       <PortalContainerContext.Provider value={container}>
         {children}

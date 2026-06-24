@@ -1,4 +1,4 @@
-import { ScrollArea } from "@lib/components/ui/scroll-area";
+import { ScrollArea } from "@open-resource-discovery/ui-components";
 
 /**
  * Lightweight settings panel without PredefinedAgents.

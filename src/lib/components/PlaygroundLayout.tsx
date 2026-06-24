@@ -1,6 +1,5 @@
 import { lazy, Suspense } from "react";
-import { Panel, Group as PanelGroup, Separator } from "react-resizable-panels";
-import { GripVertical } from "lucide-react";
+import { SplitPane, SimpleSheet } from "@open-resource-discovery/ui-components";
 import { useIsLargeScreen } from "@lib/hooks/useMediaQuery";
 import { useUIStore } from "@lib/stores/uiStore";
 import { useAgentCardStore } from "@lib/stores/agentCardStore";
@@ -9,7 +8,6 @@ import { AgentCardEditor } from "@lib/components/editor/AgentCardEditor";
 import { RightPanel } from "@lib/components/RightPanel";
 import { AgentSelector } from "@lib/components/AgentSelector";
 import { MobileBottomBar } from "@lib/components/MobileBottomBar";
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@lib/components/ui/sheet";
 import { cn } from "@lib/utils/cn";
 
 // Lazy load full SettingsPanel (with PredefinedAgents) — only loaded when showSettings=true
@@ -41,16 +39,6 @@ interface PlaygroundLayoutProps {
   disableExamplePrompts?: boolean;
   forceDesktop?: boolean;
   className?: string;
-}
-
-function ResizeHandle() {
-  return (
-    <Separator className="group relative flex w-2 items-center justify-center bg-border/50 transition-colors hover:bg-border">
-      <div className="absolute z-10 flex h-8 w-4 items-center justify-center rounded-sm bg-border opacity-0 transition-opacity group-hover:opacity-100">
-        <GripVertical className="h-4 w-4 text-muted-foreground" />
-      </div>
-    </Separator>
-  );
 }
 
 export function PlaygroundLayout({
@@ -97,22 +85,22 @@ export function PlaygroundLayout({
   if (useDesktopLayout) {
     return (
       <div className={cn("h-full overflow-hidden", className)}>
-        <PanelGroup orientation="horizontal" className="h-full">
+        <SplitPane orientation="horizontal" className="h-full">
           {showSettings && (
             <>
-              <Panel defaultSize={20} minSize={15} collapsible collapsedSize={0}>
+              <SplitPane.Panel defaultSize={20} minSize={15} collapsible collapsedSize={0}>
                 <Suspense fallback={<SettingsPanelFallback />}>
                   <SettingsPanel />
                 </Suspense>
-              </Panel>
-              <ResizeHandle />
+              </SplitPane.Panel>
+              <SplitPane.Handle />
             </>
           )}
-          <Panel defaultSize={showSettings ? 45 : 55} minSize={30}>
+          <SplitPane.Panel defaultSize={showSettings ? 45 : 55} minSize={30}>
             <AgentCardEditor readOnly={readOnly} showToolbar={showToolbar} />
-          </Panel>
-          <ResizeHandle />
-          <Panel defaultSize={showSettings ? 35 : 45} minSize={20}>
+          </SplitPane.Panel>
+          <SplitPane.Handle />
+          <SplitPane.Panel defaultSize={showSettings ? 35 : 45} minSize={20}>
             <RightPanel
               showChat={showChat}
               showValidation={showValidation}
@@ -123,8 +111,8 @@ export function PlaygroundLayout({
               readOnly={readOnly}
               showConnection={showConnection}
             />
-          </Panel>
-        </PanelGroup>
+          </SplitPane.Panel>
+        </SplitPane>
       </div>
     );
   }
@@ -165,16 +153,16 @@ export function PlaygroundLayout({
 
       {/* Settings Sheet (from left) - only sheet remaining */}
       {showSettings && (
-        <Sheet open={settingsPanelOpen} onOpenChange={setSettingsPanelOpen}>
-          <SheetContent side="left" className="w-[85%] max-w-md p-0">
-            <SheetHeader>
-              <SheetTitle>Agents</SheetTitle>
-            </SheetHeader>
-            <Suspense fallback={<SettingsPanelFallback />}>
-              <SettingsPanel />
-            </Suspense>
-          </SheetContent>
-        </Sheet>
+        <SimpleSheet
+          open={settingsPanelOpen}
+          onOpenChange={setSettingsPanelOpen}
+          side="left"
+          title="Agents"
+          className="w-[85%] max-w-md p-0">
+          <Suspense fallback={<SettingsPanelFallback />}>
+            <SettingsPanel />
+          </Suspense>
+        </SimpleSheet>
       )}
     </div>
   );

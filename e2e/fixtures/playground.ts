@@ -34,6 +34,7 @@ export class PlaygroundPage {
   readonly agentHeader: Locator;
   readonly agentName: Locator;
   readonly agentVersion: Locator;
+  readonly agentDescription: Locator;
 
   // Connection (Overview)
   readonly connectionUrl: Locator;
@@ -86,6 +87,7 @@ export class PlaygroundPage {
     this.agentHeader = page.locator("[data-testid='agent-header']");
     this.agentName = page.locator("[data-testid='agent-name']");
     this.agentVersion = page.locator("[data-testid='agent-version']");
+    this.agentDescription = page.locator("[data-testid='agent-description']");
 
     // Connection
     this.connectionUrl = page.locator("[data-testid='connection-url']");
@@ -94,8 +96,9 @@ export class PlaygroundPage {
     this.connectionStatus = page.locator("[data-testid='connection-status']");
 
     // Chat
-    this.chatInput = page.locator("[data-testid='chat-input']");
-    this.chatSend = page.locator("[data-testid='chat-send']");
+    const chatForm = page.locator("[data-testid='chat-form']");
+    this.chatInput = chatForm.locator("textarea");
+    this.chatSend = chatForm.getByRole("button", { name: "Send" });
     this.chatMessages = page.locator("[data-testid='chat-messages']");
     this.chatClear = page.locator("[data-testid='chat-clear']");
     this.userMessages = page.locator("[data-testid='message-user']");

@@ -1,5 +1,5 @@
 import { Copy, Wand2, RotateCcw, Check } from "lucide-react";
-import { Button } from "@lib/components/ui/button";
+import { Button } from "@open-resource-discovery/ui-components";
 import { useAgentCardStore } from "@lib/stores/agentCardStore";
 import { useState } from "react";
 

@@ -7,12 +7,14 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+# Build outputs
 node_modules
 dist
 dist-standalone
 dist-ssr
 website/build
 website/.docusaurus
+website/static/standalone
 *.local
 .env*
 

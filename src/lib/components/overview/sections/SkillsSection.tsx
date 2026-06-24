@@ -1,7 +1,6 @@
 import { useMemo, useState } from "react";
 import type { AgentSkill } from "@lib/types/a2a";
-import { Card, CardContent, CardHeader, CardTitle } from "@lib/components/ui/card";
-import { Badge } from "@lib/components/ui/badge";
+import { SectionCard, Badge } from "@open-resource-discovery/ui-components";
 import { SkillCard } from "../SkillCard";
 
 interface SkillsSectionProps {
@@ -32,33 +31,36 @@ export function SkillsSection({ skills, disableExamplePrompts = false, readOnly 
     return skill.tags?.some((tag) => selectedTags.has(tag)) ?? false;
   });
 
+  const skillsTitle = selectedTags.size > 0
+    ? `Skills (${filteredSkills.length}/${skills.length})`
+    : `Skills (${skills.length})`;
+
+  const tagBadges = allTags.length > 0 ? (
+    <div className="flex flex-wrap gap-1">
+      {allTags.map((tag) => (
+        <Badge
+          key={tag}
+          variant={selectedTags.has(tag) ? "default" : "outline"}
+          className="cursor-pointer"
+          onClick={() => toggleTag(tag)}
+        >
+          {tag}
+        </Badge>
+      ))}
+    </div>
+  ) : undefined;
+
   return (
-    <Card className="overflow-hidden">
-      <CardHeader className="py-3">
-        <div className="flex flex-wrap items-center gap-1.5">
-          <CardTitle className="text-sm mr-1">
-            Skills {selectedTags.size > 0 ? `(${filteredSkills.length}/${skills.length})` : `(${skills.length})`}
-          </CardTitle>
-          {allTags.map((tag) => (
-            <Badge
-              key={tag}
-              variant={selectedTags.has(tag) ? "default" : "outline"}
-              className="text-xs h-5 cursor-pointer"
-              onClick={() => toggleTag(tag)}
-            >
-              {tag}
-            </Badge>
-          ))}
-        </div>
-      </CardHeader>
-      <CardContent className="pt-0 space-y-2">
+    <SectionCard.Root>
+      <SectionCard.Header title={skillsTitle} badges={tagBadges} />
+      <SectionCard.Content className="space-y-2">
         {filteredSkills.map((skill) => (
           <SkillCard key={skill.id} skill={skill} disableExamplePrompts={disableExamplePrompts} readOnly={readOnly} />
         ))}
         {filteredSkills.length === 0 && (
           <p className="text-sm text-muted-foreground text-center py-4">No skills match the selected tags.</p>
         )}
-      </CardContent>
-    </Card>
+      </SectionCard.Content>
+    </SectionCard.Root>
   );
 }

@@ -1,5 +1,5 @@
-import { ScrollArea } from "@lib/components/ui/scroll-area";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@lib/components/ui/tabs";
+import { ScrollArea } from "@open-resource-discovery/ui-components";
+import { Tabs } from "@open-resource-discovery/ui-components";
 import { AgentOverview } from "@lib/components/overview/AgentOverview";
 import { ValidationPanel } from "@lib/components/validation/ValidationPanel";
 import { useAutoValidate } from "@lib/hooks/useAutoValidate";
@@ -36,22 +36,22 @@ export function CardViewLayout({
 
   return (
     <div className={cn("flex h-full flex-col", className)}>
-      <Tabs defaultValue={defaultTab} className="flex h-full flex-col">
+      <Tabs.Root defaultValue={defaultTab} className="flex h-full flex-col">
         <div className="flex-none border-b px-4">
-          <TabsList className="h-10">
-            <TabsTrigger value="overview">Overview</TabsTrigger>
-            <TabsTrigger value="validation">Validation</TabsTrigger>
-          </TabsList>
+          <Tabs.List className="h-10">
+            <Tabs.Tab value="overview">Overview</Tabs.Tab>
+            <Tabs.Tab value="validation">Validation</Tabs.Tab>
+          </Tabs.List>
         </div>
-        <TabsContent value="overview" className="flex-1 overflow-hidden m-0">
+        <Tabs.Panel value="overview" className="flex-1 overflow-hidden m-0">
           <ScrollArea className="h-full">
             <AgentOverview readOnly={readOnly} showConnection={showConnection} />
           </ScrollArea>
-        </TabsContent>
-        <TabsContent value="validation" className="flex-1 overflow-hidden m-0">
+        </Tabs.Panel>
+        <Tabs.Panel value="validation" className="flex-1 overflow-hidden m-0">
           <ValidationPanel />
-        </TabsContent>
-      </Tabs>
+        </Tabs.Panel>
+      </Tabs.Root>
     </div>
   );
 }

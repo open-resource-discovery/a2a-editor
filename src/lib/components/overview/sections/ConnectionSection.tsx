@@ -1,18 +1,8 @@
 import { useState, useCallback, useEffect } from "react";
 import { useConnectionStore } from "@lib/stores/connectionStore";
 import { useAgentCardStore } from "@lib/stores/agentCardStore";
-import { Card, CardContent, CardHeader, CardTitle } from "@lib/components/ui/card";
-import { Input } from "@lib/components/ui/input";
-import { PasswordInput } from "@lib/components/ui/PasswordInput";
-import { Button } from "@lib/components/ui/button";
-import {
-  Select,
-  SelectTrigger,
-  SelectValue,
-  SelectContent,
-  SelectItem,
-} from "@lib/components/ui/select";
-import { Loader2, Plug, Unplug } from "lucide-react";
+import { SectionCard, Input, PasswordInput, Button, SimpleSelect, Spinner } from "@open-resource-discovery/ui-components";
+import { Plug, Unplug } from "lucide-react";
 import { type ConnAuthType, mapStoreAuthType, buildConnHeaders } from "@lib/utils/connection-auth";
 
 export function ConnectionSection() {
@@ -73,20 +63,19 @@ export function ConnectionSection() {
     error: "bg-destructive",
   }[connectionStatus];
 
+  const statusBadge = (
+    <div className="flex items-center gap-2">
+      <div className={`h-2 w-2 rounded-full ${statusColor}`} />
+      <span className="text-xs text-muted-foreground capitalize" data-testid="connection-status">
+        {connectionStatus}
+      </span>
+    </div>
+  );
+
   return (
-    <Card>
-      <CardHeader className="py-3">
-        <div className="flex items-center justify-between">
-          <CardTitle className="text-sm">Connection</CardTitle>
-          <div className="flex items-center gap-2">
-            <div className={`h-2 w-2 rounded-full ${statusColor}`} />
-            <span className="text-xs text-muted-foreground capitalize" data-testid="connection-status">
-              {connectionStatus}
-            </span>
-          </div>
-        </div>
-      </CardHeader>
-      <CardContent className="pt-0 space-y-3">
+    <SectionCard.Root>
+      <SectionCard.Header title="Connection" badges={statusBadge} />
+      <SectionCard.Content className="space-y-3">
         <div>
           <label className="text-xs text-muted-foreground">Agent URL</label>
           <div className="flex gap-2">
@@ -112,7 +101,7 @@ export function ConnectionSection() {
               data-testid="connect-btn"
             >
               {connectionStatus === "connecting" ? (
-                <Loader2 className="h-4 w-4 mr-1 animate-spin" />
+                <Spinner size="sm" className="mr-1" />
               ) : (
                 <Plug className="h-4 w-4 mr-1" />
               )}
@@ -124,17 +113,16 @@ export function ConnectionSection() {
 
         {/* Auth for fetching agent card — independent of card's securitySchemes */}
         <form onSubmit={(e) => { e.preventDefault(); handleConnect(); }} className="space-y-2">
-          <Select value={connAuthType} onValueChange={(v) => setManualAuthType(v as ConnAuthType)}>
-            <SelectTrigger className="h-8 text-xs">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="none">No Authentication</SelectItem>
-              <SelectItem value="basic">Basic Auth</SelectItem>
-              <SelectItem value="bearer">Bearer Token</SelectItem>
-              <SelectItem value="apiKey">API Key</SelectItem>
-            </SelectContent>
-          </Select>
+          <SimpleSelect
+            value={connAuthType}
+            onChange={(v) => setManualAuthType(v as ConnAuthType)}
+            items={[
+              { value: "none", label: "No Authentication" },
+              { value: "basic", label: "Basic Auth" },
+              { value: "bearer", label: "Bearer Token" },
+              { value: "apiKey", label: "API Key" },
+            ]}
+          />
 
           {connAuthType === "basic" && (
             <div className="space-y-2">
@@ -191,7 +179,7 @@ export function ConnectionSection() {
         {errorMessage && (
           <p className="text-xs text-destructive">{errorMessage}</p>
         )}
-      </CardContent>
-    </Card>
+      </SectionCard.Content>
+    </SectionCard.Root>
   );
 }

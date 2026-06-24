@@ -1,6 +1,5 @@
 import type { AgentCard } from "@lib/types/a2a";
-import { Card, CardContent, CardHeader, CardTitle } from "@lib/components/ui/card";
-import { Badge } from "@lib/components/ui/badge";
+import { SectionCard, Badge } from "@open-resource-discovery/ui-components";
 
 interface ModesSectionProps {
   card: AgentCard;
@@ -15,18 +14,16 @@ export function ModesSection({ card }: ModesSectionProps) {
   }
 
   return (
-    <Card>
-      <CardHeader className="py-3">
-        <CardTitle className="text-sm">Input/Output Modes</CardTitle>
-      </CardHeader>
-      <CardContent className="pt-0">
+    <SectionCard.Root>
+      <SectionCard.Header title="Input/Output Modes" />
+      <SectionCard.Content>
         <div className="flex flex-wrap gap-x-6 gap-y-2">
           {inputModes.length > 0 && (
             <div className="flex items-center gap-2">
               <span className="text-xs text-muted-foreground">Input:</span>
               <div className="flex flex-wrap gap-1">
                 {inputModes.map((mode) => (
-                  <Badge key={mode} variant="outline" className="text-xs">
+                  <Badge key={mode} variant="outline">
                     {mode}
                   </Badge>
                 ))}
@@ -38,7 +35,7 @@ export function ModesSection({ card }: ModesSectionProps) {
               <span className="text-xs text-muted-foreground">Output:</span>
               <div className="flex flex-wrap gap-1">
                 {outputModes.map((mode) => (
-                  <Badge key={mode} variant="outline" className="text-xs">
+                  <Badge key={mode} variant="outline">
                     {mode}
                   </Badge>
                 ))}
@@ -46,7 +43,7 @@ export function ModesSection({ card }: ModesSectionProps) {
             </div>
           )}
         </div>
-      </CardContent>
-    </Card>
+      </SectionCard.Content>
+    </SectionCard.Root>
   );
 }

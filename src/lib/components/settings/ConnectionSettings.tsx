@@ -1,17 +1,8 @@
 import { useState, useCallback, useEffect } from "react";
 import { useConnectionStore } from "@lib/stores/connectionStore";
 import { useAgentCardStore } from "@lib/stores/agentCardStore";
-import { Input } from "@lib/components/ui/input";
-import { PasswordInput } from "@lib/components/ui/PasswordInput";
-import { Button } from "@lib/components/ui/button";
-import {
-  Select,
-  SelectTrigger,
-  SelectValue,
-  SelectContent,
-  SelectItem,
-} from "@lib/components/ui/select";
-import { Loader2, Plug, Unplug } from "lucide-react";
+import { Input, PasswordInput, Button, SimpleSelect, Spinner } from "@open-resource-discovery/ui-components";
+import { Plug, Unplug } from "lucide-react";
 import { type ConnAuthType, mapStoreAuthType, buildConnHeaders } from "@lib/utils/connection-auth";
 
 export function ConnectionSettings() {
@@ -99,17 +90,16 @@ export function ConnectionSettings() {
         />
 
         {/* Auth for fetching agent card — independent of card's securitySchemes */}
-        <Select value={connAuthType} onValueChange={(v) => setManualAuthType(v as ConnAuthType)}>
-          <SelectTrigger className="h-8 text-xs">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="none">No Authentication</SelectItem>
-            <SelectItem value="basic">Basic Auth</SelectItem>
-            <SelectItem value="bearer">Bearer Token</SelectItem>
-            <SelectItem value="apiKey">API Key</SelectItem>
-          </SelectContent>
-        </Select>
+        <SimpleSelect
+          value={connAuthType}
+          onChange={(v) => setManualAuthType(v as ConnAuthType)}
+          items={[
+            { value: "none", label: "No Authentication" },
+            { value: "basic", label: "Basic Auth" },
+            { value: "bearer", label: "Bearer Token" },
+            { value: "apiKey", label: "API Key" },
+          ]}
+        />
 
         {connAuthType === "basic" && (
           <div className="space-y-2">
@@ -163,7 +153,7 @@ export function ConnectionSettings() {
               disabled={!url || connectionStatus === "connecting"}
             >
               {connectionStatus === "connecting" ? (
-                <Loader2 className="h-4 w-4 mr-1 animate-spin" />
+                <Spinner size="sm" className="mr-1" />
               ) : (
                 <Plug className="h-4 w-4 mr-1" />
               )}

@@ -2,7 +2,61 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 import { resolve } from "path";
-import { copyFileSync, mkdirSync, existsSync } from "fs";
+import { copyFileSync, mkdirSync, existsSync, readFileSync, writeFileSync } from "fs";
+
+/**
+ * Strip all @layer wrappers from CSS output and scope loose selectors to .a2a-root.
+ *
+ * This is needed because the standalone bundle is embedded in host pages
+ * (e.g. Docusaurus) where Infima's un-layered global styles would always
+ * beat our layered Tailwind utilities. By removing @layer wrappers,
+ * all rules compete on specificity alone, and .a2a-root scoping wins.
+ */
+function stripCssLayers(css: string): string {
+  // Match @layer <name> { ... } — need to handle nested braces
+  let result = css;
+  const layerRegex = /@layer\s+[\w-]+\s*\{/g;
+  let match: RegExpExecArray | null;
+  const matches: { start: number; end: number }[] = [];
+
+  while ((match = layerRegex.exec(result)) !== null) {
+    const start = match.index;
+    let depth = 0;
+    let i = start + match[0].length - 1; // position of opening brace
+    for (; i < result.length; i++) {
+      if (result[i] === "{") depth++;
+      else if (result[i] === "}") {
+        depth--;
+        if (depth === 0) break;
+      }
+    }
+    matches.push({ start, end: i });
+  }
+
+  // Process in reverse order to preserve indices
+  for (let j = matches.length - 1; j >= 0; j--) {
+    const { start, end } = matches[j];
+    const layerHeader = result.slice(start, result.indexOf("{", start) + 1);
+    result =
+      result.slice(0, start) +
+      result.slice(start + layerHeader.length, end) +
+      result.slice(end + 1);
+  }
+
+  // Remove bare @layer order declarations like "@layer components;"
+  result = result.replace(/@layer\s+[\w,\s-]+;/g, "");
+
+  // Scope zero-specificity :where() selectors to .a2a-root
+  result = result.replace(/(?<![.\w])(:where\(\.[a-zA-Z])/g, ".a2a-root $1");
+
+  // Scope the @supports properties block to .a2a-root
+  result = result.replace(
+    /(\{)\*\s*,\s*:before\s*,\s*:after\s*,\s*::backdrop\s*\{/g,
+    "$1.a2a-root *,.a2a-root :before,.a2a-root :after,.a2a-root ::backdrop{",
+  );
+
+  return result;
+}
 
 /**
  * Vite config for standalone bundle (IIFE format with React bundled).
@@ -19,6 +73,15 @@ export default defineConfig({
         const outDir = resolve(__dirname, "dist-standalone");
         if (!existsSync(outDir)) {
           mkdirSync(outDir, { recursive: true });
+        }
+
+        // Strip @layer wrappers from CSS so the standalone bundle's rules
+        // are un-layered and compete on specificity with host page styles
+        const cssPath = resolve(outDir, "a2a-playground.css");
+        if (existsSync(cssPath)) {
+          const css = readFileSync(cssPath, "utf-8");
+          writeFileSync(cssPath, stripCssLayers(css));
+          console.log("Stripped @layer wrappers from a2a-playground.css");
         }
 
         // Copy static files from standalone/ to dist-standalone/
@@ -60,6 +123,7 @@ export default defineConfig({
       "@": resolve(__dirname, "./src"),
       "@lib": resolve(__dirname, "./src/lib"),
     },
+    dedupe: ["react", "react-dom", "react/jsx-runtime"],
   },
   define: {
     // Replace version placeholder with actual version

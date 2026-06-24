@@ -26,6 +26,7 @@ export default defineConfig(({ mode }) => {
         ? [
             dts({
               include: ["src/lib/**/*.ts", "src/lib/**/*.tsx"],
+              exclude: ["src/lib/components/ui/**"],
               outDirs: ["dist"],
               tsconfigPath: "./tsconfig.app.json",
               copyDtsFiles: true,
@@ -39,6 +40,7 @@ export default defineConfig(({ mode }) => {
         "@lib": resolve(__dirname, "./src/lib"),
         "@demo": resolve(__dirname, "./src/demo"),
       },
+      dedupe: ["react", "react-dom", "react/jsx-runtime"],
     },
     build: isLib
       ? {

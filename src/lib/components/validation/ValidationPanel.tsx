@@ -1,7 +1,7 @@
+import { ValidationPass } from "@open-resource-discovery/ui-components";
 import { useValidationStore } from "@lib/stores/validationStore";
 import { ValidationSummary } from "./ValidationSummary";
 import { ValidationResultCard } from "./ValidationResultCard";
-import Checkmark from "./Checkmark";
 
 export function ValidationPanel() {
   const { results, summary, isValidating, lastValidatedAt } = useValidationStore();
@@ -23,12 +23,11 @@ export function ValidationPanel() {
       )}
 
       {allPassed ? (
-        <div className="flex flex-1 flex-col items-center justify-center gap-4" style={{ "--c-accent": "#22c55e" } as React.CSSProperties}>
-          <Checkmark />
-          <p className="text-lg">
-            <span className="font-bold text-foreground">{versionMatch ? versionMatch[1] : passMessage}</span>
-            {versionMatch && <span className="font-normal text-muted-foreground">{versionMatch[2]}</span>}
-          </p>
+        <div className="flex flex-1 flex-col items-center justify-center">
+          <ValidationPass
+            title={versionMatch ? versionMatch[1] : passMessage}
+            suffix={versionMatch ? versionMatch[2] : undefined}
+          />
         </div>
       ) : results.length > 0 ? (
         <div className="space-y-2">
