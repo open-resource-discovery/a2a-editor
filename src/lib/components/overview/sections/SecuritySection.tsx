@@ -2,7 +2,15 @@ import { useState, useEffect } from "react";
 import type { SecurityScheme } from "@lib/types/a2a";
 import { useConnectionStore, selectIsTokenExpired } from "@lib/stores/connectionStore";
 import { useAgentCardStore } from "@lib/stores/agentCardStore";
-import { SectionCard, Badge, Input, PasswordInput, Button, SimpleSelect, Spinner } from "@open-resource-discovery/ui-components";
+import {
+  SectionCard,
+  Badge,
+  Input,
+  PasswordInput,
+  Button,
+  SimpleSelect,
+  Spinner,
+} from "@open-resource-discovery/ui-components";
 import {
   Shield,
   Key,
@@ -586,7 +594,7 @@ export function SecuritySection({ schemes, readOnly = false }: SecuritySectionPr
   if (readOnly) {
     return (
       <SectionCard.Root>
-        <SectionCard.Header title="Authentication" />
+        <SectionCard.Header title="Authentication" icon={<Shield />} />
         <SectionCard.Content className="space-y-3">
           {schemeEntries.map(([name, scheme]) => {
             const Icon = schemeIcons[scheme.type] || Shield;
@@ -595,9 +603,7 @@ export function SecuritySection({ schemes, readOnly = false }: SecuritySectionPr
                 <div className="flex items-center gap-2">
                   <Icon className="h-4 w-4 text-muted-foreground" />
                   <span className="font-medium text-sm">{name}</span>
-                  <Badge variant="outline">
-                    {scheme.type}
-                  </Badge>
+                  <Badge variant="outline">{scheme.type}</Badge>
                 </div>
                 {scheme.description && <p className="text-xs text-muted-foreground pl-6">{scheme.description}</p>}
                 {scheme.type === "oauth2" && scheme.flows && (
@@ -631,7 +637,7 @@ export function SecuritySection({ schemes, readOnly = false }: SecuritySectionPr
 
   return (
     <SectionCard.Root>
-      <SectionCard.Header title="Authentication" />
+      <SectionCard.Header title="Authentication" icon={<Shield />} />
       <SectionCard.Content className="space-y-3">
         {/* Scheme selector — shown when multiple schemes available */}
         {schemeEntries.length > 1 ? (
@@ -648,9 +654,7 @@ export function SecuritySection({ schemes, readOnly = false }: SecuritySectionPr
                 <div className="flex items-center gap-2">
                   <Icon className="h-4 w-4 text-muted-foreground" />
                   <span className="font-medium text-sm">{name}</span>
-                  <Badge variant="outline">
-                    {scheme.type}
-                  </Badge>
+                  <Badge variant="outline">{scheme.type}</Badge>
                 </div>
                 {scheme.description && <p className="text-xs text-muted-foreground pl-6">{scheme.description}</p>}
               </div>
