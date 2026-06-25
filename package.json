@@ -1,6 +1,6 @@
 {
   "name": "@open-resource-discovery/a2a-editor",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "Analyze, validate, and interact with Agent-to-Agent (A2A) protocol agent cards. Connect to agents, inspect their capabilities, and test communication in real-time.",
   "license": "Apache-2.0",
   "author": "SAP SE",
@@ -63,6 +63,12 @@
     "dist/card-view.js",
     "dist/card-view.d.ts",
     "dist/chunks",
+    "dist/components/**/*.d.ts",
+    "dist/hooks/**/*.d.ts",
+    "dist/stores/**/*.d.ts",
+    "dist/types/**/*.d.ts",
+    "dist/utils/**/*.d.ts",
+    "dist/mock/**/*.d.ts",
     "dist-standalone/a2a-playground.js",
     "dist-standalone/a2a-playground.css",
     "dist-standalone/a2a-initializer.js",
@@ -79,7 +85,8 @@
     "dev": "vite",
     "start": "npm run website:start",
     "build": "npm run build:lib && npm run build:standalone",
-    "build:lib": "tsc -b && vite build --mode lib",
+    "build:lib": "tsc -b && vite build --mode lib && npm run build:types",
+    "build:types": "tsc -p tsconfig.build.json && tsc-alias -p tsconfig.build.json && node scripts/strip-css-from-dts.mjs",
     "build:lib:watch": "vite build --mode lib --watch",
     "build:standalone": "vite build --config vite.standalone.config.ts",
     "build:demo": "vite build",
@@ -169,10 +176,10 @@
     "react-router-dom": "^7.16.0",
     "satori": "^0.26.0",
     "tailwindcss": "^4.2.1",
+    "tsc-alias": "^1.8.17",
     "typescript": "~6.0.3",
     "typescript-eslint": "^8.57.0",
     "vite": "^8.0.16",
-    "vite-plugin-dts": "^5.0.2",
     "vitest": "^4.1.0"
   }
 }

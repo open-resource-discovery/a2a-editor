@@ -1,0 +1,20 @@
+{
+  "extends": "./tsconfig.app.json",
+  "compilerOptions": {
+    "noEmit": false,
+    "emitDeclarationOnly": true,
+    "declaration": true,
+    "declarationMap": false,
+    "rootDir": "./src/lib",
+    "outDir": "./dist",
+    "allowImportingTsExtensions": false,
+    "tsBuildInfoFile": null,
+    "composite": false,
+    "incremental": false,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false
+  },
+  "references": [],
+  "include": ["src/lib/**/*.ts", "src/lib/**/*.tsx"],
+  "exclude": ["src/lib/**/__tests__/**", "src/lib/**/*.test.ts", "src/lib/**/*.test.tsx", "src/lib/components/ui/**"]
+}
