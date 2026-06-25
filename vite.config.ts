@@ -2,7 +2,6 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
-import dts from "vite-plugin-dts";
 import { resolve } from "path";
 
 // https://vite.dev/config/
@@ -19,21 +18,7 @@ export default defineConfig(({ mode }) => {
       pool: "forks",
       execArgv: ["--no-experimental-webstorage"],
     },
-    plugins: [
-      react(),
-      tailwindcss(),
-      ...(isLib
-        ? [
-            dts({
-              include: ["src/lib/**/*.ts", "src/lib/**/*.tsx"],
-              exclude: ["src/lib/components/ui/**"],
-              outDirs: ["dist"],
-              tsconfigPath: "./tsconfig.app.json",
-              copyDtsFiles: true,
-            }),
-          ]
-        : []),
-    ],
+    plugins: [react(), tailwindcss()],
     resolve: {
       alias: {
         "@": resolve(__dirname, "./src"),
