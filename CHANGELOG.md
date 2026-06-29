@@ -9,6 +9,19 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Fixed
 
+- Externalized all declared dependencies in the library build to prevent bundled CJS packages
+  (e.g. `@base-ui/react`, `use-sync-external-store`) from emitting `require("react")` calls
+  that throw in browser ESM contexts. Previously only `react`, `react-dom`, and
+  `react/jsx-runtime` were externalized; all entries in `dependencies` and `peerDependencies`
+  are now covered dynamically via a regex so new deps are excluded automatically.
+- Fixed build failure on Windows caused by `new URL(...).pathname` returning a `/C:/...`
+  prefixed path in `scripts/strip-css-from-dts.mjs`, which produced a doubled drive letter
+  when concatenated. Replaced with `fileURLToPath()`.
+
+### Changed
+
+- Added icon buttons to the overview panel header for quick access to common actions.
+
 ## [[0.4.1](https://github.com/open-resource-discovery/a2a-editor/releases/tag/v0.4.1)] - 2026-06-25
 
 ### Fixed
