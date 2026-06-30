@@ -1,5 +1,6 @@
 import type { AgentCard } from "@lib/types/a2a";
 import { SectionCard, Badge } from "@open-resource-discovery/ui-components";
+import { SlidersHorizontal } from "lucide-react";
 
 interface ModesSectionProps {
   card: AgentCard;
@@ -15,7 +16,7 @@ export function ModesSection({ card }: ModesSectionProps) {
 
   return (
     <SectionCard.Root>
-      <SectionCard.Header title="Input/Output Modes" />
+      <SectionCard.Header title="Input/Output Modes" icon={<SlidersHorizontal />} />
       <SectionCard.Content>
         <div className="flex flex-wrap gap-x-6 gap-y-2">
           {inputModes.length > 0 && (

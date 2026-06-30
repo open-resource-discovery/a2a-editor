@@ -7,7 +7,7 @@
 import { readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 
-const DIST = new URL("../dist", import.meta.url).pathname;
+const DIST = new URL("../dist", import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, "$1");
 const CSS_IMPORT = /^\s*import\s+["'][^"']+\.css["']\s*;?\s*\n?/gm;
 
 function walk(dir) {

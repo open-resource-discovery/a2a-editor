@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import type { AgentSkill } from "@lib/types/a2a";
 import { SectionCard, Badge } from "@open-resource-discovery/ui-components";
+import { Wrench } from "lucide-react";
 import { SkillCard } from "../SkillCard";
 
 interface SkillsSectionProps {
@@ -12,10 +13,7 @@ interface SkillsSectionProps {
 export function SkillsSection({ skills, disableExamplePrompts = false, readOnly = false }: SkillsSectionProps) {
   const [selectedTags, setSelectedTags] = useState<Set<string>>(new Set());
 
-  const allTags = useMemo(
-    () => [...new Set(skills.flatMap((s) => s.tags ?? []))].sort(),
-    [skills],
-  );
+  const allTags = useMemo(() => [...new Set(skills.flatMap((s) => s.tags ?? []))].sort(), [skills]);
 
   const toggleTag = (tag: string) => {
     setSelectedTags((prev) => {
@@ -31,28 +29,27 @@ export function SkillsSection({ skills, disableExamplePrompts = false, readOnly 
     return skill.tags?.some((tag) => selectedTags.has(tag)) ?? false;
   });
 
-  const skillsTitle = selectedTags.size > 0
-    ? `Skills (${filteredSkills.length}/${skills.length})`
-    : `Skills (${skills.length})`;
+  const skillsTitle =
+    selectedTags.size > 0 ? `Skills (${filteredSkills.length}/${skills.length})` : `Skills (${skills.length})`;
 
-  const tagBadges = allTags.length > 0 ? (
-    <div className="flex flex-wrap gap-1">
-      {allTags.map((tag) => (
-        <Badge
-          key={tag}
-          variant={selectedTags.has(tag) ? "default" : "outline"}
-          className="cursor-pointer"
-          onClick={() => toggleTag(tag)}
-        >
-          {tag}
-        </Badge>
-      ))}
-    </div>
-  ) : undefined;
+  const tagBadges =
+    allTags.length > 0 ? (
+      <div className="flex flex-wrap gap-1">
+        {allTags.map((tag) => (
+          <Badge
+            key={tag}
+            variant={selectedTags.has(tag) ? "default" : "outline"}
+            className="cursor-pointer"
+            onClick={() => toggleTag(tag)}>
+            {tag}
+          </Badge>
+        ))}
+      </div>
+    ) : undefined;
 
   return (
     <SectionCard.Root>
-      <SectionCard.Header title={skillsTitle} badges={tagBadges} />
+      <SectionCard.Header title={skillsTitle} badges={tagBadges} icon={<Wrench />} />
       <SectionCard.Content className="space-y-2">
         {filteredSkills.map((skill) => (
           <SkillCard key={skill.id} skill={skill} disableExamplePrompts={disableExamplePrompts} readOnly={readOnly} />

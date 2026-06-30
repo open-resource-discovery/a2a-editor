@@ -3,6 +3,21 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 import { resolve } from "path";
+import { readFileSync } from "fs";
+
+// Externalize all declared deps so their CJS code is never bundled into the dist.
+// Bundled CJS packages (e.g. @base-ui/react) emit require("react") calls that throw
+// in a browser ESM context. The regex covers subpath imports (react/jsx-runtime, etc.)
+const pkg = JSON.parse(readFileSync("./package.json", "utf-8")) as {
+  dependencies?: Record<string, string>;
+  peerDependencies?: Record<string, string>;
+};
+const allDeps = [
+  ...Object.keys(pkg.dependencies ?? {}),
+  ...Object.keys(pkg.peerDependencies ?? {}),
+  "react/jsx-runtime",
+];
+const externalRegex = new RegExp(`^(${allDeps.map((d) => d.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|")})(/.*)?$`);
 
 // https://vite.dev/config/
 export default defineConfig(({ mode }) => {
@@ -41,7 +56,7 @@ export default defineConfig(({ mode }) => {
             formats: ["es"],
           },
           rollupOptions: {
-            external: ["react", "react-dom", "react/jsx-runtime"],
+            external: (id) => externalRegex.test(id),
             output: {
               globals: {
                 "react": "React",

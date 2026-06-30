@@ -58,6 +58,15 @@ jobs:
       - name: Build
         run: npm run build
 
+  inclusive-language:
+    name: Inclusive Language
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: get-woke/woke-action@v0
+        with:
+          fail-on-error: true
+
   e2e-tests:
     name: E2E Tests
     runs-on: ubuntu-latest

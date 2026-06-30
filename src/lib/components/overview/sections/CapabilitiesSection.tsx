@@ -43,14 +43,11 @@ export function CapabilitiesSection({ capabilities }: CapabilitiesSectionProps) 
 
   return (
     <SectionCard.Root>
-      <SectionCard.Header title="Capabilities" />
+      <SectionCard.Header title="Capabilities" icon={<Zap />} />
       <SectionCard.Content>
         <div className="flex flex-wrap gap-2">
           {items.map(({ key, label, icon: Icon }) => (
-            <Badge
-              key={key}
-              variant="success"
-            >
+            <Badge key={key} variant="success">
               <Icon className="h-3 w-3" />
               {label}
             </Badge>

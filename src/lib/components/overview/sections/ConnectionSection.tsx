@@ -1,7 +1,14 @@
 import { useState, useCallback, useEffect } from "react";
 import { useConnectionStore } from "@lib/stores/connectionStore";
 import { useAgentCardStore } from "@lib/stores/agentCardStore";
-import { SectionCard, Input, PasswordInput, Button, SimpleSelect, Spinner } from "@open-resource-discovery/ui-components";
+import {
+  SectionCard,
+  Input,
+  PasswordInput,
+  Button,
+  SimpleSelect,
+  Spinner,
+} from "@open-resource-discovery/ui-components";
 import { Plug, Unplug } from "lucide-react";
 import { type ConnAuthType, mapStoreAuthType, buildConnHeaders } from "@lib/utils/connection-auth";
 
@@ -48,13 +55,30 @@ export function ConnectionSection() {
   }, [storeConnAuthType]);
 
   const handleConnect = useCallback(async () => {
-    const headers = buildConnHeaders(connAuthType, localUsername, localPassword, localToken, localApiKey, storeApiKeyCreds.headerName);
+    const headers = buildConnHeaders(
+      connAuthType,
+      localUsername,
+      localPassword,
+      localToken,
+      localApiKey,
+      storeApiKeyCreds.headerName,
+    );
     const result = await connect(Object.keys(headers).length > 0 ? headers : undefined);
     if (result) {
       setRawJson(result.rawJson);
       autoConfigureAuth(result.card);
     }
-  }, [connAuthType, localUsername, localPassword, localToken, localApiKey, storeApiKeyCreds.headerName, connect, setRawJson, autoConfigureAuth]);
+  }, [
+    connAuthType,
+    localUsername,
+    localPassword,
+    localToken,
+    localApiKey,
+    storeApiKeyCreds.headerName,
+    connect,
+    setRawJson,
+    autoConfigureAuth,
+  ]);
 
   const statusColor = {
     disconnected: "bg-muted",
@@ -74,45 +98,54 @@ export function ConnectionSection() {
 
   return (
     <SectionCard.Root>
-      <SectionCard.Header title="Connection" badges={statusBadge} />
+      <SectionCard.Header title="Connection" badges={statusBadge} icon={<Plug />} />
       <SectionCard.Content className="space-y-3">
         <div>
           <label className="text-xs text-muted-foreground">Agent URL</label>
           <div className="flex gap-2">
-          <Input
-            placeholder="Agent URL"
-            data-testid="connection-url"
-            value={url}
-            onChange={(e) => setUrl(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && url && connectionStatus !== "connecting" && handleConnect()}
-            className="h-8 text-sm"
-          />
-          {connectionStatus === "connected" ? (
-            <Button variant="outline" size="sm" onClick={disconnect} className="h-8 shrink-0" data-testid="disconnect-btn">
-              <Unplug className="h-4 w-4 mr-1" />
-              Disconnect
-            </Button>
-          ) : (
-            <Button
-              size="sm"
-              onClick={handleConnect}
-              disabled={!url || connectionStatus === "connecting"}
-              className="h-8 shrink-0"
-              data-testid="connect-btn"
-            >
-              {connectionStatus === "connecting" ? (
-                <Spinner size="sm" className="mr-1" />
-              ) : (
-                <Plug className="h-4 w-4 mr-1" />
-              )}
-              Connect
-            </Button>
-          )}
+            <Input
+              placeholder="Agent URL"
+              data-testid="connection-url"
+              value={url}
+              onChange={(e) => setUrl(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && url && connectionStatus !== "connecting" && handleConnect()}
+              className="h-8 text-sm"
+            />
+            {connectionStatus === "connected" ? (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={disconnect}
+                className="h-8 shrink-0"
+                data-testid="disconnect-btn">
+                <Unplug className="h-4 w-4 mr-1" />
+                Disconnect
+              </Button>
+            ) : (
+              <Button
+                size="sm"
+                onClick={handleConnect}
+                disabled={!url || connectionStatus === "connecting"}
+                className="h-8 shrink-0"
+                data-testid="connect-btn">
+                {connectionStatus === "connecting" ? (
+                  <Spinner size="sm" className="mr-1" />
+                ) : (
+                  <Plug className="h-4 w-4 mr-1" />
+                )}
+                Connect
+              </Button>
+            )}
           </div>
         </div>
 
         {/* Auth for fetching agent card — independent of card's securitySchemes */}
-        <form onSubmit={(e) => { e.preventDefault(); handleConnect(); }} className="space-y-2">
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            handleConnect();
+          }}
+          className="space-y-2">
           <SimpleSelect
             value={connAuthType}
             onChange={(v) => setManualAuthType(v as ConnAuthType)}
@@ -176,9 +209,7 @@ export function ConnectionSection() {
           )}
         </form>
 
-        {errorMessage && (
-          <p className="text-xs text-destructive">{errorMessage}</p>
-        )}
+        {errorMessage && <p className="text-xs text-destructive">{errorMessage}</p>}
       </SectionCard.Content>
     </SectionCard.Root>
   );
