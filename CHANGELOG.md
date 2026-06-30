@@ -7,6 +7,8 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [unreleased]
 
+## [[0.4.2](https://github.com/open-resource-discovery/a2a-editor/releases/tag/v0.4.2)] - 2026-06-30
+
 ### Fixed
 
 - Externalized all declared dependencies in the library build to prevent bundled CJS packages
