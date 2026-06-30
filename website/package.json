@@ -31,7 +31,7 @@
     "docusaurus-plugin-sass": "^0.2.5",
     "dotenv": "^17.4.2",
     "sass": "^1.100.0",
-    "typescript": "~5.5.0"
+    "typescript": "~6.0.0"
   },
   "browserslist": {
     "production": [
