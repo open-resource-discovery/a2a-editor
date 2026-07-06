@@ -1519,31 +1519,12 @@ article.markdown,
 }
 
 /* ===== Breadcrumb Fixes ===== */
-.breadcrumbs {
-  /* Ensure breadcrumb items are vertically centered */
-  li {
-    display: inline-flex;
-    align-items: center;
-    line-height: 1;
-  }
-
-  /* Fix home icon vertical alignment */
-  .breadcrumbs__link svg,
-  a[href] svg {
-    display: block;
-  }
-
-  /* Home breadcrumb item (first item) */
-  li:first-child {
-    display: inline-flex;
-    align-items: center;
-
-    a {
-      display: inline-flex;
-      align-items: center;
-      line-height: 1;
-    }
-  }
+/* Ensure home icon aligns properly with breadcrumb text.
+ * The Docusaurus home icon SVG (`.breadcrumbHomeIcon_*`) uses
+ * `vertical-align: top` + `position:relative; top:1px`, which only work
+ * when the SVG is an inline-level element. Force it back to inline. */
+.breadcrumbs__link svg[class*="breadcrumbHomeIcon"] {
+  display: inline-block;
 }
 
 /* Responsive adjustments */

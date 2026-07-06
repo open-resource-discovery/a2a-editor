@@ -7,8 +7,13 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [unreleased]
 
+### Added
+
+- VS Code Extension docs page covering installation, usage, MCP server setup, and client configuration for Copilot, Claude Code, and Cursor/Cline.
+
 ### Fixed
 
+- Fixed Tailwind preflight rules (`h1–h6`, `img/svg`, `ol/ul`, etc.) from `ui-components` leaking into host pages when the standalone bundle is embedded (e.g. Docusaurus). The `stripBarePreflightRules` post-build step now uses PostCSS as a proper CSS AST parser to remove bare element resets, replacing a fragile hand-rolled brace-counting text-walker.
 - Fixed agent card overview scrolling to the bottom on load and on any user interaction (dropdown open, button click). The `ScrollArea` component defaults to `autoScroll={true}`, which attaches a `MutationObserver` that scrolls to the bottom on every DOM change. All non-chat `ScrollArea` instances (`RightPanel`, `EditorRightPanel`, `ViewerRightPanel`, `CardViewLayout`, `SettingsPanel`, `SettingsPanelLite`) now explicitly pass `autoScroll={false}`. Chat retains auto-scroll by its existing explicit `autoScroll` prop.
 
 ## [[0.4.2](https://github.com/open-resource-discovery/a2a-editor/releases/tag/v0.4.2)] - 2026-06-30

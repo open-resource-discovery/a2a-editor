@@ -23,6 +23,7 @@ const sidebars = {
       ],
     },
     "customization",
+    "vscode-extension",
   ],
 };
 
