@@ -1,6 +1,7 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
+import postcss from "postcss";
 import { resolve } from "path";
 import { copyFileSync, mkdirSync, existsSync, readFileSync, writeFileSync } from "fs";
 
@@ -37,10 +38,7 @@ function stripCssLayers(css: string): string {
   for (let j = matches.length - 1; j >= 0; j--) {
     const { start, end } = matches[j];
     const layerHeader = result.slice(start, result.indexOf("{", start) + 1);
-    result =
-      result.slice(0, start) +
-      result.slice(start + layerHeader.length, end) +
-      result.slice(end + 1);
+    result = result.slice(0, start) + result.slice(start + layerHeader.length, end) + result.slice(end + 1);
   }
 
   // Remove bare @layer order declarations like "@layer components;"
@@ -56,6 +54,33 @@ function stripCssLayers(css: string): string {
   );
 
   return result;
+}
+
+/**
+ * Use PostCSS to remove bare Tailwind preflight element rules from the built CSS.
+ *
+ * After @layer stripping, ui-components' preflight rules (h1-h6, img/svg, ol/ul,
+ * etc.) become globally un-layered. Our own styles.css has a complete scoped
+ * replacement under `.a2a-root :where(...)` — the bare rules are redundant and
+ * break host-page styles when the bundle is embedded (e.g. in Docusaurus).
+ *
+ * We use PostCSS as a proper CSS parser rather than a hand-rolled text-walker, so
+ * selector detection is accurate and handles all minified output structures.
+ * A rule is considered "bare preflight" when ALL of its selectors start with a
+ * letter or `*` (element names) and none start with `.` (classes already scoped).
+ */
+function stripBarePreflightRules(css: string): string {
+  const root = postcss.parse(css);
+  root.walkRules((rule) => {
+    // Skip rules inside @-rules (e.g. @keyframes, @media, @supports)
+    if (rule.parent?.type === "atrule") return;
+    const allBare = rule.selectors.every((sel) => {
+      const s = sel.trim();
+      return /^[a-zA-Z*]/.test(s) && !s.startsWith(".");
+    });
+    if (allBare) rule.remove();
+  });
+  return root.toResult().css;
 }
 
 /**
@@ -75,13 +100,15 @@ export default defineConfig({
           mkdirSync(outDir, { recursive: true });
         }
 
-        // Strip @layer wrappers from CSS so the standalone bundle's rules
-        // are un-layered and compete on specificity with host page styles
+        // Strip @layer wrappers then bare preflight element rules from the CSS so
+        // the standalone bundle does not pollute host-page styles (e.g. Docusaurus)
         const cssPath = resolve(outDir, "a2a-playground.css");
         if (existsSync(cssPath)) {
-          const css = readFileSync(cssPath, "utf-8");
-          writeFileSync(cssPath, stripCssLayers(css));
-          console.log("Stripped @layer wrappers from a2a-playground.css");
+          let css = readFileSync(cssPath, "utf-8");
+          css = stripCssLayers(css);
+          css = stripBarePreflightRules(css);
+          writeFileSync(cssPath, css);
+          console.log("Stripped @layer wrappers and bare preflight from a2a-playground.css");
         }
 
         // Copy static files from standalone/ to dist-standalone/
@@ -148,7 +175,7 @@ export default defineConfig({
         inlineDynamicImports: true,
         // Put CSS in same directory
         assetFileNames: (assetInfo) => {
-          if (assetInfo.name?.endsWith(".css")) {
+          if (assetInfo.names?.[0]?.endsWith(".css")) {
             return "a2a-playground.css";
           }
           return "[name][extname]";
