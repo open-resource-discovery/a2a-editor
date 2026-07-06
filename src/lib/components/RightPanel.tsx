@@ -83,27 +83,21 @@ export function RightPanel({
             {showRawHttp && (
               <Tabs.Tab value="rawhttp" data-testid="tab-rawhttp">
                 Raw HTTP
-                {logCount > 0 && (
-                  <Badge variant="secondary">{logCount}</Badge>
-                )}
+                {logCount > 0 && <Badge variant="secondary">{logCount}</Badge>}
               </Tabs.Tab>
             )}
             {showValidation && (
               <Tabs.Tab value="validation" data-testid="tab-validation">
                 Validation
-                {summary.fail > 0 && (
-                  <Badge variant="destructive">{summary.fail}</Badge>
-                )}
-                {summary.fail === 0 && summary.warning > 0 && (
-                  <Badge variant="warning">{summary.warning}</Badge>
-                )}
+                {summary.fail > 0 && <Badge variant="destructive">{summary.fail}</Badge>}
+                {summary.fail === 0 && summary.warning > 0 && <Badge variant="warning">{summary.warning}</Badge>}
               </Tabs.Tab>
             )}
           </Tabs.List>
         </div>
 
         <Tabs.Panel value="overview" className="flex-1 overflow-hidden mt-0">
-          <ScrollArea className="h-full">
+          <ScrollArea autoScroll={false} className="h-full">
             <AgentOverview
               disableExamplePrompts={disableExamplePrompts}
               readOnly={readOnly}
@@ -120,7 +114,7 @@ export function RightPanel({
 
         {showRawHttp && (
           <Tabs.Panel value="rawhttp" className="flex-1 overflow-hidden mt-0">
-            <ScrollArea className="h-full">
+            <ScrollArea autoScroll={false} className="h-full">
               <RawHttpPanel />
             </ScrollArea>
           </Tabs.Panel>
@@ -128,7 +122,7 @@ export function RightPanel({
 
         {showValidation && (
           <Tabs.Panel value="validation" className="flex-1 overflow-hidden mt-0">
-            <ScrollArea className="h-full">
+            <ScrollArea autoScroll={false} className="h-full">
               <ValidationPanel />
             </ScrollArea>
           </Tabs.Panel>

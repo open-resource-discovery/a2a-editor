@@ -28,7 +28,7 @@ export function CardViewLayout({
 
   if (!showValidation) {
     return (
-      <ScrollArea className={cn("h-full", className)}>
+      <ScrollArea autoScroll={false} className={cn("h-full", className)}>
         <AgentOverview readOnly={readOnly} showConnection={showConnection} />
       </ScrollArea>
     );
@@ -44,7 +44,7 @@ export function CardViewLayout({
           </Tabs.List>
         </div>
         <Tabs.Panel value="overview" className="flex-1 overflow-hidden m-0">
-          <ScrollArea className="h-full">
+          <ScrollArea autoScroll={false} className="h-full">
             <AgentOverview readOnly={readOnly} showConnection={showConnection} />
           </ScrollArea>
         </Tabs.Panel>

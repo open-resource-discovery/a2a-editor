@@ -48,32 +48,26 @@ export function EditorRightPanel({ showValidation = true, defaultTab = "overview
       <Tabs.Root value={localTab} onValueChange={handleTabChange} className="flex h-full flex-col">
         <div className="border-b">
           <Tabs.List>
-            <Tabs.Tab value="overview">
-              Overview
-            </Tabs.Tab>
+            <Tabs.Tab value="overview">Overview</Tabs.Tab>
             {showValidation && (
               <Tabs.Tab value="validation">
                 Validation
-                {summary.fail > 0 && (
-                  <Badge variant="destructive">{summary.fail}</Badge>
-                )}
-                {summary.fail === 0 && summary.warning > 0 && (
-                  <Badge variant="warning">{summary.warning}</Badge>
-                )}
+                {summary.fail > 0 && <Badge variant="destructive">{summary.fail}</Badge>}
+                {summary.fail === 0 && summary.warning > 0 && <Badge variant="warning">{summary.warning}</Badge>}
               </Tabs.Tab>
             )}
           </Tabs.List>
         </div>
 
         <Tabs.Panel value="overview" className="flex-1 overflow-hidden mt-0">
-          <ScrollArea className="h-full">
+          <ScrollArea autoScroll={false} className="h-full">
             <AgentOverview />
           </ScrollArea>
         </Tabs.Panel>
 
         {showValidation && (
           <Tabs.Panel value="validation" className="flex-1 overflow-hidden mt-0">
-            <ScrollArea className="h-full">
+            <ScrollArea autoScroll={false} className="h-full">
               <ValidationPanel />
             </ScrollArea>
           </Tabs.Panel>

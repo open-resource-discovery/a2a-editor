@@ -7,6 +7,10 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [unreleased]
 
+### Fixed
+
+- Fixed agent card overview scrolling to the bottom on load and on any user interaction (dropdown open, button click). The `ScrollArea` component defaults to `autoScroll={true}`, which attaches a `MutationObserver` that scrolls to the bottom on every DOM change. All non-chat `ScrollArea` instances (`RightPanel`, `EditorRightPanel`, `ViewerRightPanel`, `CardViewLayout`, `SettingsPanel`, `SettingsPanelLite`) now explicitly pass `autoScroll={false}`. Chat retains auto-scroll by its existing explicit `autoScroll` prop.
+
 ## [[0.4.2](https://github.com/open-resource-discovery/a2a-editor/releases/tag/v0.4.2)] - 2026-06-30
 
 ### Fixed

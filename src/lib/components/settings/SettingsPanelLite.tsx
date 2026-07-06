@@ -11,11 +11,9 @@ export function SettingsPanelLite() {
       <div className="flex h-10 flex-none items-center border-b px-4">
         <h2 className="text-sm font-semibold">Settings</h2>
       </div>
-      <ScrollArea className="flex-1">
+      <ScrollArea autoScroll={false} className="flex-1">
         <div className="p-4">
-          <p className="text-sm text-muted-foreground">
-            Use the editor to modify the agent card JSON.
-          </p>
+          <p className="text-sm text-muted-foreground">Use the editor to modify the agent card JSON.</p>
         </div>
       </ScrollArea>
     </div>
