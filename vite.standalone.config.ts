@@ -74,11 +74,20 @@ function stripBarePreflightRules(css: string): string {
   root.walkRules((rule) => {
     // Skip rules inside @-rules (e.g. @keyframes, @media, @supports)
     if (rule.parent?.type === "atrule") return;
+    // A rule is bare preflight if none of its selectors reference a class (.),
+    // ID (#), or attribute ([). That covers element names, *, :root/:host,
+    // ::pseudo-elements, :-vendor-prefixed, and their combinations.
     const allBare = rule.selectors.every((sel) => {
       const s = sel.trim();
-      return /^[a-zA-Z*]/.test(s) && !s.startsWith(".");
+      return !s.includes(".") && !s.includes("#") && !s.includes("[");
     });
-    if (allBare) rule.remove();
+    if (!allBare) return;
+    // Preserve rules that only define CSS custom properties (--var). Those are
+    // theme tokens (Tailwind's :root,:host { --spacing, --color-*, ... }) that
+    // utility classes depend on — not visual preflight resets.
+    const onlyCustomProps = rule.nodes?.every((node) => node.type === "decl" && node.prop.startsWith("--"));
+    if (onlyCustomProps) return;
+    rule.remove();
   });
   return root.toResult().css;
 }
