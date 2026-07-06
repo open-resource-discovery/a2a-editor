@@ -7,6 +7,8 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [unreleased]
 
+## [[0.4.3](https://github.com/open-resource-discovery/a2a-editor/releases/tag/v0.4.3)] - 2026-07-06
+
 ### Added
 
 - VS Code Extension docs page covering installation, usage, MCP server setup, and client configuration for Copilot, Claude Code, and Cursor/Cline.
