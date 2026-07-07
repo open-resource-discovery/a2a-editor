@@ -65,7 +65,6 @@ export function HttpLogEntry({ entry, isHighlighted }: HttpLogEntryProps) {
         effectiveUrl
           ? async ({ headers, body }) => {
               await sendRawRequest(body, effectiveUrl, headers, entry.id);
-              switchToChat();
             }
           : undefined
       }
