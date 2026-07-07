@@ -50,13 +50,25 @@ export function HttpLogEntry({ entry, isHighlighted }: HttpLogEntryProps) {
       error={entry.error}
       highlighted={isHighlighted}
       defaultOpen={isHighlighted}
-      onResend={effectiveUrl ? async () => {
-        await sendRawRequest(entry.request.body, effectiveUrl, entry.request.headers, entry.id);
-        switchToChat();
-      } : undefined}
+      onResend={
+        effectiveUrl
+          ? async () => {
+              await sendRawRequest(entry.request.body, effectiveUrl, entry.request.headers, entry.id);
+              switchToChat();
+            }
+          : undefined
+      }
       onCopy={async () => {
         await navigator.clipboard.writeText(generateCurl());
       }}
+      onEdit={
+        effectiveUrl
+          ? async ({ headers, body }) => {
+              await sendRawRequest(body, effectiveUrl, headers, entry.id);
+              switchToChat();
+            }
+          : undefined
+      }
     />
   );
 }
