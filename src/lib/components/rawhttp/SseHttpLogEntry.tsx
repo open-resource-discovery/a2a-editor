@@ -23,7 +23,9 @@ function parseSseEvents(body: string): SseEvent[] {
       const parsed = JSON.parse(raw);
       const dataJson = JSON.stringify(parsed, null, 2);
       let label = `Event ${index + 1}`;
-      const state: unknown = (parsed as Record<string, unknown>)?.result?.status?.state;
+      const result = (parsed as Record<string, unknown>)?.result;
+      const status = (result as Record<string, unknown>)?.status;
+      const state: unknown = (status as Record<string, unknown>)?.state;
       if (typeof state === "string") label = `Event ${index + 1} — ${state}`;
       events.push({ index, dataJson, isJson: true, label });
     } catch {
