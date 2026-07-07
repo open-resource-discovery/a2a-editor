@@ -5,6 +5,24 @@ import { useChatStore } from "@lib/stores/chatStore";
 import { useConnectionStore, selectEffectiveUrl } from "@lib/stores/connectionStore";
 import { useUIStore } from "@lib/stores/uiStore";
 
+function formatResponseBody(body: string | undefined): string | undefined {
+  if (!body) return body;
+  if (!body.trimStart().startsWith("data:")) return body;
+  return body
+    .split("\n")
+    .map((line) => {
+      if (line.startsWith("data: ")) {
+        try {
+          return "data: " + JSON.stringify(JSON.parse(line.slice(6)), null, 2);
+        } catch {
+          return line;
+        }
+      }
+      return line;
+    })
+    .join("\n");
+}
+
 interface HttpLogEntryProps {
   entry: HttpLogEntryType;
   isHighlighted: boolean;
@@ -46,7 +64,7 @@ export function HttpLogEntry({ entry, isHighlighted }: HttpLogEntryProps) {
       timestamp={entry.timestamp}
       requestBody={entry.request.body}
       requestHeaders={entry.request.headers}
-      responseBody={entry.response?.body}
+      responseBody={formatResponseBody(entry.response?.body)}
       error={entry.error}
       highlighted={isHighlighted}
       defaultOpen={isHighlighted}
