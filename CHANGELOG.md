@@ -7,6 +7,16 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [unreleased]
 
+## [[0.4.4](https://github.com/open-resource-discovery/a2a-editor/releases/tag/v0.4.4)] - 2026-07-07
+
+### Added
+
+- Edit & Resend button in the Raw HTTP log panel: clicking it opens an inline editor (provided by `ui-components` 0.1.4) pre-filled with the original request headers and body. Changes are sent as a new request and the view switches to Chat.
+
+### Changed
+
+- Upgraded `@open-resource-discovery/ui-components` to 0.1.4, which adds the `onEdit` prop to `HttpLogEntry`.
+
 ## [[0.4.3](https://github.com/open-resource-discovery/a2a-editor/releases/tag/v0.4.3)] - 2026-07-06
 
 ### Added
