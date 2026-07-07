@@ -4,24 +4,7 @@ import type { HttpLogEntry as HttpLogEntryType } from "@lib/types/httpLog";
 import { useChatStore } from "@lib/stores/chatStore";
 import { useConnectionStore, selectEffectiveUrl } from "@lib/stores/connectionStore";
 import { useUIStore } from "@lib/stores/uiStore";
-
-function formatResponseBody(body: string | undefined): string | undefined {
-  if (!body) return body;
-  if (!body.trimStart().startsWith("data:")) return body;
-  return body
-    .split("\n")
-    .map((line) => {
-      if (line.startsWith("data: ")) {
-        try {
-          return "data: " + JSON.stringify(JSON.parse(line.slice(6)), null, 2);
-        } catch {
-          return line;
-        }
-      }
-      return line;
-    })
-    .join("\n");
-}
+import { SseHttpLogEntry } from "./SseHttpLogEntry";
 
 interface HttpLogEntryProps {
   entry: HttpLogEntryType;
@@ -39,6 +22,10 @@ export function HttpLogEntry({ entry, isHighlighted }: HttpLogEntryProps) {
       ref.current?.scrollIntoView({ behavior: "smooth", block: "center" });
     }
   }, [isHighlighted]);
+
+  if (entry.isSSE) {
+    return <SseHttpLogEntry entry={entry} isHighlighted={isHighlighted} />;
+  }
 
   const generateCurl = () => {
     const esc = (s: string) => s.replace(/'/g, "'\\''");
@@ -64,7 +51,7 @@ export function HttpLogEntry({ entry, isHighlighted }: HttpLogEntryProps) {
       timestamp={entry.timestamp}
       requestBody={entry.request.body}
       requestHeaders={entry.request.headers}
-      responseBody={formatResponseBody(entry.response?.body)}
+      responseBody={entry.response?.body}
       error={entry.error}
       highlighted={isHighlighted}
       defaultOpen={isHighlighted}

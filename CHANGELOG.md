@@ -7,6 +7,10 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [unreleased]
 
+### Changed
+
+- SSE streaming responses in the HTTP log are now rendered as a dedicated `SseHttpLogEntry` component. Each `data:` event is shown as an individual collapsible entry (closed by default) with its JSON payload pretty-printed and a summary label that includes the event index and task state (e.g. "Event 3 — completed"). An "SSE" badge appears next to the method badge to distinguish streaming entries from regular JSON responses.
+
 ## [[0.4.4](https://github.com/open-resource-discovery/a2a-editor/releases/tag/v0.4.4)] - 2026-07-07
 
 ### Added
