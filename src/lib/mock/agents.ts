@@ -25,7 +25,7 @@ export const MOCK_AGENTS: Record<string, MockAgent> = {
       version: "1.0.0",
       description:
         "A simple echo agent that returns exactly what you send. Useful for testing connectivity and message format.",
-      protocolVersions: ["0.3"],
+      protocolVersion: "0.3.0",
       provider: { name: "Agent Card Editor", organization: "Mock", url: "https://github.com/nicepkg/a2a-editor-react" },
       capabilities: { streaming: false, pushNotifications: false },
       skills: [
@@ -74,7 +74,7 @@ export const MOCK_AGENTS: Record<string, MockAgent> = {
       url: `${MOCK_URL_PREFIX}weather`,
       version: "1.0.0",
       description: "Returns mock weather information for any city. Data is simulated for testing purposes.",
-      protocolVersions: ["0.3"],
+      protocolVersion: "0.3.0",
       provider: { name: "Agent Card Editor", organization: "Mock", url: "https://github.com/nicepkg/a2a-editor-react" },
       capabilities: { streaming: false, pushNotifications: false },
       skills: [
@@ -128,7 +128,7 @@ export const MOCK_AGENTS: Record<string, MockAgent> = {
       url: `${MOCK_URL_PREFIX}translator`,
       version: "1.0.0",
       description: "A mock translation agent. Simulates translating text between languages for testing purposes.",
-      protocolVersions: ["0.3"],
+      protocolVersion: "0.3.0",
       provider: { name: "Agent Card Editor", organization: "Mock", url: "https://github.com/nicepkg/a2a-editor-react" },
       capabilities: { streaming: false, pushNotifications: false },
       skills: [
@@ -257,7 +257,7 @@ export const MOCK_AGENTS: Record<string, MockAgent> = {
       version: "1.0.0",
       description:
         'A calculator agent that accepts JSON input with math operations. Send a JSON object with "operation", "a", and "b" fields.',
-      protocolVersions: ["0.3"],
+      protocolVersion: "0.3.0",
       provider: { name: "Agent Card Editor", organization: "Mock", url: "https://github.com/nicepkg/a2a-editor-react" },
       capabilities: { streaming: false, pushNotifications: false },
       skills: [
