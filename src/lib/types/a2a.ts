@@ -23,6 +23,7 @@ export interface AgentCard {
   defaultOutputModes?: string[];
   securitySchemes?: Record<string, SecurityScheme>;
   security?: SecurityRequirement[];
+  protocolVersion?: string; // Singular string in v0.3.0 (required by that schema)
   protocolVersions?: string[];
   extensions?: AgentExtension[];
   supportedInterfaces?: SupportedInterface[]; // v1.0.0
