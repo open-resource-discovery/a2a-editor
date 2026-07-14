@@ -14,6 +14,7 @@ import {
   buildOutboundMessage,
   buildOutboundHeaders,
   buildOutboundConfiguration,
+  isTerminalTaskState,
 } from "@lib/utils/a2a-protocol";
 import { validateResponse, isFullyCompliant } from "@lib/utils/a2a-compliance";
 import { streamMessage } from "@lib/utils/a2a-stream";
@@ -343,7 +344,7 @@ export const useChatStore = create<ChatState>((set, get) => {
           updateMessage(agentMsgId, (msg) => {
             const updated: ChatMessage = { ...msg, status: status.state, taskId, contextId };
             if (status.message?.parts?.length) {
-              const isTerminal = status.state === "completed" || status.state === "failed";
+              const isTerminal = isTerminalTaskState(status.state);
               // Terminal status with parts = final full message; replace to avoid duplication
               // with parts already accumulated from artifact-update events
               updated.parts = isTerminal ? status.message.parts : [...msg.parts, ...status.message.parts];
@@ -364,8 +365,14 @@ export const useChatStore = create<ChatState>((set, get) => {
             } else {
               // Concatenate text from incoming chunk onto existing artifact
               const current = existingArtifacts[idx];
-              const currentText = current.parts.filter(isTextPart).map((p) => p.text).join("");
-              const incomingText = artifact.parts.filter(isTextPart).map((p) => p.text).join("");
+              const currentText = current.parts
+                .filter(isTextPart)
+                .map((p) => p.text)
+                .join("");
+              const incomingText = artifact.parts
+                .filter(isTextPart)
+                .map((p) => p.text)
+                .join("");
               const nonTextParts = [
                 ...current.parts.filter((p) => !isTextPart(p)),
                 ...artifact.parts.filter((p) => !isTextPart(p)),
@@ -394,6 +401,27 @@ export const useChatStore = create<ChatState>((set, get) => {
           const wrapped = { jsonrpc: "2.0" as const, result: task };
           const normalized = normalizeTaskResponse(wrapped);
           const result = processJsonRpcResponse(normalized);
+
+          // A `task` envelope can arrive mid-stream with a non-terminal state
+          // (e.g. the initial "submitted" task before any artifacts). Only treat
+          // it as the final response when its state is terminal — otherwise just
+          // capture ids/parts and keep the stream open for artifact-update and
+          // status-update events that carry the actual answer.
+          const taskState = (task.status as { state?: TaskState } | undefined)?.state;
+          if (!isTerminalTaskState(taskState)) {
+            updateMessage(agentMsgId, (msg) => ({
+              ...msg,
+              taskId: result?.taskId ?? msg.taskId,
+              contextId: result?.contextId ?? msg.contextId,
+              // Adopt parts/artifacts only if this envelope actually carried them.
+              parts: result?.parts ?? msg.parts,
+              artifacts: result?.artifacts ?? msg.artifacts,
+            }));
+            const nextTaskId = result?.taskId ?? (task.id as string | undefined);
+            if (nextTaskId) set({ currentTaskId: nextTaskId, contextId: result?.contextId ?? get().contextId });
+            return;
+          }
+
           const complianceDetails = validateResponse(normalized);
 
           updateMessage(agentMsgId, (msg) => ({
