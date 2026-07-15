@@ -36,15 +36,6 @@
   --sidebar-accent-foreground: oklch(0.21 0.034 264.665);
   --sidebar-border: oklch(0.928 0.006 264.531);
   --sidebar-ring: oklch(0.707 0.022 261.325);
-  /* Syntax highlighting tokens (light) */
-  --hljs-attr: #881391;
-  --hljs-string: #a31515;
-  --hljs-number: #098658;
-  --hljs-literal: #0000ff;
-  --hljs-punctuation: #000000;
-  --hljs-tag: #800000;
-  --hljs-keyword: #0000ff;
-  --hljs-comment: #008000;
 }
 
 .dark {
@@ -79,15 +70,6 @@
   --sidebar-accent-foreground: #d4d4d4;
   --sidebar-border: #3e3e42;
   --sidebar-ring: #0098ff;
-  /* Syntax highlighting tokens (dark) */
-  --hljs-attr: #9cdcfe;
-  --hljs-string: #ce9178;
-  --hljs-number: #b5cea8;
-  --hljs-literal: #569cd6;
-  --hljs-punctuation: #d4d4d4;
-  --hljs-tag: #569cd6;
-  --hljs-keyword: #569cd6;
-  --hljs-comment: #6a9955;
 }
 
 @theme inline {
@@ -156,42 +138,6 @@
     display: flex;
     flex-direction: column;
   }
-}
-
-/* Highlight.js custom theme — colors via CSS variables set in :root / .dark */
-.hljs {
-  background: transparent !important;
-}
-.hljs-attr {
-  color: var(--hljs-attr);
-}
-.hljs-string {
-  color: var(--hljs-string);
-}
-.hljs-number {
-  color: var(--hljs-number);
-}
-.hljs-literal {
-  color: var(--hljs-literal);
-}
-.hljs-punctuation {
-  color: var(--hljs-punctuation);
-}
-.hljs-tag,
-.hljs-name {
-  color: var(--hljs-tag);
-}
-.hljs-keyword {
-  color: var(--hljs-keyword);
-}
-.hljs-comment {
-  color: var(--hljs-comment);
-}
-.hljs-section {
-  color: var(--hljs-attr);
-}
-.hljs-bullet {
-  color: var(--hljs-number);
 }
 
 /* Custom scrollbar styling */
