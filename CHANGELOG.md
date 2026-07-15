@@ -7,6 +7,18 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [unreleased]
 
+### Refactored
+
+- Extracted shared `LazySettingsPanel` component (`layouts/LazySettingsPanel.tsx`)
+  to eliminate duplicated lazy import and fallback across `PlaygroundLayout`,
+  `EditorLayout`, and `PlaygroundLiteLayout`
+
+### Changed
+
+- Settings panel background changed from `bg-sidebar` to `bg-background` in
+  `SettingsPanel`, `SettingsPanelLite`, `PredefinedAgents` (sticky header), and
+  the Suspense loading fallback
+
 ## [[0.4.4](https://github.com/open-resource-discovery/a2a-editor/releases/tag/v0.4.4)] - 2026-07-07
 
 ### Added
