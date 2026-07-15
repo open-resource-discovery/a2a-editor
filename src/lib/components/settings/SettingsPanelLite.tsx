@@ -7,7 +7,7 @@ import { ScrollArea } from "@open-resource-discovery/ui-components";
  */
 export function SettingsPanelLite() {
   return (
-    <div className="flex h-full flex-col bg-sidebar">
+    <div className="flex h-full flex-col bg-background">
       <div className="flex h-10 flex-none items-center border-b px-4">
         <h2 className="text-sm font-semibold">Settings</h2>
       </div>
