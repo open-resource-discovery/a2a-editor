@@ -7,6 +7,10 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [unreleased]
 
+### Fixed
+
+- SSE streaming: non-terminal `task` envelopes (e.g. `submitted`) no longer close the stream prematurely. The chat store now keeps the stream open until a terminal state (`completed`, `failed`, `canceled`, `rejected`) is received, preventing blank or dropped responses from agents that send an initial task object before `artifact-update` / `status-update` events.
+
 ## [[0.4.4](https://github.com/open-resource-discovery/a2a-editor/releases/tag/v0.4.4)] - 2026-07-07
 
 ### Added
