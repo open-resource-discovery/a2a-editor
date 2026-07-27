@@ -413,7 +413,6 @@ export const useChatStore = create<ChatState>((set, get) => {
               ...msg,
               taskId: result?.taskId ?? msg.taskId,
               contextId: result?.contextId ?? msg.contextId,
-              // Adopt parts/artifacts only if this envelope actually carried them.
               parts: result?.parts ?? msg.parts,
               artifacts: result?.artifacts ?? msg.artifacts,
             }));
