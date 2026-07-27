@@ -91,9 +91,7 @@ export function normalizeAgentCard(raw: unknown): AgentCard {
 
   // Normalize v1.0 securityRequirements to v0.3 security format
   if (Array.isArray(card.securityRequirements) && !card.security) {
-    card.security = (card.securityRequirements as Array<Record<string, unknown>>).map(
-      normalizeSecurityRequirement,
-    );
+    card.security = (card.securityRequirements as Array<Record<string, unknown>>).map(normalizeSecurityRequirement);
   }
 
   return card as unknown as AgentCard;
@@ -113,7 +111,12 @@ function normalizeSecurityScheme(scheme: Record<string, unknown>): Record<string
   }
   if (scheme.oauth2SecurityScheme && typeof scheme.oauth2SecurityScheme === "object") {
     const inner = scheme.oauth2SecurityScheme as Record<string, unknown>;
-    return { type: "oauth2", flows: inner.flows, oauth2MetadataUrl: inner.oauth2MetadataUrl, description: inner.description };
+    return {
+      type: "oauth2",
+      flows: inner.flows,
+      oauth2MetadataUrl: inner.oauth2MetadataUrl,
+      description: inner.description,
+    };
   }
   if (scheme.apiKeySecurityScheme && typeof scheme.apiKeySecurityScheme === "object") {
     const inner = scheme.apiKeySecurityScheme as Record<string, unknown>;
@@ -259,7 +262,12 @@ export function normalizeTaskResponse(data: unknown): unknown {
   if ("task" in result && typeof result.task === "object" && !("status" in result) && !("id" in result)) {
     result = result.task as Record<string, unknown>;
     response.result = result;
-  } else if ("message" in result && typeof result.message === "object" && !("status" in result) && !("role" in result)) {
+  } else if (
+    "message" in result &&
+    typeof result.message === "object" &&
+    !("status" in result) &&
+    !("role" in result)
+  ) {
     // v1.0 Message response — normalize the message and wrap as a minimal task
     const msg = result.message as Record<string, unknown>;
     normalizeMessageInPlace(msg);
@@ -607,3 +615,17 @@ export const ALL_VALID_STATES = new Set([
   "TASK_STATE_AUTH_REQUIRED",
   "TASK_STATE_UNSPECIFIED",
 ]);
+
+/**
+ * Terminal (internal, human-readable) task states — the task has finished and
+ * will not produce further updates. Used to decide when a streamed message is
+ * done and when a `task` envelope should be treated as the final response.
+ * Non-terminal states (submitted, working, input-required, auth-required) mean
+ * more events may still arrive.
+ */
+export const TERMINAL_TASK_STATES = new Set<TaskState>(["completed", "failed", "canceled", "rejected"]);
+
+/** Whether a task state is terminal (no further updates expected). */
+export function isTerminalTaskState(state: TaskState | string | undefined): boolean {
+  return typeof state === "string" && TERMINAL_TASK_STATES.has(normalizeTaskState(state));
+}
