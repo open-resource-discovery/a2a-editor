@@ -514,7 +514,27 @@ export function buildOutboundRole(version: string): string {
  * v1.0: unified Part with oneof content {text, url, raw, data} + shared mediaType/filename/metadata
  */
 export function buildOutboundParts(parts: Part[], version: string): unknown[] {
-  if (!isV1(version)) return parts;
+  if (!isV1(version)) {
+    // v0.3 requires the `kind` discriminator on every part (TextPart, FilePart,
+    // DataPart). Ensure it is always present, since the internal Part type keeps
+    // `kind` optional. Drop the legacy `type` field, which is not part of the
+    // v0.3 wire format and is superseded by `kind`.
+    return parts.map((part) => {
+      const rest: Record<string, unknown> = { ...part };
+      // Drop the legacy `type` field; it is superseded by `kind` in v0.3.
+      delete rest.type;
+      if ("text" in part && typeof part.text === "string") {
+        return { ...rest, kind: "text" };
+      }
+      if ("file" in part) {
+        return { ...rest, kind: "file" };
+      }
+      if ("data" in part && typeof part.data === "object") {
+        return { ...rest, kind: "data" };
+      }
+      return part;
+    });
+  }
 
   return parts.map((part) => {
     if ("text" in part && typeof part.text === "string") {

@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { isTerminalTaskState, normalizeStreamEvent } from "../a2a-protocol";
+import { isTerminalTaskState, normalizeStreamEvent, buildOutboundParts } from "../a2a-protocol";
+import type { Part } from "@lib/types/a2a";
 
 // ===================================================================
 // isTerminalTaskState
@@ -95,5 +96,56 @@ describe("normalizeStreamEvent — artifact answer flow", () => {
       expect(n.status.state).toBe("completed");
       expect(n.status.message).toBeUndefined();
     }
+  });
+});
+
+// ===================================================================
+// buildOutboundParts
+// ===================================================================
+
+describe("buildOutboundParts", () => {
+  describe("v0.3", () => {
+    it("adds the kind discriminator to a TextPart that lacks it", () => {
+      const parts: Part[] = [{ text: "Hello" }];
+      const out = buildOutboundParts(parts, "0.3.0");
+      expect(out).toEqual([{ kind: "text", text: "Hello" }]);
+    });
+
+    it("adds the kind discriminator to FilePart and DataPart", () => {
+      const parts: Part[] = [
+        { file: { uri: "https://example.com/a.png", mimeType: "image/png" } },
+        { data: { foo: "bar" } },
+      ];
+      const out = buildOutboundParts(parts, "0.3.0") as Record<string, unknown>[];
+      expect(out[0].kind).toBe("file");
+      expect(out[1].kind).toBe("data");
+    });
+
+    it("preserves metadata and part contents", () => {
+      const parts: Part[] = [{ text: "Hi", metadata: { locale: "en" } }];
+      const out = buildOutboundParts(parts, "0.3.0");
+      expect(out).toEqual([{ kind: "text", text: "Hi", metadata: { locale: "en" } }]);
+    });
+
+    it("drops the legacy `type` field in favor of `kind`", () => {
+      const parts = [{ type: "text", text: "Hello" }] as unknown as Part[];
+      const out = buildOutboundParts(parts, "0.3.0") as Record<string, unknown>[];
+      expect(out[0].kind).toBe("text");
+      expect(out[0].type).toBeUndefined();
+    });
+
+    it("keeps an existing correct kind", () => {
+      const parts: Part[] = [{ kind: "text", text: "Hello" }];
+      const out = buildOutboundParts(parts, "0.3.0");
+      expect(out).toEqual([{ kind: "text", text: "Hello" }]);
+    });
+  });
+
+  describe("v1.0", () => {
+    it("converts a TextPart to the unified v1.0 shape without kind", () => {
+      const parts: Part[] = [{ text: "Hello" }];
+      const out = buildOutboundParts(parts, "1.0.0");
+      expect(out).toEqual([{ text: "Hello" }]);
+    });
   });
 });

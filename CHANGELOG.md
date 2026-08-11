@@ -9,6 +9,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Fixed
 
+- Outbound v0.3 message parts now always include the required `kind` discriminator (`"text"`, `"file"`, `"data"`). `buildOutboundParts` previously passed v0.3 parts through unchanged, so messages sent to v0.3 agents omitted `kind` (e.g. `{ "text": "Hello" }`), breaking agents that use it as a discriminator. The legacy `type` field is also dropped, since it is superseded by `kind` in the v0.3 wire format.
 - SSE streaming: non-terminal `task` envelopes (e.g. `submitted`) no longer close the stream prematurely. The chat store now keeps the stream open until a terminal state (`completed`, `failed`, `canceled`, `rejected`) is received, preventing blank or dropped responses from agents that send an initial task object before `artifact-update` / `status-update` events.
 
 ## [[0.4.4](https://github.com/open-resource-discovery/a2a-editor/releases/tag/v0.4.4)] - 2026-07-07
