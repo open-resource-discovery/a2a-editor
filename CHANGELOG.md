@@ -10,6 +10,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ### Fixed
 
 - Demo app: the theme toggle now controls the whole page. The demo previously wrapped its content in a second, uncontrolled `ThemeRoot` (from `ui-components`, `defaultTheme="system"`) that followed the OS independently of the header toggle, leaking dark tokens (e.g. `--sidebar`) into the light `.a2a-root` and leaving the sidebar dark in light mode. Removed the redundant wrapper so a single, toggle-synced theme root governs the app. (Demo only — the published library was unaffected.)
+- Outbound v0.3 message parts now always include the required `kind` discriminator (`"text"`, `"file"`, `"data"`). `buildOutboundParts` previously passed v0.3 parts through unchanged, so messages sent to v0.3 agents omitted `kind` (e.g. `{ "text": "Hello" }`), breaking agents that use it as a discriminator. The legacy `type` field is also dropped, since it is superseded by `kind` in the v0.3 wire format.
 - SSE streaming: non-terminal `task` envelopes (e.g. `submitted`) no longer close the stream prematurely. The chat store now keeps the stream open until a terminal state (`completed`, `failed`, `canceled`, `rejected`) is received, preventing blank or dropped responses from agents that send an initial task object before `artifact-update` / `status-update` events.
 
 ## [[0.4.4](https://github.com/open-resource-discovery/a2a-editor/releases/tag/v0.4.4)] - 2026-07-07
