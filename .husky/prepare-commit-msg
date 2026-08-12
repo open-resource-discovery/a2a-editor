@@ -1,0 +1,19 @@
+# Auto-append a DCO Signed-off-by trailer using the committer's own identity.
+# Runs via Husky (this repo sets core.hooksPath to .husky/_).
+# Equivalent to always committing with `git commit -s`, for every commit
+# (including from IDEs/tools that don't pass -s). CI enforces DCO on PRs.
+#
+# Idempotent: the addIfDifferent policy avoids duplicate trailers on
+# rebase/cherry-pick/merge or when -s was already used.
+
+commit_msg_file="$1"
+
+name="$(git config user.name)"
+email="$(git config user.email)"
+
+# If identity isn't configured, let the commit proceed; git/CI will surface it.
+[ -n "$name" ] && [ -n "$email" ] || exit 0
+
+git interpret-trailers --if-exists addIfDifferent \
+  --trailer "Signed-off-by: $name <$email>" \
+  --in-place "$commit_msg_file"
