@@ -7,6 +7,8 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [unreleased]
 
+## [[0.4.5](https://github.com/open-resource-discovery/a2a-editor/releases/tag/v0.4.5)] - 2026-08-12
+
 ### Fixed
 
 - Demo app: the theme toggle now controls the whole page. The demo previously wrapped its content in a second, uncontrolled `ThemeRoot` (from `ui-components`, `defaultTheme="system"`) that followed the OS independently of the header toggle, leaking dark tokens (e.g. `--sidebar`) into the light `.a2a-root` and leaving the sidebar dark in light mode. Removed the redundant wrapper so a single, toggle-synced theme root governs the app. (Demo only — the published library was unaffected.)
