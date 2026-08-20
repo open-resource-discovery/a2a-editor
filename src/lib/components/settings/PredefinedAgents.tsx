@@ -242,7 +242,7 @@ export function PredefinedAgents() {
 
   return (
     <div className="space-y-3">
-      <div className="sticky top-0 z-10 bg-sidebar pt-2 pb-3 space-y-3">
+      <div className="sticky top-0 z-10 bg-background pt-2 pb-3 space-y-3">
         <div className="flex items-center justify-between">
           <span className="text-sm font-medium">Agents</span>
           <div className="flex items-center gap-1">

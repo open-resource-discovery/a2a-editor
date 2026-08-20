@@ -1,4 +1,3 @@
-import { lazy, Suspense } from "react";
 import { SplitPane, SimpleSheet } from "@open-resource-discovery/ui-components";
 import { useIsLargeScreen } from "@lib/hooks/useMediaQuery";
 import { useUIStore } from "@lib/stores/uiStore";
@@ -9,21 +8,7 @@ import { RightPanel } from "@lib/components/RightPanel";
 import { AgentSelector } from "@lib/components/AgentSelector";
 import { MobileBottomBar } from "@lib/components/MobileBottomBar";
 import { cn } from "@lib/utils/cn";
-
-// Lazy load full SettingsPanel (with PredefinedAgents) — only loaded when showSettings=true
-const SettingsPanel = lazy(() =>
-  import("@lib/components/settings/SettingsPanel").then((m) => ({
-    default: m.SettingsPanel,
-  })),
-);
-
-function SettingsPanelFallback() {
-  return (
-    <div className="flex h-full items-center justify-center bg-sidebar">
-      <div className="text-sm text-muted-foreground">Loading...</div>
-    </div>
-  );
-}
+import { LazySettingsPanel } from "@lib/components/layouts/LazySettingsPanel";
 
 interface PlaygroundLayoutProps {
   showSettings?: boolean;
@@ -89,9 +74,7 @@ export function PlaygroundLayout({
           {showSettings && (
             <>
               <SplitPane.Panel defaultSize={20} minSize={15} collapsible collapsedSize={0}>
-                <Suspense fallback={<SettingsPanelFallback />}>
-                  <SettingsPanel />
-                </Suspense>
+                <LazySettingsPanel />
               </SplitPane.Panel>
               <SplitPane.Handle />
             </>
@@ -159,9 +142,7 @@ export function PlaygroundLayout({
           side="left"
           title="Agents"
           className="w-[85%] max-w-md p-0">
-          <Suspense fallback={<SettingsPanelFallback />}>
-            <SettingsPanel />
-          </Suspense>
+          <LazySettingsPanel />
         </SimpleSheet>
       )}
     </div>
