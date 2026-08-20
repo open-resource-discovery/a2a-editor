@@ -1,9 +1,35 @@
 import { useEffect, useRef } from "react";
-import { HttpLogEntry as LibHttpLogEntry } from "@open-resource-discovery/ui-components";
+import { Badge, CodeBlock, HttpLogEntry as LibHttpLogEntry } from "@open-resource-discovery/ui-components";
 import type { HttpLogEntry as HttpLogEntryType } from "@lib/types/httpLog";
 import { useChatStore } from "@lib/stores/chatStore";
 import { useConnectionStore, selectEffectiveUrl } from "@lib/stores/connectionStore";
 import { useUIStore } from "@lib/stores/uiStore";
+
+interface SseEvent {
+  index: number;
+  dataJson: string;
+  isJson: boolean;
+  label: string;
+}
+
+function parseSseEvents(body: string): SseEvent[] {
+  const events: SseEvent[] = [];
+  let index = 0;
+  for (const line of body.split("\n")) {
+    if (!line.startsWith("data: ")) continue;
+    const raw = line.slice(6);
+    try {
+      const parsed = JSON.parse(raw);
+      const dataJson = JSON.stringify(parsed, null, 2);
+      const label = `Event ${index + 1}`;
+      events.push({ index, dataJson, isJson: true, label });
+    } catch {
+      events.push({ index, dataJson: raw, isJson: false, label: `Event ${index + 1}` });
+    }
+    index++;
+  }
+  return events;
+}
 
 interface HttpLogEntryProps {
   entry: HttpLogEntryType;
@@ -34,6 +60,22 @@ export function HttpLogEntry({ entry, isHighlighted }: HttpLogEntryProps) {
     return curl;
   };
 
+  const sseEvents = entry.isSSE && entry.response?.body ? parseSseEvents(entry.response.body) : null;
+
+  const responseBodyContent = sseEvents ? (
+    <div className="space-y-1">
+      <p className="text-[11px] text-muted-foreground">
+        {sseEvents.length} event{sseEvents.length !== 1 ? "s" : ""}
+      </p>
+      {sseEvents.map((evt) => (
+        <details key={evt.index} className="text-xs">
+          <summary className="cursor-pointer text-muted-foreground hover:text-foreground">{evt.label}</summary>
+          <CodeBlock code={evt.dataJson} language={evt.isJson ? "json" : "text"} className="mt-1 text-[11px]" />
+        </details>
+      ))}
+    </div>
+  ) : undefined;
+
   return (
     <LibHttpLogEntry
       ref={ref}
@@ -46,10 +88,18 @@ export function HttpLogEntry({ entry, isHighlighted }: HttpLogEntryProps) {
       timestamp={entry.timestamp}
       requestBody={entry.request.body}
       requestHeaders={entry.request.headers}
-      responseBody={entry.response?.body}
+      responseBody={sseEvents ? undefined : entry.response?.body}
       error={entry.error}
       highlighted={isHighlighted}
       defaultOpen={isHighlighted}
+      extraBadges={
+        entry.isSSE ? (
+          <Badge variant="outline" size="sm" className="font-mono shrink-0">
+            SSE
+          </Badge>
+        ) : undefined
+      }
+      responseBodyContent={responseBodyContent}
       onResend={
         effectiveUrl
           ? async () => {
