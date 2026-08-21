@@ -175,7 +175,7 @@
     "react": "19.2.8",
     "react-dom": "19.2.8",
     "react-router-dom": "7.18.2",
-    "satori": "0.31.0",
+    "satori": "0.33.3",
     "tailwindcss": "4.3.3",
     "tsc-alias": "1.9.2",
     "typescript": "6.0.3",
