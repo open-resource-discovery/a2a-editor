@@ -34,7 +34,7 @@
     "@docusaurus/types": "3.10.2",
     "docusaurus-plugin-sass": "0.2.6",
     "dotenv": "17.4.2",
-    "sass": "1.103.0",
+    "sass": "1.103.1",
     "typescript": "5.9.3"
   },
   "browserslist": {
