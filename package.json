@@ -143,6 +143,9 @@
     "zod": "4.4.3",
     "zustand": "5.0.15"
   },
+  "overrides": {
+    "dompurify": ">=3.4.12"
+  },
   "lint-staged": {
     "*.{ts,tsx}": [
       "eslint --fix",
