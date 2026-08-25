@@ -18,6 +18,8 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 - Settings panel background changed from `bg-sidebar` to `bg-background` in
   `SettingsPanel`, `SettingsPanelLite`, `PredefinedAgents` (sticky header), and
   the Suspense loading fallback
+- SSE streaming responses in the HTTP log are now rendered with per-event detail. Each `data:` line is shown as an individual collapsible entry (closed by default) with its JSON payload pretty-printed and a summary label that includes the event index. An "SSE" badge appears next to the method badge to distinguish streaming entries from regular JSON responses.
+- Upgraded `@open-resource-discovery/ui-components` to pick up `HttpLogEntry` `responseBodyContent` and `extraBadges` props.
 
 ## [[0.4.5](https://github.com/open-resource-discovery/a2a-editor/releases/tag/v0.4.5)] - 2026-08-12
 
