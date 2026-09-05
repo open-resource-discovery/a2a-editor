@@ -26,8 +26,8 @@
     "react-dom": "18.3.1"
   },
   "overrides": {
-    "serialize-javascript": "^7.1.0",
-    "webpack-dev-server": ">=6.0.0"
+    "serialize-javascript": "7.1.1",
+    "webpack-dev-server": "6.0.0"
   },
   "devDependencies": {
     "@docusaurus/module-type-aliases": "3.10.2",
