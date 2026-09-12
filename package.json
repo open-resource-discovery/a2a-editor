@@ -140,7 +140,7 @@
     "sonner": "2.0.8",
     "tailwind-merge": "3.6.0",
     "uuid": "14.0.2",
-    "zod": "4.5.4",
+    "zod": "4.6.2",
     "zustand": "5.0.15"
   },
   "overrides": {
@@ -175,8 +175,8 @@
     "lint-staged": "17.5.1",
     "postcss": "8.5.28",
     "prettier": "3.9.6",
-    "react": "19.2.8",
-    "react-dom": "19.2.8",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
     "react-router-dom": "7.18.3",
     "satori": "0.33.4",
     "tailwindcss": "4.3.3",
