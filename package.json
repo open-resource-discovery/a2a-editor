@@ -140,7 +140,7 @@
     "sonner": "2.0.8",
     "tailwind-merge": "3.6.0",
     "uuid": "14.0.2",
-    "zod": "4.6.2",
+    "zod": "4.6.4",
     "zustand": "5.0.15"
   },
   "overrides": {
