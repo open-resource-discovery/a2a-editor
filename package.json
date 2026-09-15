@@ -1,6 +1,6 @@
 {
   "name": "@open-resource-discovery/a2a-editor",
-  "version": "0.4.5",
+  "version": "0.4.6",
   "description": "Analyze, validate, and interact with Agent-to-Agent (A2A) protocol agent cards. Connect to agents, inspect their capabilities, and test communication in real-time.",
   "license": "Apache-2.0",
   "author": "SAP SE",
@@ -120,7 +120,7 @@
   "dependencies": {
     "@monaco-editor/react": "4.7.0",
     "@open-resource-discovery/specification": "1.16.3",
-    "@open-resource-discovery/ui-components": "file:../ui-components",
+    "@open-resource-discovery/ui-components": "^0.2.0",
     "@radix-ui/react-accordion": "1.2.20",
     "@radix-ui/react-collapsible": "1.1.20",
     "@radix-ui/react-dialog": "1.1.23",
