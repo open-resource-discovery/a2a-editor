@@ -1,6 +1,6 @@
 {
   "name": "@open-resource-discovery/a2a-editor",
-  "version": "0.4.5",
+  "version": "0.4.6",
   "description": "Analyze, validate, and interact with Agent-to-Agent (A2A) protocol agent cards. Connect to agents, inspect their capabilities, and test communication in real-time.",
   "license": "Apache-2.0",
   "author": "SAP SE",
@@ -144,7 +144,8 @@
     "zustand": "5.0.15"
   },
   "overrides": {
-    "dompurify": "3.4.15"
+    "dompurify": "3.4.15",
+    "fflate": "^0.7.5"
   },
   "lint-staged": {
     "*.{ts,tsx}": [

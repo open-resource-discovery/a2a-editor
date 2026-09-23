@@ -20,6 +20,16 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   the Suspense loading fallback
 - SSE streaming responses in the HTTP log are now rendered with per-event detail. Each `data:` line is shown as an individual collapsible entry (closed by default) with its JSON payload pretty-printed and a summary label that includes the event index. An "SSE" badge appears next to the method badge to distinguish streaming entries from regular JSON responses.
 - Upgraded `@open-resource-discovery/ui-components` to pick up `HttpLogEntry` `responseBodyContent` and `extraBadges` props.
+- Upgraded `@open-resource-discovery/ui-components` to `^0.2.0`.
+- Removed local scoped preflight CSS reset (`.a2a-root :where(*)` block and all
+  element resets) from `styles.css` — the reset is now provided by
+  `ui-components`' own `.ord-ui`-scoped reset, which covers `.a2a-root` since
+  `ThemeRoot` renders both classes on the same element.
+
+### Security
+
+- Added `fflate ^0.7.5` resolution override to address a security advisory in
+  the transitive dependency.
 
 ## [[0.4.5](https://github.com/open-resource-discovery/a2a-editor/releases/tag/v0.4.5)] - 2026-08-12
 
