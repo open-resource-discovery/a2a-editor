@@ -5,7 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) rules.
 
+
 ## [unreleased]
+
+## [[0.4.6](https://github.com/open-resource-discovery/a2a-editor/releases/tag/v0.4.6)] - 2026-09-25
 
 ### Refactored
 
@@ -30,6 +33,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 - Added `fflate ^0.7.5` resolution override to address a security advisory in
   the transitive dependency.
+
 
 ## [[0.4.5](https://github.com/open-resource-discovery/a2a-editor/releases/tag/v0.4.5)] - 2026-08-12
 
