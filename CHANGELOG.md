@@ -7,6 +7,8 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [unreleased]
 
+## [[0.4.6](https://github.com/open-resource-discovery/a2a-editor/releases/tag/v0.4.6)] - 2026-09-25
+
 ### Refactored
 
 - Extracted shared `LazySettingsPanel` component (`layouts/LazySettingsPanel.tsx`)
