@@ -172,10 +172,10 @@
     "globals": "17.12.0",
     "husky": "9.1.7",
     "is-ci": "4.1.0",
-    "jsdom": "30.1.0",
+    "jsdom": "30.1.1",
     "lint-staged": "17.5.1",
     "postcss": "8.5.28",
-    "prettier": "3.9.8",
+    "prettier": "3.9.9",
     "react": "19.3.0",
     "react-dom": "19.3.0",
     "react-router-dom": "7.18.4",
@@ -183,8 +183,8 @@
     "tailwindcss": "4.3.3",
     "tsc-alias": "1.9.5",
     "typescript": "6.0.3",
-    "typescript-eslint": "8.70.0",
-    "vite": "8.3.0",
-    "vitest": "5.0.1"
+    "typescript-eslint": "8.70.1",
+    "vite": "8.3.1",
+    "vitest": "5.0.2"
   }
 }
