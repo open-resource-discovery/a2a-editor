@@ -145,7 +145,7 @@
   },
   "overrides": {
     "dompurify": "3.4.15",
-    "fflate": "^0.7.5"
+    "fflate": "0.7.5"
   },
   "lint-staged": {
     "*.{ts,tsx}": [
