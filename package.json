@@ -136,7 +136,7 @@
     "lucide-react": "1.47.0",
     "playwright": "1.63.0",
     "react-markdown": "10.1.0",
-    "react-resizable-panels": "4.13.1",
+    "react-resizable-panels": "4.13.3",
     "sonner": "2.0.8",
     "tailwind-merge": "3.7.0",
     "uuid": "14.0.2",
@@ -144,7 +144,7 @@
     "zustand": "5.0.15"
   },
   "overrides": {
-    "dompurify": "3.4.15",
+    "dompurify": "3.4.16",
     "fflate": "^0.7.5"
   },
   "lint-staged": {
@@ -179,7 +179,7 @@
     "react": "19.3.0",
     "react-dom": "19.3.0",
     "react-router-dom": "7.18.4",
-    "satori": "0.33.4",
+    "satori": "0.33.5",
     "tailwindcss": "4.3.3",
     "tsc-alias": "1.9.5",
     "typescript": "6.0.3",
