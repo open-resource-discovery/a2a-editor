@@ -144,7 +144,7 @@
     "zustand": "5.0.15"
   },
   "overrides": {
-    "dompurify": "3.4.15",
+    "dompurify": "3.4.16",
     "fflate": "^0.7.5"
   },
   "lint-staged": {
@@ -179,7 +179,7 @@
     "react": "19.3.0",
     "react-dom": "19.3.0",
     "react-router-dom": "7.18.4",
-    "satori": "0.33.4",
+    "satori": "0.33.5",
     "tailwindcss": "4.3.3",
     "tsc-alias": "1.9.5",
     "typescript": "6.0.3",
