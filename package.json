@@ -158,14 +158,14 @@
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",
-    "@playwright/test": "1.63.0",
+    "@playwright/test": "1.64.0",
     "@resvg/resvg-js": "2.6.2",
     "@tailwindcss/typography": "0.5.20",
     "@tailwindcss/vite": "4.3.3",
     "@types/node": "25.9.9",
     "@types/react": "19.3.0",
     "@types/react-dom": "19.3.0",
-    "@vitejs/plugin-react": "6.1.1",
+    "@vitejs/plugin-react": "6.1.2",
     "eslint": "10.12.0",
     "eslint-plugin-react-hooks": "7.1.1",
     "eslint-plugin-react-refresh": "0.5.7",
@@ -175,7 +175,7 @@
     "jsdom": "30.1.2",
     "lint-staged": "17.6.0",
     "postcss": "8.5.28",
-    "prettier": "3.9.9",
+    "prettier": "3.9.10",
     "react": "19.3.0",
     "react-dom": "19.3.0",
     "react-router-dom": "7.18.4",
@@ -183,8 +183,8 @@
     "tailwindcss": "4.3.3",
     "tsc-alias": "1.9.7",
     "typescript": "6.0.3",
-    "typescript-eslint": "8.71.0",
-    "vite": "8.3.2",
+    "typescript-eslint": "8.71.1",
+    "vite": "8.3.4",
     "vitest": "5.0.3"
   }
 }
