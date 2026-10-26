@@ -7,6 +7,10 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [unreleased]
 
+### Fixed
+
+- Confined the bundled `ui-components` `.ord-ui` reset to `.ord-ui:where(.a2a-root)` in the library build so it no longer zeroes padding/margins on a host app's own `.ord-ui` elements.
+
 ## [[0.4.6](https://github.com/open-resource-discovery/a2a-editor/releases/tag/v0.4.6)] - 2026-09-25
 
 ### Refactored
