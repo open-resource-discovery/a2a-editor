@@ -1,10 +1,10 @@
-import { create } from "zustand";
+import { getMockAgentCard, isMockUrl } from "@lib/mock/agents";
 import type { AgentCard } from "@lib/types/a2a";
-import { isMockUrl, getMockAgentCard } from "@lib/mock/agents";
-import { usePredefinedAgentsStore } from "./predefinedAgentsStore";
+import { detectProtocolVersion, normalizeAgentCard } from "@lib/utils/a2a-protocol";
+import { create } from "zustand";
 import { useConnectionStore } from "./connectionStore";
 import { useHttpLogStore } from "./httpLogStore";
-import { normalizeAgentCard, detectProtocolVersion } from "@lib/utils/a2a-protocol";
+import { usePredefinedAgentsStore } from "./predefinedAgentsStore";
 
 // Helper to parse JSON, normalize for version compat, and extract card/error
 function parseAgentCard(json: string): {
@@ -153,8 +153,7 @@ export const useAgentCardStore = create<AgentCardState>((set, get) => ({
       connectionStore.autoConfigureAuth(card);
     } catch (err) {
       set({
-        parseError:
-          err instanceof Error ? err.message : "Failed to load agent card",
+        parseError: err instanceof Error ? err.message : "Failed to load agent card",
       });
     } finally {
       set({ isLoading: false });
@@ -163,7 +162,5 @@ export const useAgentCardStore = create<AgentCardState>((set, get) => ({
 }));
 
 // Selectors - these now just return stored state (no computation)
-export const selectParsedCard = (state: AgentCardState): AgentCard | null =>
-  state.parsedCard;
-export const selectParseError = (state: AgentCardState): string | null =>
-  state.parseError;
+export const selectParsedCard = (state: AgentCardState): AgentCard | null => state.parsedCard;
+export const selectParseError = (state: AgentCardState): string | null => state.parseError;

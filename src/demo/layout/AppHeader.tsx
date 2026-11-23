@@ -1,8 +1,8 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
-import { Moon, Sun, Menu, X } from "lucide-react";
 import { Button } from "@lib/components/ui/button";
 import { useTheme } from "@lib/hooks/useTheme";
+import { Menu, Moon, Sun, X } from "lucide-react";
+import { useState } from "react";
+import { Link } from "react-router-dom";
 
 const base = import.meta.env.BASE_URL;
 
@@ -40,11 +40,7 @@ export function AppHeader() {
           </Link>
         ))}
         <Button variant="ghost" size="icon" onClick={toggleTheme}>
-          {resolvedTheme === "dark" ? (
-            <Sun className="h-5 w-5" />
-          ) : (
-            <Moon className="h-5 w-5" />
-          )}
+          {resolvedTheme === "dark" ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
           <span className="sr-only">Toggle theme</span>
         </Button>
       </nav>
@@ -52,17 +48,9 @@ export function AppHeader() {
       {/* Mobile nav */}
       <div className="flex sm:hidden items-center gap-2">
         <Button variant="ghost" size="icon" onClick={toggleTheme}>
-          {resolvedTheme === "dark" ? (
-            <Sun className="h-5 w-5" />
-          ) : (
-            <Moon className="h-5 w-5" />
-          )}
+          {resolvedTheme === "dark" ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
         </Button>
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-        >
+        <Button variant="ghost" size="icon" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
           {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           <span className="sr-only">Toggle menu</span>
         </Button>

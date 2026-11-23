@@ -23,7 +23,7 @@
     <script>
       // GitHub Pages SPA redirect handler
       // Picks up the redirect from 404.html and navigates to the correct route
-      (function () {
+      (() => {
         var redirect = sessionStorage.redirect;
         delete sessionStorage.redirect;
         if (redirect && redirect !== location.href) {

@@ -1,5 +1,5 @@
 import type { SecurityRequirement } from "@lib/types/a2a";
-import { SectionCard, Badge } from "@open-resource-discovery/ui-components";
+import { Badge, SectionCard } from "@open-resource-discovery/ui-components";
 import { ShieldCheck } from "lucide-react";
 
 interface SecurityRequirementsSectionProps {
@@ -49,9 +49,7 @@ export function SecurityRequirementsSection({ requirements }: SecurityRequiremen
                   </div>
                 ))}
                 {entries.length > 1 && (
-                  <p className="text-[10px] text-muted-foreground pl-6">
-                    All of the above are required together
-                  </p>
+                  <p className="text-[10px] text-muted-foreground pl-6">All of the above are required together</p>
                 )}
               </div>
             </div>

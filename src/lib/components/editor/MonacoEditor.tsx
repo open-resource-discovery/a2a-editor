@@ -1,8 +1,8 @@
-import { useEffect, useRef } from "react";
-import Editor, { useMonaco, type OnMount } from "@monaco-editor/react";
 import { useTheme } from "@lib/hooks/useTheme";
 import type { EditorMarker } from "@lib/types/validation";
 import { resolveJsonPathToPosition } from "@lib/utils/json-path-resolver";
+import Editor, { type OnMount, useMonaco } from "@monaco-editor/react";
+import { useEffect, useRef } from "react";
 
 interface MonacoEditorProps {
   value: string;

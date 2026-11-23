@@ -1,6 +1,6 @@
-import { describe, it, expect } from "vitest";
-import { isTerminalTaskState, normalizeStreamEvent, buildOutboundParts } from "../a2a-protocol";
 import type { Part } from "@lib/types/a2a";
+import { describe, expect, it } from "vitest";
+import { buildOutboundParts, isTerminalTaskState, normalizeStreamEvent } from "../a2a-protocol";
 
 // ===================================================================
 // isTerminalTaskState

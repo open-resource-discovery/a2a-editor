@@ -1,7 +1,7 @@
-import { useMemo, useState } from "react";
 import type { AgentSkill } from "@lib/types/a2a";
-import { SectionCard, Badge } from "@open-resource-discovery/ui-components";
+import { Badge, SectionCard } from "@open-resource-discovery/ui-components";
 import { Wrench } from "lucide-react";
+import { useMemo, useState } from "react";
 import { SkillCard } from "../SkillCard";
 
 interface SkillsSectionProps {
@@ -40,7 +40,8 @@ export function SkillsSection({ skills, disableExamplePrompts = false, readOnly 
             key={tag}
             variant={selectedTags.has(tag) ? "default" : "outline"}
             className="cursor-pointer"
-            onClick={() => toggleTag(tag)}>
+            onClick={() => toggleTag(tag)}
+          >
             {tag}
           </Badge>
         ))}

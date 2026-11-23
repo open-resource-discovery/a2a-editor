@@ -7,7 +7,7 @@
  *
  * v1.0 is the primary supported protocol. v0.3 is supported for backwards compatibility.
  */
-import type { AgentCard, TaskState, Part, Artifact } from "@lib/types/a2a";
+import type { AgentCard, Artifact, Part, TaskState } from "@lib/types/a2a";
 
 // ===================================================================
 // Protocol Versions

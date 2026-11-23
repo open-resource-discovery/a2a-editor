@@ -1,9 +1,9 @@
-import { useEffect, useRef } from "react";
-import { Badge, CodeBlock, HttpLogEntry as LibHttpLogEntry } from "@open-resource-discovery/ui-components";
-import type { HttpLogEntry as HttpLogEntryType } from "@lib/types/httpLog";
 import { useChatStore } from "@lib/stores/chatStore";
-import { useConnectionStore, selectEffectiveUrl } from "@lib/stores/connectionStore";
+import { selectEffectiveUrl, useConnectionStore } from "@lib/stores/connectionStore";
 import { useUIStore } from "@lib/stores/uiStore";
+import type { HttpLogEntry as HttpLogEntryType } from "@lib/types/httpLog";
+import { Badge, CodeBlock, HttpLogEntry as LibHttpLogEntry } from "@open-resource-discovery/ui-components";
+import { useEffect, useRef } from "react";
 
 interface SseEvent {
   index: number;

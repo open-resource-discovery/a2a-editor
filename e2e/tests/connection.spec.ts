@@ -1,4 +1,4 @@
-import { test, expect } from "../fixtures/playground";
+import { expect, test } from "../fixtures/playground";
 
 test.describe("Connection Flow", () => {
   test("should auto-connect when selecting Echo Agent", async ({ playground }) => {

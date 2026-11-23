@@ -1,4 +1,4 @@
-import { test, expect } from "../fixtures/playground";
+import { expect, test } from "../fixtures/playground";
 
 test.describe("Custom Agent", () => {
   test.beforeEach(async ({ playground }) => {
@@ -21,15 +21,10 @@ test.describe("Custom Agent", () => {
     // Submit button should be disabled for invalid URL
     await expect(playground.addAgentSubmit).toBeDisabled();
     // Should show inline validation message
-    await expect(
-      playground.page.getByText("Please enter a valid absolute"),
-    ).toBeVisible();
+    await expect(playground.page.getByText("Please enter a valid absolute")).toBeVisible();
   });
 
-  test("should add custom agent via network mock", async ({
-    playground,
-    page,
-  }) => {
+  test("should add custom agent via network mock", async ({ playground, page }) => {
     // Intercept the .well-known/agent.json fetch
     await page.route("**/example.com/.well-known/agent.json", (route) => {
       route.fulfill({
@@ -53,21 +48,14 @@ test.describe("Custom Agent", () => {
     await playground.addAgentSubmit.click();
 
     // Wait for the custom agent card to appear (id starts with "custom-")
-    await expect(
-      page.locator("[data-testid^='agent-card-custom-']"),
-    ).toBeVisible({ timeout: 10000 });
+    await expect(page.locator("[data-testid^='agent-card-custom-']")).toBeVisible({ timeout: 10000 });
     // The new agent should display its name
-    await expect(
-      page.locator("[data-testid^='agent-card-custom-']"),
-    ).toContainText("Test Custom Agent");
+    await expect(page.locator("[data-testid^='agent-card-custom-']")).toContainText("Test Custom Agent");
     // Add form should be hidden after successful add
     await expect(playground.addAgentUrl).toBeHidden();
   });
 
-  test("should not add duplicate agent with same URL", async ({
-    playground,
-    page,
-  }) => {
+  test("should not add duplicate agent with same URL", async ({ playground, page }) => {
     await page.route("**/example.com/.well-known/agent.json", (route) => {
       route.fulfill({
         status: 200,
@@ -89,9 +77,7 @@ test.describe("Custom Agent", () => {
     await playground.addAgentBtn.click();
     await playground.addAgentUrl.fill("https://example.com");
     await playground.addAgentSubmit.click();
-    await expect(
-      page.locator("[data-testid^='agent-card-custom-']"),
-    ).toBeVisible({ timeout: 10000 });
+    await expect(page.locator("[data-testid^='agent-card-custom-']")).toBeVisible({ timeout: 10000 });
 
     // Try to add the same URL again
     await playground.addAgentBtn.click();
@@ -99,14 +85,10 @@ test.describe("Custom Agent", () => {
     await playground.addAgentSubmit.click();
 
     // Error message should appear
-    await expect(
-      page.getByText("An agent with this URL already exists"),
-    ).toBeVisible({ timeout: 5000 });
+    await expect(page.getByText("An agent with this URL already exists")).toBeVisible({ timeout: 5000 });
 
     // Only one custom agent card should exist
-    await expect(
-      page.locator("[data-testid^='agent-card-custom-']"),
-    ).toHaveCount(1);
+    await expect(page.locator("[data-testid^='agent-card-custom-']")).toHaveCount(1);
   });
 
   test("should remove custom agent", async ({ playground, page }) => {

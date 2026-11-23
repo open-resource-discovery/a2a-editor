@@ -1,5 +1,5 @@
-import type { Part, TaskState, Artifact } from "./a2a";
 import type { ComplianceResult } from "@lib/utils/a2a-compliance";
+import type { Artifact, Part, TaskState } from "./a2a";
 
 export interface ChatMessage {
   id: string;

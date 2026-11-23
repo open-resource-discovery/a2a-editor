@@ -1,16 +1,16 @@
-import { useState, useCallback, useEffect } from "react";
-import { useConnectionStore } from "@lib/stores/connectionStore";
 import { useAgentCardStore } from "@lib/stores/agentCardStore";
+import { useConnectionStore } from "@lib/stores/connectionStore";
+import { buildConnHeaders, type ConnAuthType, mapStoreAuthType } from "@lib/utils/connection-auth";
 import {
-  SectionCard,
+  Button,
   Input,
   PasswordInput,
-  Button,
+  SectionCard,
   SimpleSelect,
   Spinner,
 } from "@open-resource-discovery/ui-components";
 import { Plug, Unplug } from "lucide-react";
-import { type ConnAuthType, mapStoreAuthType, buildConnHeaders } from "@lib/utils/connection-auth";
+import { useCallback, useEffect, useState } from "react";
 
 export function ConnectionSection() {
   const {
@@ -51,7 +51,7 @@ export function ConnectionSection() {
     setLocalPassword(storeBasicCreds.password);
     setLocalToken(storeOAuth2Creds.accessToken ?? "");
     setLocalApiKey(storeApiKeyCreds.key);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // biome-ignore lint/correctness/useExhaustiveDependencies: Existing exception retained during tooling migration.
   }, [storeConnAuthType]);
 
   const handleConnect = useCallback(async () => {
@@ -117,7 +117,8 @@ export function ConnectionSection() {
                 size="sm"
                 onClick={disconnect}
                 className="h-8 shrink-0"
-                data-testid="disconnect-btn">
+                data-testid="disconnect-btn"
+              >
                 <Unplug className="h-4 w-4 mr-1" />
                 Disconnect
               </Button>
@@ -127,7 +128,8 @@ export function ConnectionSection() {
                 onClick={handleConnect}
                 disabled={!url || connectionStatus === "connecting"}
                 className="h-8 shrink-0"
-                data-testid="connect-btn">
+                data-testid="connect-btn"
+              >
                 {connectionStatus === "connecting" ? (
                   <Spinner size="sm" className="mr-1" />
                 ) : (
@@ -145,7 +147,8 @@ export function ConnectionSection() {
             e.preventDefault();
             handleConnect();
           }}
-          className="space-y-2">
+          className="space-y-2"
+        >
           <SimpleSelect
             value={connAuthType}
             onChange={(v) => setManualAuthType(v as ConnAuthType)}

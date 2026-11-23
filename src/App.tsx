@@ -1,9 +1,9 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Toaster } from "sonner";
+import { AppHeader } from "./demo/layout/AppHeader";
+import { DocumentationPage } from "./demo/pages/DocumentationPage";
 import { HomePage } from "./demo/pages/HomePage";
 import { PlaygroundPage } from "./demo/pages/PlaygroundPage";
-import { DocumentationPage } from "./demo/pages/DocumentationPage";
-import { AppHeader } from "./demo/layout/AppHeader";
 import { OAuthCallback } from "./lib/components/OAuthCallback";
 import { ThemeRoot } from "./lib/components/ThemeRoot";
 import "@open-resource-discovery/ui-components/styles";

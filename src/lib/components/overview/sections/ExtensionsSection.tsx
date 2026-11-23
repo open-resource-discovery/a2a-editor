@@ -1,5 +1,5 @@
 import type { AgentExtension } from "@lib/types/a2a";
-import { SectionCard, Badge } from "@open-resource-discovery/ui-components";
+import { Badge, SectionCard } from "@open-resource-discovery/ui-components";
 import { ExternalLink, Puzzle } from "lucide-react";
 
 interface ExtensionsSectionProps {
@@ -22,7 +22,8 @@ export function ExtensionsSection({ extensions }: ExtensionsSectionProps) {
                   href={ext.uri}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-sm font-medium text-primary hover:underline truncate flex items-center gap-1">
+                  className="text-sm font-medium text-primary hover:underline truncate flex items-center gap-1"
+                >
                   {ext.uri}
                   <ExternalLink className="h-3 w-3 shrink-0" />
                 </a>

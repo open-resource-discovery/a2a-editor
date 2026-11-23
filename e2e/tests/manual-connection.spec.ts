@@ -1,4 +1,4 @@
-import { test, expect } from "../fixtures/playground";
+import { expect, test } from "../fixtures/playground";
 
 test.describe("Manual Connection", () => {
   test("should connect when selecting an agent", async ({ playground }) => {

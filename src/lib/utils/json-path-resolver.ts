@@ -5,7 +5,7 @@
  * Powered by jsonc-parser (Microsoft's VS Code JSON parser).
  */
 
-import { parseTree, findNodeAtLocation } from "jsonc-parser";
+import { findNodeAtLocation, parseTree } from "jsonc-parser";
 
 export interface JsonPosition {
   startLineNumber: number;
@@ -42,10 +42,7 @@ function parsePathSegments(path: string): (string | number)[] {
  * Resolve a JSON path to an editor position. Falls back to parent paths or
  * line 1 if the path is not found (e.g. for missing required fields).
  */
-export function resolveJsonPathToPosition(
-  jsonText: string,
-  path: string | undefined,
-): JsonPosition {
+export function resolveJsonPathToPosition(jsonText: string, path: string | undefined): JsonPosition {
   const fallback: JsonPosition = {
     startLineNumber: 1,
     startColumn: 1,

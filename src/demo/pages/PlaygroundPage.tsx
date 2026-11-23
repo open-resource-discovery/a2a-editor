@@ -1,11 +1,11 @@
-import { useEffect, useRef } from "react";
-import { useSearchParams } from "react-router-dom";
 import { AgentPlayground } from "@lib/components/AgentPlayground";
-import { usePredefinedAgentsStore } from "@lib/stores/predefinedAgentsStore";
-import { useConnectionStore } from "@lib/stores/connectionStore";
 import { useAgentCardStore } from "@lib/stores/agentCardStore";
 import { useChatStore } from "@lib/stores/chatStore";
+import { useConnectionStore } from "@lib/stores/connectionStore";
 import { useHttpLogStore } from "@lib/stores/httpLogStore";
+import { usePredefinedAgentsStore } from "@lib/stores/predefinedAgentsStore";
+import { useEffect, useRef } from "react";
+import { useSearchParams } from "react-router-dom";
 
 export function PlaygroundPage() {
   const [searchParams, setSearchParams] = useSearchParams();

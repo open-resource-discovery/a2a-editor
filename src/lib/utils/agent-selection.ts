@@ -1,8 +1,8 @@
+import { useAgentCardStore } from "@lib/stores/agentCardStore";
 import { useChatStore } from "@lib/stores/chatStore";
+import { useConnectionStore } from "@lib/stores/connectionStore";
 import { useHttpLogStore } from "@lib/stores/httpLogStore";
 import { usePredefinedAgentsStore } from "@lib/stores/predefinedAgentsStore";
-import { useConnectionStore } from "@lib/stores/connectionStore";
-import { useAgentCardStore } from "@lib/stores/agentCardStore";
 import { useUIStore } from "@lib/stores/uiStore";
 import type { PredefinedAgent } from "@lib/types/connection";
 

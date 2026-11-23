@@ -1,9 +1,6 @@
 export type ConnAuthType = "none" | "basic" | "bearer" | "apiKey";
 
-export function mapStoreAuthType(
-  storeType: string | null | undefined,
-  hasAccessToken: boolean,
-): ConnAuthType {
+export function mapStoreAuthType(storeType: string | null | undefined, hasAccessToken: boolean): ConnAuthType {
   if (storeType === "oauth2" && hasAccessToken) return "bearer";
   if (storeType === "basic") return "basic";
   if (storeType === "apiKey") return "apiKey";

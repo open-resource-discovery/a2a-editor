@@ -1,12 +1,12 @@
-import { describe, it, expect, beforeEach } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import {
-  generateCodeVerifier,
-  generateCodeChallenge,
-  generateState,
-  storeOAuthParams,
-  getStoredOAuthParams,
   clearOAuthParams,
+  generateCodeChallenge,
+  generateCodeVerifier,
+  generateState,
+  getStoredOAuthParams,
   OAUTH_STORAGE_KEYS,
+  storeOAuthParams,
 } from "../pkce";
 
 describe("generateCodeVerifier", () => {

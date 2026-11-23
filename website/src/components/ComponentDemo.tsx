@@ -1,5 +1,5 @@
-import React, { useEffect, useRef, useId, useState } from "react";
 import useBaseUrl from "@docusaurus/useBaseUrl";
+import { useEffect, useId, useRef, useState } from "react";
 
 type DemoType = "playground" | "editor" | "card";
 
@@ -162,7 +162,8 @@ function ComponentBasedDemo({ type, height }: { type: DemoType; height: string }
           justifyContent: "center",
           color: "var(--ifm-color-danger)",
           background: "var(--ifm-background-surface-color)",
-        }}>
+        }}
+      >
         Error: {error}
       </div>
     );
@@ -184,7 +185,8 @@ function ComponentBasedDemo({ type, height }: { type: DemoType; height: string }
             background: "var(--ifm-background-surface-color)",
             borderRadius: "8px",
             zIndex: 1,
-          }}>
+          }}
+        >
           Loading demo...
         </div>
       )}

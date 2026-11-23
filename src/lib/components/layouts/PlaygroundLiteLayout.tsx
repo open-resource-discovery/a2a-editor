@@ -1,13 +1,13 @@
-import { useEffect } from "react";
-import { SplitPane, SimpleSheet } from "@open-resource-discovery/ui-components";
-import { useIsLargeScreen } from "@lib/hooks/useMediaQuery";
-import { useUIStore } from "@lib/stores/uiStore";
-import { useAutoValidate } from "@lib/hooks/useAutoValidate";
 import { AgentCardEditor } from "@lib/components/editor/AgentCardEditor";
 import { EditorRightPanel } from "@lib/components/layouts/EditorRightPanel";
-import { MobileBottomBar } from "@lib/components/MobileBottomBar";
-import { cn } from "@lib/utils/cn";
 import { LazySettingsPanel } from "@lib/components/layouts/LazySettingsPanel";
+import { MobileBottomBar } from "@lib/components/MobileBottomBar";
+import { useAutoValidate } from "@lib/hooks/useAutoValidate";
+import { useIsLargeScreen } from "@lib/hooks/useMediaQuery";
+import { useUIStore } from "@lib/stores/uiStore";
+import { cn } from "@lib/utils/cn";
+import { SimpleSheet, SplitPane } from "@open-resource-discovery/ui-components";
+import { useEffect } from "react";
 
 interface PlaygroundLiteLayoutProps {
   showSettings?: boolean;
@@ -84,7 +84,8 @@ export function PlaygroundLiteLayout({
           onOpenChange={setSettingsPanelOpen}
           side="left"
           title="Settings"
-          className="w-[85%] max-w-md p-0">
+          className="w-[85%] max-w-md p-0"
+        >
           <LazySettingsPanel />
         </SimpleSheet>
       )}
@@ -95,7 +96,8 @@ export function PlaygroundLiteLayout({
         onOpenChange={setValidationPanelOpen}
         side="bottom"
         title="Overview & Validation"
-        className="h-[70vh] max-h-[600px] p-0">
+        className="h-[70vh] max-h-[600px] p-0"
+      >
         <EditorRightPanel showValidation={showValidation} defaultTab={defaultTab} />
       </SimpleSheet>
     </div>

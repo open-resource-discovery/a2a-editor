@@ -1,6 +1,6 @@
 import type { AgentCapabilities } from "@lib/types/a2a";
-import { SectionCard, Badge } from "@open-resource-discovery/ui-components";
-import { Zap, Bell, History, FileText } from "lucide-react";
+import { Badge, SectionCard } from "@open-resource-discovery/ui-components";
+import { Bell, FileText, History, Zap } from "lucide-react";
 
 interface CapabilitiesSectionProps {
   capabilities: AgentCapabilities;

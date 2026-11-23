@@ -1,7 +1,7 @@
-import { useEffect, useRef } from "react";
 import { useAgentCardStore } from "@lib/stores/agentCardStore";
 import { useEditorSettingsStore } from "@lib/stores/editorSettingsStore";
 import { useValidationStore } from "@lib/stores/validationStore";
+import { useEffect, useRef } from "react";
 
 export function useAutoValidate() {
   const rawJson = useAgentCardStore((s) => s.rawJson);

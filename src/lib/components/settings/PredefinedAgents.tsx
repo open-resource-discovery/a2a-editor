@@ -1,5 +1,10 @@
-import { useEffect, useState, useMemo } from "react";
 import { usePredefinedAgentsStore } from "@lib/stores/predefinedAgentsStore";
+import type { PredefinedAgent } from "@lib/types/connection";
+import { detectProtocolVersion, normalizeAgentCard } from "@lib/utils/a2a-protocol";
+import { clearAgentState, selectPredefinedAgent } from "@lib/utils/agent-selection";
+import { cn } from "@lib/utils/cn";
+import type { AddAuthType } from "@lib/utils/predefined-auth";
+import { buildAddHeaders, buildPredefinedConnHeaders, mapAddAuth } from "@lib/utils/predefined-auth";
 import {
   Badge,
   Button,
@@ -9,13 +14,8 @@ import {
   SimpleSelect,
   Spinner,
 } from "@open-resource-discovery/ui-components";
-import { cn } from "@lib/utils/cn";
-import { selectPredefinedAgent, clearAgentState } from "@lib/utils/agent-selection";
-import { detectProtocolVersion, normalizeAgentCard } from "@lib/utils/a2a-protocol";
-import { buildAddHeaders, mapAddAuth, buildPredefinedConnHeaders } from "@lib/utils/predefined-auth";
-import type { AddAuthType } from "@lib/utils/predefined-auth";
-import { Search, Plus, X, Globe } from "lucide-react";
-import type { PredefinedAgent } from "@lib/types/connection";
+import { Globe, Plus, Search, X } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
 
 function parseAgentUrl(input: string): { normalizedUrl: string; fetchUrl: string } {
   const trimmed = input.trim();
@@ -205,13 +205,15 @@ export function PredefinedAgents() {
           e.preventDefault();
           handleSelectAgent(agent.id);
         }
-      }}>
+      }}
+    >
       {isCustom && (
         <Button
           variant="ghost"
           size="icon"
           className="absolute top-1 right-1 h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
-          onClick={(e) => handleRemoveAgent(e, agent.id)}>
+          onClick={(e) => handleRemoveAgent(e, agent.id)}
+        >
           <X className="h-3 w-3" />
         </Button>
       )}
@@ -254,7 +256,8 @@ export function PredefinedAgents() {
                 setShowOrdForm(!showOrdForm);
                 setShowAddForm(false);
               }}
-              data-testid="discover-ord-btn">
+              data-testid="discover-ord-btn"
+            >
               <Globe className="h-3.5 w-3.5" />
               Discover
             </Button>
@@ -266,7 +269,8 @@ export function PredefinedAgents() {
                 setShowAddForm(!showAddForm);
                 setShowOrdForm(false);
               }}
-              data-testid="add-agent-btn">
+              data-testid="add-agent-btn"
+            >
               <Plus className="h-3.5 w-3.5" />
               Add
             </Button>
@@ -299,7 +303,8 @@ export function PredefinedAgents() {
                 size="sm"
                 onClick={handleDiscover}
                 disabled={isDiscovering || !ordUrl.trim()}
-                data-testid="discover-ord-submit">
+                data-testid="discover-ord-submit"
+              >
                 {isDiscovering ? (
                   <>
                     <Spinner className="h-3 w-3 mr-1" />
@@ -395,14 +400,16 @@ export function PredefinedAgents() {
                   setNewAgentUrl("");
                   setAddError("");
                 }}
-                data-testid="add-agent-cancel">
+                data-testid="add-agent-cancel"
+              >
                 Cancel
               </Button>
               <Button
                 size="sm"
                 onClick={handleAddAgent}
                 disabled={isAdding || !isValidNewAgentUrl}
-                data-testid="add-agent-submit">
+                data-testid="add-agent-submit"
+              >
                 {isAdding ? (
                   <>
                     <Spinner className="h-3 w-3 mr-1" />

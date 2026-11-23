@@ -1,9 +1,9 @@
-import { defineConfig } from "vite";
-import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
-import postcss from "postcss";
+import react from "@vitejs/plugin-react";
+import { copyFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "fs";
 import { resolve } from "path";
-import { copyFileSync, mkdirSync, existsSync, readFileSync, writeFileSync } from "fs";
+import postcss from "postcss";
+import { defineConfig } from "vite";
 
 /**
  * Strip all @layer wrappers from CSS output and scope loose selectors to .a2a-root.
@@ -163,7 +163,7 @@ export default defineConfig({
   },
   define: {
     // Replace version placeholder with actual version
-    "__VERSION__": JSON.stringify(process.env.npm_package_version || "0.0.0-standalone"),
+    __VERSION__: JSON.stringify(process.env.npm_package_version || "0.0.0-standalone"),
     // Define process.env for browser compatibility
     "process.env.NODE_ENV": JSON.stringify("production"),
     "process.env": JSON.stringify({}),

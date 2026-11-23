@@ -6,12 +6,5 @@ interface ValidationResultCardProps {
 }
 
 export function ValidationResultCard({ result }: ValidationResultCardProps) {
-  return (
-    <ValidationEntry
-      status={result.status}
-      rule={result.rule}
-      message={result.message}
-      path={result.path}
-    />
-  );
+  return <ValidationEntry status={result.status} rule={result.rule} message={result.message} path={result.path} />;
 }

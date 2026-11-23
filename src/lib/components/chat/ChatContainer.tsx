@@ -1,11 +1,11 @@
-import { useChatStore } from "@lib/stores/chatStore";
-import { useConnectionStore, selectEffectiveUrl } from "@lib/stores/connectionStore";
-import { useAgentCardStore } from "@lib/stores/agentCardStore";
 import { useIsLargeScreen } from "@lib/hooks/useMediaQuery";
-import { ScrollArea, Button, ChatInput, TypingIndicator } from "@open-resource-discovery/ui-components";
-import { ChatMessage } from "./ChatMessage";
-import { Trash2, Play } from "lucide-react";
+import { useAgentCardStore } from "@lib/stores/agentCardStore";
+import { useChatStore } from "@lib/stores/chatStore";
+import { selectEffectiveUrl, useConnectionStore } from "@lib/stores/connectionStore";
 import type { Part } from "@lib/types/a2a";
+import { Button, ChatInput, ScrollArea, TypingIndicator } from "@open-resource-discovery/ui-components";
+import { Play, Trash2 } from "lucide-react";
+import { ChatMessage } from "./ChatMessage";
 
 interface ChatContainerProps {
   maxExamplePrompts?: number;
@@ -81,7 +81,8 @@ export function ChatContainer({ maxExamplePrompts = 2, disableExamplePrompts = f
                       data-testid={`example-prompt-${index}`}
                       onClick={() => handleExampleClick(example)}
                       disabled={!isConnected || isStreaming || disableExamplePrompts}
-                      className="group inline-flex items-center gap-1.5 rounded-full border bg-background px-3 py-1.5 text-xs text-foreground cursor-pointer transition-colors hover:bg-accent hover:text-accent-foreground active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed">
+                      className="group inline-flex items-center gap-1.5 rounded-full border bg-background px-3 py-1.5 text-xs text-foreground cursor-pointer transition-colors hover:bg-accent hover:text-accent-foreground active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
                       <Play className="h-3 w-3 text-success" />
                       <span className="max-w-48 truncate">{example}</span>
                     </button>
@@ -112,7 +113,8 @@ export function ChatContainer({ maxExamplePrompts = 2, disableExamplePrompts = f
                 key={index}
                 onClick={() => handleExampleClick(example)}
                 disabled={!isConnected || isStreaming}
-                className="inline-flex items-center gap-1 rounded-full border bg-background px-2 py-1 text-[11px] text-foreground cursor-pointer transition-colors hover:bg-accent hover:text-accent-foreground active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed">
+                className="inline-flex items-center gap-1 rounded-full border bg-background px-2 py-1 text-[11px] text-foreground cursor-pointer transition-colors hover:bg-accent hover:text-accent-foreground active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
+              >
                 <Play className="h-2.5 w-2.5 text-green-500" />
                 <span className="max-w-32 truncate">{example}</span>
               </button>

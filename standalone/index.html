@@ -416,7 +416,7 @@
       window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => applyTheme());
 
       // Allow parent frame to control theme (for Docusaurus embedding)
-      window.setTheme = function (theme) {
+      window.setTheme = (theme) => {
         applyTheme(theme === "dark");
       };
 

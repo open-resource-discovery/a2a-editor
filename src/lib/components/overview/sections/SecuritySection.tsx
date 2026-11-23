@@ -1,30 +1,30 @@
-import { useState, useEffect } from "react";
-import type { SecurityScheme } from "@lib/types/a2a";
-import { useConnectionStore, selectIsTokenExpired } from "@lib/stores/connectionStore";
 import { useAgentCardStore } from "@lib/stores/agentCardStore";
+import { selectIsTokenExpired, useConnectionStore } from "@lib/stores/connectionStore";
+import type { SecurityScheme } from "@lib/types/a2a";
 import {
-  SectionCard,
   Badge,
+  Button,
   Input,
   PasswordInput,
-  Button,
+  SectionCard,
   SimpleSelect,
   Spinner,
 } from "@open-resource-discovery/ui-components";
 import {
-  Shield,
-  Key,
-  Lock,
-  User,
   Check,
   ChevronDown,
   ChevronUp,
-  LogIn,
-  X,
   ExternalLink,
-  RefreshCw,
   Info,
+  Key,
+  Lock,
+  LogIn,
+  RefreshCw,
+  Shield,
+  User,
+  X,
 } from "lucide-react";
+import { useEffect, useState } from "react";
 
 interface SecuritySectionProps {
   schemes: Record<string, SecurityScheme>;
@@ -95,7 +95,7 @@ export function SecuritySection({ schemes, readOnly = false }: SecuritySectionPr
     if (parsedCard && preferredKey) {
       autoConfigureAuth(parsedCard, preferredKey);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // biome-ignore lint/correctness/useExhaustiveDependencies: Existing exception retained during tooling migration.
   }, [schemes]);
 
   const activeEntry = schemeEntries.find(([n]) => n === selectedScheme);
@@ -203,7 +203,8 @@ export function SecuritySection({ schemes, readOnly = false }: SecuritySectionPr
                   variant="ghost"
                   size="sm"
                   className="h-6 text-xs"
-                  onClick={() => setOAuth2Credentials({ accessToken: undefined, refreshToken: undefined })}>
+                  onClick={() => setOAuth2Credentials({ accessToken: undefined, refreshToken: undefined })}
+                >
                   Sign Out
                 </Button>
               </div>
@@ -212,7 +213,8 @@ export function SecuritySection({ schemes, readOnly = false }: SecuritySectionPr
                 variant="default"
                 className="w-full h-8 text-xs"
                 onClick={startAuthCodeFlow}
-                disabled={!oauth2Credentials.clientId}>
+                disabled={!oauth2Credentials.clientId}
+              >
                 <LogIn className="mr-1 h-3 w-3" />
                 Sign In with OAuth
               </Button>
@@ -232,7 +234,8 @@ export function SecuritySection({ schemes, readOnly = false }: SecuritySectionPr
               size="sm"
               className="h-6 text-xs"
               onClick={refreshOAuth2Token}
-              disabled={isTokenLoading}>
+              disabled={isTokenLoading}
+            >
               {isTokenLoading ? <Spinner className="h-3 w-3" /> : <RefreshCw className="h-3 w-3 mr-1" />}
               Refresh
             </Button>
@@ -246,7 +249,8 @@ export function SecuritySection({ schemes, readOnly = false }: SecuritySectionPr
             size="sm"
             className="h-6 text-xs"
             onClick={refreshOAuth2Token}
-            disabled={isTokenLoading}>
+            disabled={isTokenLoading}
+          >
             <RefreshCw className="h-3 w-3 mr-1" />
             Refresh Token
           </Button>
@@ -284,7 +288,8 @@ export function SecuritySection({ schemes, readOnly = false }: SecuritySectionPr
         <button
           type="button"
           onClick={() => setShowAdvanced(!showAdvanced)}
-          className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground">
+          className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground"
+        >
           {showAdvanced ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
           Advanced
         </button>
@@ -340,7 +345,8 @@ export function SecuritySection({ schemes, readOnly = false }: SecuritySectionPr
                 !oauth2Credentials.clientSecret ||
                 !oauth2Credentials.tokenUrl
               }
-              className="h-7 text-xs">
+              className="h-7 text-xs"
+            >
               {isTokenLoading ? (
                 <Spinner className="h-3 w-3 mr-1" />
               ) : hasAccessToken ? (
@@ -387,7 +393,8 @@ export function SecuritySection({ schemes, readOnly = false }: SecuritySectionPr
               href={deviceCodeState.verificationUriComplete ?? deviceCodeState.verificationUri}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-xs text-primary hover:underline flex items-center gap-1 break-all">
+              className="text-xs text-primary hover:underline flex items-center gap-1 break-all"
+            >
               {deviceCodeState.verificationUri}
               <ExternalLink className="h-3 w-3" />
             </a>
@@ -413,7 +420,8 @@ export function SecuritySection({ schemes, readOnly = false }: SecuritySectionPr
         variant="outline"
         className="w-full h-8 text-xs"
         onClick={() => startDeviceCodeFlow(deviceFlow.deviceAuthorizationUrl, deviceFlow.tokenUrl)}
-        disabled={isTokenLoading || !oauth2Credentials.clientId}>
+        disabled={isTokenLoading || !oauth2Credentials.clientId}
+      >
         {isTokenLoading ? <Spinner className="h-3 w-3 mr-1" /> : <LogIn className="h-3 w-3 mr-1" />}
         Authorize with Device Code
       </Button>
@@ -501,7 +509,8 @@ export function SecuritySection({ schemes, readOnly = false }: SecuritySectionPr
                   variant="ghost"
                   size="sm"
                   className="h-6 text-xs"
-                  onClick={() => setOAuth2Credentials({ accessToken: undefined, refreshToken: undefined })}>
+                  onClick={() => setOAuth2Credentials({ accessToken: undefined, refreshToken: undefined })}
+                >
                   Sign Out
                 </Button>
               </div>
@@ -510,7 +519,8 @@ export function SecuritySection({ schemes, readOnly = false }: SecuritySectionPr
                 variant="default"
                 className="w-full h-8 text-xs"
                 onClick={startAuthCodeFlow}
-                disabled={!oauth2Credentials.clientId}>
+                disabled={!oauth2Credentials.clientId}
+              >
                 <LogIn className="mr-1 h-3 w-3" />
                 Sign In with OAuth
               </Button>
@@ -527,7 +537,8 @@ export function SecuritySection({ schemes, readOnly = false }: SecuritySectionPr
               size="sm"
               className="h-6 text-xs"
               onClick={refreshOAuth2Token}
-              disabled={isTokenLoading}>
+              disabled={isTokenLoading}
+            >
               {isTokenLoading ? <Spinner className="h-3 w-3" /> : <RefreshCw className="h-3 w-3 mr-1" />}
               Refresh
             </Button>

@@ -1,5 +1,5 @@
 import type { PredefinedAgent } from "@lib/types/connection";
-import type { OrdConfiguration, ApiResource, OrdDocument } from "@open-resource-discovery/specification";
+import type { ApiResource, OrdConfiguration, OrdDocument } from "@open-resource-discovery/specification";
 
 interface AgentCardJson {
   name?: string;
@@ -56,9 +56,7 @@ export async function discoverAgentsFromOrd(
 
     const docProviderOrigin = new URL(docUrl).origin;
 
-    const apiResourceMap = new Map(
-      (doc.apiResources ?? []).map((r) => [r.ordId, r]),
-    );
+    const apiResourceMap = new Map((doc.apiResources ?? []).map((r) => [r.ordId, r]));
 
     const ordAgents = doc.agents ?? [];
     if (ordAgents.length > 0) {
@@ -112,9 +110,7 @@ async function buildAgentFromApiResource(
   );
   if (!cardDef?.url) return null;
 
-  const cardUrl = cardDef.url.startsWith("http")
-    ? cardDef.url
-    : `${providerOrigin}${cardDef.url}`;
+  const cardUrl = cardDef.url.startsWith("http") ? cardDef.url : `${providerOrigin}${cardDef.url}`;
 
   let card: AgentCardJson | null = null;
   try {

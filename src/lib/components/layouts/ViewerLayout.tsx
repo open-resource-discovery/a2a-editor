@@ -1,11 +1,11 @@
-import { SplitPane, SimpleSheet } from "@open-resource-discovery/ui-components";
-import { useIsLargeScreen } from "@lib/hooks/useMediaQuery";
-import { useUIStore } from "@lib/stores/uiStore";
-import { useAutoValidate } from "@lib/hooks/useAutoValidate";
 import { TextareaEditor } from "@lib/components/editor/TextareaEditor";
+import { useAutoValidate } from "@lib/hooks/useAutoValidate";
+import { useIsLargeScreen } from "@lib/hooks/useMediaQuery";
 import { useAgentCardStore } from "@lib/stores/agentCardStore";
-import { ViewerRightPanel } from "./ViewerRightPanel";
+import { useUIStore } from "@lib/stores/uiStore";
 import { cn } from "@lib/utils/cn";
+import { SimpleSheet, SplitPane } from "@open-resource-discovery/ui-components";
+import { ViewerRightPanel } from "./ViewerRightPanel";
 
 interface ViewerLayoutProps {
   showValidation?: boolean;
@@ -17,15 +17,10 @@ interface ViewerLayoutProps {
  * Layout for AgentViewer - 2 pane layout without Monaco editor
  * Uses simple textarea instead of Monaco for JSON editing
  */
-export function ViewerLayout({
-  showValidation = true,
-  defaultTab = "overview",
-  className,
-}: ViewerLayoutProps) {
+export function ViewerLayout({ showValidation = true, defaultTab = "overview", className }: ViewerLayoutProps) {
   const isLargeScreen = useIsLargeScreen();
   const { rawJson, setRawJson } = useAgentCardStore();
-  const { validationPanelOpen, setValidationPanelOpen, closeAllPanels } =
-    useUIStore();
+  const { validationPanelOpen, setValidationPanelOpen, closeAllPanels } = useUIStore();
 
   // Enable auto-validation
   useAutoValidate();
@@ -41,18 +36,12 @@ export function ViewerLayout({
         <SplitPane orientation="horizontal">
           <SplitPane.Panel defaultSize={50} minSize={30}>
             <div className="h-full border-r">
-              <TextareaEditor
-                value={rawJson}
-                onChange={setRawJson}
-              />
+              <TextareaEditor value={rawJson} onChange={setRawJson} />
             </div>
           </SplitPane.Panel>
           <SplitPane.Handle />
           <SplitPane.Panel defaultSize={50} minSize={20}>
-            <ViewerRightPanel
-              showValidation={showValidation}
-              defaultTab={defaultTab}
-            />
+            <ViewerRightPanel showValidation={showValidation} defaultTab={defaultTab} />
           </SplitPane.Panel>
         </SplitPane>
       </div>
@@ -72,11 +61,9 @@ export function ViewerLayout({
         onOpenChange={setValidationPanelOpen}
         side="bottom"
         title="Overview & Validation"
-        className="h-[70vh] max-h-[600px] p-0">
-        <ViewerRightPanel
-          showValidation={showValidation}
-          defaultTab={defaultTab}
-        />
+        className="h-[70vh] max-h-[600px] p-0"
+      >
+        <ViewerRightPanel showValidation={showValidation} defaultTab={defaultTab} />
       </SimpleSheet>
     </div>
   );

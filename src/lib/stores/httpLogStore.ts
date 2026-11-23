@@ -1,5 +1,5 @@
-import { create } from "zustand";
 import type { HttpLogEntry } from "@lib/types/httpLog";
+import { create } from "zustand";
 
 const MAX_LOG_ENTRIES = 50;
 
@@ -25,9 +25,7 @@ export const useHttpLogStore = create<HttpLogState>((set, get) => ({
 
   updateLog: (id, updates) =>
     set((state) => ({
-      logs: state.logs.map((log) =>
-        log.id === id ? { ...log, ...updates } : log,
-      ),
+      logs: state.logs.map((log) => (log.id === id ? { ...log, ...updates } : log)),
     })),
 
   clearLogs: () => set({ logs: [], highlightedLogId: null }),

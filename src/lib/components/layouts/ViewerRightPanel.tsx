@@ -1,10 +1,9 @@
-import { useEffect, useRef, useState, useCallback } from "react";
-import { Tabs, Badge } from "@open-resource-discovery/ui-components";
-import { ScrollArea } from "@open-resource-discovery/ui-components";
-import { useUIStore } from "@lib/stores/uiStore";
-import { useValidationStore } from "@lib/stores/validationStore";
 import { AgentOverview } from "@lib/components/overview/AgentOverview";
 import { ValidationPanel } from "@lib/components/validation/ValidationPanel";
+import { useUIStore } from "@lib/stores/uiStore";
+import { useValidationStore } from "@lib/stores/validationStore";
+import { Badge, ScrollArea, Tabs } from "@open-resource-discovery/ui-components";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 type TabValue = "overview" | "validation";
 

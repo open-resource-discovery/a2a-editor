@@ -20,7 +20,7 @@
  * - onError: Callback on error
  */
 
-window.addEventListener("DOMContentLoaded", function () {
+window.addEventListener("DOMContentLoaded", () => {
   window.playground = A2APlayground.init({
     el: "#a2a-playground",
 
@@ -47,15 +47,15 @@ window.addEventListener("DOMContentLoaded", function () {
     // },
 
     // Callbacks
-    onReady: function (instance) {
+    onReady: (instance) => {
       console.log("A2A Playground ready!", instance);
     },
 
-    onConnect: function (url, card) {
+    onConnect: (url, card) => {
       console.log("Connected to:", card.name, "at", url);
     },
 
-    onError: function (error) {
+    onError: (error) => {
       console.error("A2A Playground error:", error);
     },
   });

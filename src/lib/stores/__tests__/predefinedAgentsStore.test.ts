@@ -1,6 +1,6 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { usePredefinedAgentsStore } from "../predefinedAgentsStore";
 import type { PredefinedAgent } from "@lib/types/connection";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { usePredefinedAgentsStore } from "../predefinedAgentsStore";
 
 vi.mock("@lib/utils/ord-discovery", () => ({
   discoverAgentsFromOrd: vi.fn(),
@@ -8,6 +8,7 @@ vi.mock("@lib/utils/ord-discovery", () => ({
 }));
 
 import { discoverAgentsFromOrd } from "@lib/utils/ord-discovery";
+
 const mockDiscover = vi.mocked(discoverAgentsFromOrd);
 
 function makeAgent(overrides: Partial<PredefinedAgent> = {}): PredefinedAgent {
@@ -99,9 +100,9 @@ describe("loadFromOrd", () => {
   it("propagates errors thrown by discoverAgentsFromOrd", async () => {
     mockDiscover.mockRejectedValue(new Error("ORD config fetch failed: 404 Not Found"));
 
-    await expect(
-      usePredefinedAgentsStore.getState().loadFromOrd("http://bad-host.example.com"),
-    ).rejects.toThrow("ORD config fetch failed");
+    await expect(usePredefinedAgentsStore.getState().loadFromOrd("http://bad-host.example.com")).rejects.toThrow(
+      "ORD config fetch failed",
+    );
   });
 
   it("forwards auth headers to discoverAgentsFromOrd", async () => {

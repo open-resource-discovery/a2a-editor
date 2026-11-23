@@ -1,13 +1,12 @@
-import { useEffect, useRef, useState, useCallback } from "react";
-import { Tabs, Badge } from "@open-resource-discovery/ui-components";
-import { ScrollArea } from "@open-resource-discovery/ui-components";
+import { ChatContainer } from "@lib/components/chat/ChatContainer";
+import { AgentOverview } from "@lib/components/overview/AgentOverview";
+import { RawHttpPanel } from "@lib/components/rawhttp/RawHttpPanel";
+import { ValidationPanel } from "@lib/components/validation/ValidationPanel";
+import { useHttpLogStore } from "@lib/stores/httpLogStore";
 import { useUIStore } from "@lib/stores/uiStore";
 import { useValidationStore } from "@lib/stores/validationStore";
-import { useHttpLogStore } from "@lib/stores/httpLogStore";
-import { AgentOverview } from "@lib/components/overview/AgentOverview";
-import { ChatContainer } from "@lib/components/chat/ChatContainer";
-import { ValidationPanel } from "@lib/components/validation/ValidationPanel";
-import { RawHttpPanel } from "@lib/components/rawhttp/RawHttpPanel";
+import { Badge, ScrollArea, Tabs } from "@open-resource-discovery/ui-components";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 type TabValue = "overview" | "chat" | "validation" | "rawhttp";
 

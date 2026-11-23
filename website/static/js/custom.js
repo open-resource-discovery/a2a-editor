@@ -5,18 +5,15 @@
 // resize on the next frame — which Monaco/Radix/many UI libs do intentionally.
 // The message never surfaces a real bug but webpack-dev-server's error overlay
 // treats it as a runtime error. Filter it out at the window error boundary.
-(function () {
+(() => {
   var RO_MSG = "ResizeObserver loop completed with undelivered notifications";
   var RO_MSG_LEGACY = "ResizeObserver loop limit exceeded";
   function isResizeObserverError(msg) {
-    return (
-      typeof msg === "string" &&
-      (msg.indexOf(RO_MSG) !== -1 || msg.indexOf(RO_MSG_LEGACY) !== -1)
-    );
+    return typeof msg === "string" && (msg.indexOf(RO_MSG) !== -1 || msg.indexOf(RO_MSG_LEGACY) !== -1);
   }
   window.addEventListener(
     "error",
-    function (e) {
+    (e) => {
       if (isResizeObserverError(e.message)) {
         e.stopImmediatePropagation();
         e.preventDefault();
@@ -26,10 +23,9 @@
   );
   window.addEventListener(
     "unhandledrejection",
-    function (e) {
+    (e) => {
       var reason = e && e.reason;
-      var msg =
-        reason && typeof reason === "object" ? reason.message : String(reason);
+      var msg = reason && typeof reason === "object" ? reason.message : String(reason);
       if (isResizeObserverError(msg)) {
         e.stopImmediatePropagation();
         e.preventDefault();
@@ -44,8 +40,7 @@ var __NAV_SCROLL_THRESHOLD__ = 2;
 var __navScrollTicking__ = false;
 
 function __applyNavScrolled__() {
-  var scrolled =
-    (window.scrollY || window.pageYOffset) > __NAV_SCROLL_THRESHOLD__;
+  var scrolled = (window.scrollY || window.pageYOffset) > __NAV_SCROLL_THRESHOLD__;
   var val = scrolled ? "1" : "0";
   var html = document.documentElement;
   if (html.getAttribute("data-nav-scrolled") !== val) {
@@ -77,7 +72,7 @@ function initInternalBanner() {
   }
 
   // Banner not yet rendered (React hydration pending), use MutationObserver
-  var observer = new MutationObserver(function (_, obs) {
+  var observer = new MutationObserver((_, obs) => {
     var banner = document.querySelector(".theme-announcement-bar");
     if (banner) {
       obs.disconnect();
@@ -87,7 +82,7 @@ function initInternalBanner() {
   });
 
   observer.observe(document.body, { childList: true, subtree: true });
-  setTimeout(function () {
+  setTimeout(() => {
     observer.disconnect();
   }, 10000);
 }
@@ -150,7 +145,7 @@ async function fetchWithRetry(url, retries, delay) {
     }
     // Wait before retrying
     if (i < retries) {
-      await new Promise(function (resolve) {
+      await new Promise((resolve) => {
         setTimeout(resolve, delay);
       });
     }
@@ -162,8 +157,7 @@ function displayBanner(banner, data) {
   if (!data || !data.url) return;
 
   var content =
-    banner.querySelector(".announcementBarContent") ||
-    banner.querySelector("[class*='announcementBarContent']");
+    banner.querySelector(".announcementBarContent") || banner.querySelector("[class*='announcementBarContent']");
 
   if (content) {
     content.innerHTML =
@@ -180,9 +174,7 @@ function displayBanner(banner, data) {
 async function fetchBannerContent(banner) {
   var apiUrl = getBannerApiUrl();
   if (!apiUrl) {
-    console.debug(
-      "BANNER_SERVER_BASE_URL not configured, skipping banner fetch",
-    );
+    console.debug("BANNER_SERVER_BASE_URL not configured, skipping banner fetch");
     return;
   }
 
@@ -224,7 +216,7 @@ function adjustLayoutForBanner() {
     }
     // Add padding to docRoot if banner is taller than default 30px
     if (docRoot && bannerHeight > 30) {
-      docRoot.style.paddingTop = (bannerHeight - 30) + "px";
+      docRoot.style.paddingTop = bannerHeight - 30 + "px";
     } else if (docRoot) {
       docRoot.style.paddingTop = "";
     }

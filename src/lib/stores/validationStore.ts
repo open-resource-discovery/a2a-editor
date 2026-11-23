@@ -1,9 +1,6 @@
-import { create } from "zustand";
-import type {
-  ValidationResult,
-  ValidationSummary,
-} from "@lib/types/validation";
+import type { ValidationResult, ValidationSummary } from "@lib/types/validation";
 import { validateAgentCardSchema } from "@lib/utils/a2a-schema";
+import { create } from "zustand";
 
 // Compute summary from results
 function computeSummary(results: ValidationResult[]): ValidationSummary {
@@ -64,6 +61,4 @@ export const useValidationStore = create<ValidationState>((set) => ({
 }));
 
 // Selector for summary - now just returns stored state
-export const selectValidationSummary = (
-  state: ValidationState,
-): ValidationSummary => state.summary;
+export const selectValidationSummary = (state: ValidationState): ValidationSummary => state.summary;

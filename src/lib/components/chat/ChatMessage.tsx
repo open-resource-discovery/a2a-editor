@@ -1,17 +1,17 @@
-import { useState } from "react";
+import { useHttpLogStore } from "@lib/stores/httpLogStore";
+import { useUIStore } from "@lib/stores/uiStore";
+import { isDataPart, isFilePart, isTextPart } from "@lib/types/a2a";
 import type { ChatMessage as ChatMessageType } from "@lib/types/chat";
-import { isTextPart, isDataPart, isFilePart } from "@lib/types/a2a";
+import { cn } from "@lib/utils/cn";
 import {
-  ChatMessage as ChatMessageShell,
   Badge,
-  Spinner,
+  ChatMessage as ChatMessageShell,
   CodeBlock,
   MarkdownText,
+  Spinner,
 } from "@open-resource-discovery/ui-components";
-import { FileText, CheckCircle, AlertCircle, ChevronDown, ChevronUp } from "lucide-react";
-import { cn } from "@lib/utils/cn";
-import { useUIStore } from "@lib/stores/uiStore";
-import { useHttpLogStore } from "@lib/stores/httpLogStore";
+import { AlertCircle, CheckCircle, ChevronDown, ChevronUp, FileText } from "lucide-react";
+import { useState } from "react";
 
 interface ChatMessageProps {
   message: ChatMessageType;
@@ -141,14 +141,16 @@ export function ChatMessage({ message, onRetry }: ChatMessageProps) {
               : message.status === "auth-required"
                 ? "destructive"
                 : "secondary"
-        }>
+        }
+      >
         {message.status}
       </Badge>
       {!isUser && message.compliant === true && (
         <button
           type="button"
           className="inline-flex items-center gap-0.5 text-xs text-success hover:underline cursor-pointer"
-          onClick={() => setShowCompliance((v) => !v)}>
+          onClick={() => setShowCompliance((v) => !v)}
+        >
           <CheckCircle className="h-3.5 w-3.5" />
           compliant
           {message.complianceDetails &&
@@ -159,7 +161,8 @@ export function ChatMessage({ message, onRetry }: ChatMessageProps) {
         <button
           type="button"
           className="inline-flex items-center gap-0.5 text-xs text-orange-600 dark:text-orange-400 hover:underline cursor-pointer"
-          onClick={() => setShowCompliance((v) => !v)}>
+          onClick={() => setShowCompliance((v) => !v)}
+        >
           <AlertCircle className="h-3.5 w-3.5" />
           non-compliant
           {message.complianceDetails &&
@@ -177,7 +180,8 @@ export function ChatMessage({ message, onRetry }: ChatMessageProps) {
       onRetry={isUser && onRetry ? onRetry : undefined}
       status={statusNode}
       data-testid={isUser ? "message-user" : "message-agent"}
-      className="mb-3">
+      className="mb-3"
+    >
       {showCompliance && message.complianceDetails && (
         <div className="mb-2 rounded bg-background/50 p-2 text-xs space-y-0.5">
           {message.complianceDetails.map((result, i) => (
@@ -230,7 +234,8 @@ export function ChatMessage({ message, onRetry }: ChatMessageProps) {
         <button
           type="button"
           onClick={handleViewHttp}
-          className="mt-1 text-[10px] text-accent-foreground hover:underline cursor-pointer">
+          className="mt-1 text-[10px] text-accent-foreground hover:underline cursor-pointer"
+        >
           View HTTP log ↗
         </button>
       )}

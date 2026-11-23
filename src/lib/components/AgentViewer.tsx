@@ -1,12 +1,12 @@
-import { useEffect } from "react";
-import type { AgentCard } from "@lib/types/a2a";
-import type { ValidationResult } from "@lib/types/validation";
 import { useAgentCardStore } from "@lib/stores/agentCardStore";
 import { useValidationStore } from "@lib/stores/validationStore";
+import type { AgentCard } from "@lib/types/a2a";
+import type { ValidationResult } from "@lib/types/validation";
+import { cn } from "@lib/utils/cn";
+import { useEffect } from "react";
+import { ErrorBoundary } from "./ErrorBoundary";
 import { ViewerLayout } from "./layouts/ViewerLayout";
 import { ThemeRoot } from "./ThemeRoot";
-import { ErrorBoundary } from "./ErrorBoundary";
-import { cn } from "@lib/utils/cn";
 
 export interface AgentViewerProps {
   /** Initial agent card JSON string */
@@ -75,7 +75,7 @@ export function AgentViewer({
     } else if (initialAgentUrl) {
       loadFromUrl(initialAgentUrl);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // biome-ignore lint/correctness/useExhaustiveDependencies: Existing exception retained during tooling migration.
   }, []);
 
   // Notify parent of agent card changes
@@ -93,11 +93,7 @@ export function AgentViewer({
   return (
     <ErrorBoundary>
       <ThemeRoot className={cn("h-full", className)}>
-        <ViewerLayout
-          showValidation={showValidation}
-          defaultTab={defaultTab}
-          className="h-full"
-        />
+        <ViewerLayout showValidation={showValidation} defaultTab={defaultTab} className="h-full" />
       </ThemeRoot>
     </ErrorBoundary>
   );

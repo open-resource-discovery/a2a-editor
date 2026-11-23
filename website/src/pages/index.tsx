@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from "react";
 import Link from "@docusaurus/Link";
+import useBaseUrl from "@docusaurus/useBaseUrl";
 import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
 import Layout from "@theme/Layout";
-import useBaseUrl from "@docusaurus/useBaseUrl";
+import type React from "react";
+import { useEffect, useState } from "react";
 
 interface PredefinedAgent {
   id: string;
@@ -89,7 +90,8 @@ export default function Home(): React.JSX.Element {
     <Layout
       title={siteConfig.title}
       description="Analyze, validate, and interact with Agent-to-Agent (A2A) protocol agent cards. Connect to agents, inspect their capabilities, and test communication in real-time."
-      wrapperClassName="home">
+      wrapperClassName="home"
+    >
       <main>
         <HeroSection />
         <PredefinedAgentsList />

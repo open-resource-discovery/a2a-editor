@@ -1,5 +1,5 @@
-import { create } from "zustand";
 import { getStored, setStored } from "@lib/utils/local-storage";
+import { create } from "zustand";
 
 type Theme = "light" | "dark" | "system";
 
@@ -14,9 +14,7 @@ const STORAGE_KEY = "a2a-theme";
 
 function getSystemTheme(): "light" | "dark" {
   if (typeof window === "undefined") return "light";
-  return window.matchMedia("(prefers-color-scheme: dark)").matches
-    ? "dark"
-    : "light";
+  return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
 }
 
 function resolveTheme(theme: Theme): "light" | "dark" {

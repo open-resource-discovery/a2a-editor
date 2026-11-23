@@ -1,10 +1,11 @@
 /// <reference types="vitest" />
-import { defineConfig } from "vite";
-import react from "@vitejs/plugin-react";
+
 import tailwindcss from "@tailwindcss/vite";
-import postcss from "postcss";
+import react from "@vitejs/plugin-react";
+import { existsSync, readFileSync, writeFileSync } from "fs";
 import { resolve } from "path";
-import { readFileSync, writeFileSync, existsSync } from "fs";
+import postcss from "postcss";
+import { defineConfig } from "vite";
 
 // The card root (`.a2a-root`) is rendered on the SAME element as `.ord-ui`
 // (see src/lib/components/ThemeRoot.tsx).
@@ -135,10 +136,10 @@ export default defineConfig(({ mode }) => {
           lib: {
             // Multiple entry points for tree-shaking
             entry: {
-              "index": resolve(__dirname, "src/lib/index.ts"),
+              index: resolve(__dirname, "src/lib/index.ts"),
               "playground-lite": resolve(__dirname, "src/lib/playground-lite.ts"),
-              "viewer": resolve(__dirname, "src/lib/viewer.ts"),
-              "editor": resolve(__dirname, "src/lib/editor.ts"),
+              viewer: resolve(__dirname, "src/lib/viewer.ts"),
+              editor: resolve(__dirname, "src/lib/editor.ts"),
               "card-view": resolve(__dirname, "src/lib/card-view.ts"),
             },
             formats: ["es"],
@@ -147,7 +148,7 @@ export default defineConfig(({ mode }) => {
             external: (id) => externalRegex.test(id),
             output: {
               globals: {
-                "react": "React",
+                react: "React",
                 "react-dom": "ReactDOM",
               },
               // Separate chunk files per entry

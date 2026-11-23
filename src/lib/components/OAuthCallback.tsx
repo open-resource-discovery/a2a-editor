@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
 import { useConnectionStore } from "@lib/stores/connectionStore";
-import { Spinner, Card, Button } from "@open-resource-discovery/ui-components";
+import { Button, Card, Spinner } from "@open-resource-discovery/ui-components";
+import { useEffect, useState } from "react";
 
 /**
  * OAuth callback component that handles the redirect from OAuth provider.
@@ -10,13 +10,9 @@ import { Spinner, Card, Button } from "@open-resource-discovery/ui-components";
  * exchanges them for an access token, then notifies the opener window.
  */
 export function OAuthCallback() {
-  const [status, setStatus] = useState<"processing" | "success" | "error">(
-    "processing",
-  );
+  const [status, setStatus] = useState<"processing" | "success" | "error">("processing");
   const [error, setError] = useState<string>("");
-  const handleAuthCallback = useConnectionStore(
-    (state) => state.handleAuthCallback,
-  );
+  const handleAuthCallback = useConnectionStore((state) => state.handleAuthCallback);
 
   useEffect(() => {
     const processCallback = async () => {
@@ -58,9 +54,7 @@ export function OAuthCallback() {
             ).useConnectionStore;
 
             if (openerStore) {
-              const success = await openerStore
-                .getState()
-                .handleAuthCallback(code, state);
+              const success = await openerStore.getState().handleAuthCallback(code, state);
               if (success) {
                 setStatus("success");
                 // Close popup after a brief delay to show success
@@ -126,18 +120,12 @@ export function OAuthCallback() {
                   stroke="currentColor"
                   aria-hidden="true"
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M5 13l4 4L19 7"
-                  />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                 </svg>
               </div>
               <h2 className="text-lg font-semibold text-success">Success!</h2>
               <p className="mt-2 text-sm text-muted-foreground">
-                You have been successfully authenticated. This window will close
-                automatically.
+                You have been successfully authenticated. This window will close automatically.
               </p>
             </div>
           )}
@@ -152,17 +140,10 @@ export function OAuthCallback() {
                   stroke="currentColor"
                   aria-hidden="true"
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M6 18L18 6M6 6l12 12"
-                  />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </div>
-              <h2 className="text-lg font-semibold text-destructive">
-                Authentication Failed
-              </h2>
+              <h2 className="text-lg font-semibold text-destructive">Authentication Failed</h2>
               <p className="mt-2 text-sm text-muted-foreground">{error}</p>
               <Button className="mt-4" onClick={() => window.close()}>
                 Close Window

@@ -1,7 +1,7 @@
-import { createContext, useContext, useState } from "react";
-import type { ReactNode } from "react";
 import { useTheme } from "@lib/hooks/useTheme";
 import { cn } from "@lib/utils/cn";
+import type { ReactNode } from "react";
+import { createContext, useContext, useState } from "react";
 
 interface ThemeRootProps {
   className?: string;
@@ -40,13 +40,8 @@ export function ThemeRoot({ className, children }: ThemeRootProps) {
   const [container, setContainer] = useState<HTMLElement | null>(null);
 
   return (
-    <div
-      ref={setContainer}
-      className={cn("a2a-root ord-ui", resolvedTheme === "dark" && "dark", className)}
-    >
-      <PortalContainerContext.Provider value={container}>
-        {children}
-      </PortalContainerContext.Provider>
+    <div ref={setContainer} className={cn("a2a-root ord-ui", resolvedTheme === "dark" && "dark", className)}>
+      <PortalContainerContext.Provider value={container}>{children}</PortalContainerContext.Provider>
     </div>
   );
 }

@@ -1,14 +1,14 @@
-import { SplitPane, SimpleSheet } from "@open-resource-discovery/ui-components";
-import { useIsLargeScreen } from "@lib/hooks/useMediaQuery";
-import { useUIStore } from "@lib/stores/uiStore";
-import { useAgentCardStore } from "@lib/stores/agentCardStore";
-import { useAutoValidate } from "@lib/hooks/useAutoValidate";
-import { AgentCardEditor } from "@lib/components/editor/AgentCardEditor";
-import { RightPanel } from "@lib/components/RightPanel";
 import { AgentSelector } from "@lib/components/AgentSelector";
-import { MobileBottomBar } from "@lib/components/MobileBottomBar";
-import { cn } from "@lib/utils/cn";
+import { AgentCardEditor } from "@lib/components/editor/AgentCardEditor";
 import { LazySettingsPanel } from "@lib/components/layouts/LazySettingsPanel";
+import { MobileBottomBar } from "@lib/components/MobileBottomBar";
+import { RightPanel } from "@lib/components/RightPanel";
+import { useAutoValidate } from "@lib/hooks/useAutoValidate";
+import { useIsLargeScreen } from "@lib/hooks/useMediaQuery";
+import { useAgentCardStore } from "@lib/stores/agentCardStore";
+import { useUIStore } from "@lib/stores/uiStore";
+import { cn } from "@lib/utils/cn";
+import { SimpleSheet, SplitPane } from "@open-resource-discovery/ui-components";
 
 interface PlaygroundLayoutProps {
   showSettings?: boolean;
@@ -141,7 +141,8 @@ export function PlaygroundLayout({
           onOpenChange={setSettingsPanelOpen}
           side="left"
           title="Agents"
-          className="w-[85%] max-w-md p-0">
+          className="w-[85%] max-w-md p-0"
+        >
           <LazySettingsPanel />
         </SimpleSheet>
       )}

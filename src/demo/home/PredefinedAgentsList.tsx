@@ -1,9 +1,9 @@
+import { Badge } from "@lib/components/ui/badge";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@lib/components/ui/card";
+import { usePredefinedAgentsStore } from "@lib/stores/predefinedAgentsStore";
+import { ExternalLink } from "lucide-react";
 import { useEffect } from "react";
 import { Link } from "react-router-dom";
-import { usePredefinedAgentsStore } from "@lib/stores/predefinedAgentsStore";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@lib/components/ui/card";
-import { Badge } from "@lib/components/ui/badge";
-import { ExternalLink } from "lucide-react";
 
 export function PredefinedAgentsList() {
   const { agents, loadDefaults } = usePredefinedAgentsStore();
@@ -26,11 +26,7 @@ export function PredefinedAgentsList() {
               <Card className="h-full transition-colors hover:bg-accent/50 overflow-hidden">
                 <CardHeader className="pb-2">
                   <CardTitle className="text-lg truncate">{agent.name}</CardTitle>
-                  {agent.description && (
-                    <CardDescription className="line-clamp-2">
-                      {agent.description}
-                    </CardDescription>
-                  )}
+                  {agent.description && <CardDescription className="line-clamp-2">{agent.description}</CardDescription>}
                 </CardHeader>
                 <CardContent>
                   <div className="flex items-center gap-2 text-xs text-muted-foreground min-w-0">

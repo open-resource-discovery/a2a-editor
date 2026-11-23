@@ -16,22 +16,21 @@
  */
 import React from "react";
 import { createRoot, type Root } from "react-dom/client";
-import { AgentPlayground, type AgentPlaygroundProps } from "./components/AgentPlayground";
 import { AgentCardView, type AgentCardViewProps } from "./components/AgentCardView";
-import { AgentViewer, type AgentViewerProps } from "./components/AgentViewer";
 import { AgentEditor, type AgentEditorProps } from "./components/AgentEditor";
-import { useAgentCardStore } from "./stores/agentCardStore";
-import { useConnectionStore } from "./stores/connectionStore";
-import { useValidationStore } from "./stores/validationStore";
-import { useUIStore } from "./stores/uiStore";
-import { usePredefinedAgentsStore } from "./stores/predefinedAgentsStore";
-import { useChatStore } from "./stores/chatStore";
-import { useHttpLogStore } from "./stores/httpLogStore";
-import type { AgentCard, Part } from "./types/a2a";
-import type { ValidationResult } from "./types/validation";
-import type { AuthType } from "./types/connection";
-import type { PredefinedAgent } from "./types/connection";
+import { AgentPlayground, type AgentPlaygroundProps } from "./components/AgentPlayground";
+import { AgentViewer, type AgentViewerProps } from "./components/AgentViewer";
 import { useThemeStore } from "./hooks/useTheme";
+import { useAgentCardStore } from "./stores/agentCardStore";
+import { useChatStore } from "./stores/chatStore";
+import { useConnectionStore } from "./stores/connectionStore";
+import { useHttpLogStore } from "./stores/httpLogStore";
+import { usePredefinedAgentsStore } from "./stores/predefinedAgentsStore";
+import { useUIStore } from "./stores/uiStore";
+import { useValidationStore } from "./stores/validationStore";
+import type { AgentCard, Part } from "./types/a2a";
+import type { AuthType, PredefinedAgent } from "./types/connection";
+import type { ValidationResult } from "./types/validation";
 
 // Import CSS so it gets bundled
 import "./styles.css";
@@ -330,10 +329,7 @@ function mountContainer(
 }
 
 /** Create a lightweight instance handle for cardView / viewer / editor */
-function createComponentInstance(
-  element: HTMLElement,
-  options: A2AComponentOptions,
-): A2AComponentInstance {
+function createComponentInstance(element: HTMLElement, options: A2AComponentOptions): A2AComponentInstance {
   const inst: A2AComponentInstance = {
     setAgentCard(json: string) {
       useAgentCardStore.getState().setRawJson(json);
@@ -712,7 +708,7 @@ declare global {
 }
 
 // Self-executing to ensure window assignment happens
-(function () {
+(() => {
   if (typeof window !== "undefined") {
     window.A2APlayground = A2APlayground;
     window.A2AEditor = A2APlayground;

@@ -1,9 +1,8 @@
-import { ScrollArea } from "@open-resource-discovery/ui-components";
-import { Tabs } from "@open-resource-discovery/ui-components";
 import { AgentOverview } from "@lib/components/overview/AgentOverview";
 import { ValidationPanel } from "@lib/components/validation/ValidationPanel";
 import { useAutoValidate } from "@lib/hooks/useAutoValidate";
 import { cn } from "@lib/utils/cn";
+import { ScrollArea, Tabs } from "@open-resource-discovery/ui-components";
 
 interface CardViewLayoutProps {
   showValidation?: boolean;

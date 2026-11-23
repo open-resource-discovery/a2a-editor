@@ -1,7 +1,7 @@
-import { useEffect } from "react";
 import { usePredefinedAgentsStore } from "@lib/stores/predefinedAgentsStore";
-import { ConnectionCard, Badge } from "@open-resource-discovery/ui-components";
 import { selectPredefinedAgent } from "@lib/utils/agent-selection";
+import { Badge, ConnectionCard } from "@open-resource-discovery/ui-components";
+import { useEffect } from "react";
 
 function getHostname(url: string): string {
   try {
@@ -43,9 +43,7 @@ export function AgentSelector() {
     <div className="h-full overflow-y-auto p-4">
       <div className="flex min-h-full items-center justify-center">
         <div className="w-full max-w-xs">
-          <h2 className="mb-3 text-center text-sm font-medium text-muted-foreground">
-            Select an Agent
-          </h2>
+          <h2 className="mb-3 text-center text-sm font-medium text-muted-foreground">Select an Agent</h2>
           <div className="grid grid-cols-2 gap-2" role="list">
             {agents.map((agent) => (
               <ConnectionCard
@@ -69,7 +67,9 @@ export function AgentSelector() {
                 <ConnectionCard.Description className="truncate">{getHostname(agent.url)}</ConnectionCard.Description>
                 {agent.mocked !== false && (
                   <ConnectionCard.Tags className="justify-center">
-                    <Badge variant="warning" className="text-[10px] h-4">Mocked LLM</Badge>
+                    <Badge variant="warning" className="text-[10px] h-4">
+                      Mocked LLM
+                    </Badge>
                   </ConnectionCard.Tags>
                 )}
               </ConnectionCard>

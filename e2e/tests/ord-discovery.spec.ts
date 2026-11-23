@@ -1,5 +1,5 @@
-import { type Page } from "@playwright/test";
-import { test, expect } from "../fixtures/playground";
+import type { Page } from "@playwright/test";
+import { expect, test } from "../fixtures/playground";
 
 const ORD_HOST = "https://ord-host.example.com";
 

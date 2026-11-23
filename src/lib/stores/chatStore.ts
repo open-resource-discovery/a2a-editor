@@ -1,23 +1,23 @@
-import { create } from "zustand";
+import { handleMockMessage, isMockUrl } from "@lib/mock/agents";
+import { type Artifact, isTextPart, type Part, type TaskState } from "@lib/types/a2a";
 import type { ChatMessage } from "@lib/types/chat";
-import { isTextPart, type Part, type TaskState, type Artifact } from "@lib/types/a2a";
 import type { HttpLogEntry } from "@lib/types/httpLog";
-import { v4 as uuidv4 } from "uuid";
-import { isMockUrl, handleMockMessage } from "@lib/mock/agents";
-import { useHttpLogStore } from "./httpLogStore";
-import { useConnectionStore } from "./connectionStore";
-import { useAgentCardStore } from "./agentCardStore";
+import { isFullyCompliant, validateResponse } from "@lib/utils/a2a-compliance";
 import {
-  normalizeTaskResponse,
+  buildOutboundConfiguration,
+  buildOutboundHeaders,
+  buildOutboundMessage,
   getJsonRpcMethod,
   getStreamingJsonRpcMethod,
-  buildOutboundMessage,
-  buildOutboundHeaders,
-  buildOutboundConfiguration,
   isTerminalTaskState,
+  normalizeTaskResponse,
 } from "@lib/utils/a2a-protocol";
-import { validateResponse, isFullyCompliant } from "@lib/utils/a2a-compliance";
 import { streamMessage } from "@lib/utils/a2a-stream";
+import { v4 as uuidv4 } from "uuid";
+import { create } from "zustand";
+import { useAgentCardStore } from "./agentCardStore";
+import { useConnectionStore } from "./connectionStore";
+import { useHttpLogStore } from "./httpLogStore";
 
 const MAX_MESSAGES = 200;
 

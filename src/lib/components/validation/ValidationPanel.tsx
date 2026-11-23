@@ -1,7 +1,7 @@
-import { ValidationPass } from "@open-resource-discovery/ui-components";
 import { useValidationStore } from "@lib/stores/validationStore";
-import { ValidationSummary } from "./ValidationSummary";
+import { ValidationPass } from "@open-resource-discovery/ui-components";
 import { ValidationResultCard } from "./ValidationResultCard";
+import { ValidationSummary } from "./ValidationSummary";
 
 export function ValidationPanel() {
   const { results, summary, isValidating, lastValidatedAt } = useValidationStore();
@@ -15,11 +15,7 @@ export function ValidationPanel() {
   return (
     <div className="flex flex-col gap-4 p-4 h-full">
       {!allPassed && (
-        <ValidationSummary
-          summary={summary}
-          isValidating={isValidating}
-          lastValidatedAt={lastValidatedAt}
-        />
+        <ValidationSummary summary={summary} isValidating={isValidating} lastValidatedAt={lastValidatedAt} />
       )}
 
       {allPassed ? (
@@ -39,9 +35,7 @@ export function ValidationPanel() {
         <div className="flex items-center justify-center py-8 text-center text-muted-foreground">
           <div>
             <p className="text-lg font-medium">No validation results</p>
-            <p className="text-sm">
-              Enter an agent card JSON and validation will run automatically.
-            </p>
+            <p className="text-sm">Enter an agent card JSON and validation will run automatically.</p>
           </div>
         </div>
       )}

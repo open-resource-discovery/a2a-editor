@@ -1,5 +1,5 @@
 import type { AgentCard, Part } from "@lib/types/a2a";
-import { isTextPart, isDataPart } from "@lib/types/a2a";
+import { isDataPart, isTextPart } from "@lib/types/a2a";
 import { v4 as uuidv4 } from "uuid";
 
 export interface MockAgent {
@@ -172,28 +172,28 @@ export const MOCK_AGENTS: Record<string, MockAgent> = {
     handle: (text) => {
       const translations: Record<string, Record<string, string>> = {
         german: {
-          "hello": "Hallo",
+          hello: "Hallo",
           "good morning": "Guten Morgen",
           "thank you": "Danke",
-          "goodbye": "Auf Wiedersehen",
+          goodbye: "Auf Wiedersehen",
         },
         french: {
-          "hello": "Bonjour",
+          hello: "Bonjour",
           "good morning": "Bon matin",
           "thank you": "Merci",
-          "goodbye": "Au revoir",
+          goodbye: "Au revoir",
         },
         spanish: {
-          "hello": "Hola",
+          hello: "Hola",
           "good morning": "Buenos días",
           "thank you": "Gracias",
-          "goodbye": "Adiós",
+          goodbye: "Adiós",
         },
         japanese: {
-          "hello": "こんにちは",
+          hello: "こんにちは",
           "good morning": "おはようございます",
           "thank you": "ありがとう",
-          "goodbye": "さようなら",
+          goodbye: "さようなら",
         },
       };
 
@@ -344,7 +344,7 @@ export const MOCK_AGENTS: Record<string, MockAgent> = {
           result = (a * b) / 100;
           break;
         case "power":
-          result = Math.pow(a, b);
+          result = a ** b;
           break;
         default:
           return [

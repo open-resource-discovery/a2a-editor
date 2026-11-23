@@ -4,12 +4,16 @@
  * Ties together fetch, SSE parsing, and event normalization to provide
  * a high-level streaming interface with typed callbacks.
  */
-import type { Artifact, TaskState, Part } from "@lib/types/a2a";
+import type { Artifact, Part, TaskState } from "@lib/types/a2a";
+import { type NormalizedStreamEvent, normalizeStreamEvent } from "./a2a-protocol";
 import { parseSSEStream } from "./sse-parser";
-import { normalizeStreamEvent, type NormalizedStreamEvent } from "./a2a-protocol";
 
 export interface StreamCallbacks {
-  onStatusUpdate(taskId: string, contextId: string, status: { state: TaskState; message?: { role: string; parts: Part[] } }): void;
+  onStatusUpdate(
+    taskId: string,
+    contextId: string,
+    status: { state: TaskState; message?: { role: string; parts: Part[] } },
+  ): void;
   onArtifactUpdate(taskId: string, contextId: string, artifact: Artifact): void;
   onTaskComplete(task: Record<string, unknown>): void;
   onError(error: Error): void;

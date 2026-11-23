@@ -1,5 +1,5 @@
-import { describe, it, expect } from "vitest";
-import { buildAddHeaders, mapAddAuth, buildPredefinedConnHeaders } from "../predefined-auth";
+import { describe, expect, it } from "vitest";
+import { buildAddHeaders, buildPredefinedConnHeaders, mapAddAuth } from "../predefined-auth";
 
 describe("buildAddHeaders", () => {
   it("returns undefined for none auth type", () => {

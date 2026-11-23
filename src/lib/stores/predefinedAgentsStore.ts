@@ -1,7 +1,7 @@
-import { create } from "zustand";
 import type { PredefinedAgent } from "@lib/types/connection";
 import { getStoredJson, setStoredJson } from "@lib/utils/local-storage";
 import { discoverAgentsFromOrd } from "@lib/utils/ord-discovery";
+import { create } from "zustand";
 
 interface PredefinedAgentsState {
   agents: PredefinedAgent[];
@@ -35,97 +35,95 @@ function getBaseUrl(): string {
   return import.meta.env.BASE_URL;
 }
 
-export const usePredefinedAgentsStore = create<PredefinedAgentsState>(
-  (set) => ({
-    agents: [],
-    selectedId: null,
+export const usePredefinedAgentsStore = create<PredefinedAgentsState>((set) => ({
+  agents: [],
+  selectedId: null,
 
-    loadDefaults: async () => {
-      let defaults: PredefinedAgent[] = [];
+  loadDefaults: async () => {
+    let defaults: PredefinedAgent[] = [];
 
-      if (ENV_AGENTS) {
-        try {
-          defaults = JSON.parse(ENV_AGENTS);
-        } catch {
-          // Invalid JSON — fall through to fetch
-        }
+    if (ENV_AGENTS) {
+      try {
+        defaults = JSON.parse(ENV_AGENTS);
+      } catch {
+        // Invalid JSON — fall through to fetch
       }
+    }
 
-      if (defaults.length === 0) {
-        try {
-          const res = await fetch(`${getBaseUrl()}predefined-agents.json`);
-          if (res.ok) {
-            defaults = await res.json();
-          }
-        } catch {
-          // Silent fail - predefined agents are optional
+    if (defaults.length === 0) {
+      try {
+        const res = await fetch(`${getBaseUrl()}predefined-agents.json`);
+        if (res.ok) {
+          defaults = await res.json();
         }
+      } catch {
+        // Silent fail - predefined agents are optional
       }
+    }
 
-      const custom: PredefinedAgent[] = getStoredJson("a2a-custom-agents", []);
-      const ord: PredefinedAgent[] = getStoredJson("a2a-ord-agents", []);
+    const custom: PredefinedAgent[] = getStoredJson("a2a-custom-agents", []);
+    const ord: PredefinedAgent[] = getStoredJson("a2a-ord-agents", []);
 
-      const allAgents = [...custom, ...ord, ...defaults];
-      set({ agents: allAgents });
+    const allAgents = [...custom, ...ord, ...defaults];
+    set({ agents: allAgents });
 
-      if (ENV_ORD_URL) {
-        try {
-          const discovered = await discoverAgentsFromOrd(ENV_ORD_URL);
-          set((state) => {
-            const existingUrls = new Set(state.agents.map((a) => a.url));
-            const fresh = discovered.filter((a) => !existingUrls.has(a.url));
-            if (fresh.length === 0) return state;
-            const newAgents = [...state.agents, ...fresh];
-            persistOrd(newAgents);
-            return { agents: newAgents };
-          });
-        } catch {
-          // Silent fail - ORD discovery is optional
-        }
+    if (ENV_ORD_URL) {
+      try {
+        const discovered = await discoverAgentsFromOrd(ENV_ORD_URL);
+        set((state) => {
+          const existingUrls = new Set(state.agents.map((a) => a.url));
+          const fresh = discovered.filter((a) => !existingUrls.has(a.url));
+          if (fresh.length === 0) return state;
+          const newAgents = [...state.agents, ...fresh];
+          persistOrd(newAgents);
+          return { agents: newAgents };
+        });
+      } catch {
+        // Silent fail - ORD discovery is optional
       }
-    },
+    }
+  },
 
-    loadFromOrd: async (url, headers) => {
-      const discovered = await discoverAgentsFromOrd(url, headers);
-      let added = 0;
-      set((state) => {
-        const existingUrls = new Set(state.agents.map((a) => a.url));
-        const fresh = discovered.filter((a) => !existingUrls.has(a.url));
-        added = fresh.length;
-        if (fresh.length === 0) return state;
-        const newAgents = [...state.agents, ...fresh];
-        persistOrd(newAgents);
-        return { agents: newAgents };
-      });
-      return added;
-    },
+  loadFromOrd: async (url, headers) => {
+    const discovered = await discoverAgentsFromOrd(url, headers);
+    let added = 0;
+    set((state) => {
+      const existingUrls = new Set(state.agents.map((a) => a.url));
+      const fresh = discovered.filter((a) => !existingUrls.has(a.url));
+      added = fresh.length;
+      if (fresh.length === 0) return state;
+      const newAgents = [...state.agents, ...fresh];
+      persistOrd(newAgents);
+      return { agents: newAgents };
+    });
+    return added;
+  },
 
-    addCustomAgent: (agent) => {
-      set((state) => {
-        // Prevent duplicate IDs
-        if (state.agents.some((a) => a.id === agent.id)) {
-          return state;
-        }
-        const newAgents = [...state.agents, agent];
-        persistCustom(newAgents);
-        return { agents: newAgents };
-      });
-    },
+  addCustomAgent: (agent) => {
+    set((state) => {
+      // Prevent duplicate IDs
+      if (state.agents.some((a) => a.id === agent.id)) {
+        return state;
+      }
+      const newAgents = [...state.agents, agent];
+      persistCustom(newAgents);
+      return { agents: newAgents };
+    });
+  },
 
-    removeAgent: (id) => {
-      set((state) => {
-        const newAgents = state.agents.filter((a) => a.id !== id);
-        persistCustom(newAgents);
-        persistOrd(newAgents);
-        return { agents: newAgents };
-      });
-    },
+  removeAgent: (id) => {
+    set((state) => {
+      const newAgents = state.agents.filter((a) => a.id !== id);
+      persistCustom(newAgents);
+      persistOrd(newAgents);
+      return { agents: newAgents };
+    });
+  },
 
-    select: (id) => set({ selectedId: id }),
+  select: (id) => set({ selectedId: id }),
 
-    deselect: () => set({ selectedId: null }),
-  }),
-);
+  deselect: () => set({ selectedId: null }),
+}));
 
 function persistCustom(agents: PredefinedAgent[]) {
   const custom = agents.filter((a) => a.id.startsWith("custom-"));
@@ -138,8 +136,6 @@ function persistOrd(agents: PredefinedAgent[]) {
 }
 
 // Selector for selected agent
-export const selectSelectedAgent = (
-  state: PredefinedAgentsState,
-): PredefinedAgent | null => {
+export const selectSelectedAgent = (state: PredefinedAgentsState): PredefinedAgent | null => {
   return state.agents.find((a) => a.id === state.selectedId) ?? null;
 };

@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
 import { resolveJsonPathToPosition } from "../json-path-resolver";
 
 const SAMPLE_JSON = JSON.stringify(

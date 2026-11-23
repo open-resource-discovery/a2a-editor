@@ -78,7 +78,7 @@
       <p>Please wait while we complete the authentication process.</p>
     </div>
     <script>
-      (async function () {
+      (async () => {
         var card = document.getElementById("card");
         var params = new URLSearchParams(window.location.search);
         var code = params.get("code");
@@ -99,7 +99,7 @@
           card.innerHTML =
             '<div class="success"><h2>Success!</h2></div>' +
             "<p>You have been successfully authenticated. This window will close automatically.</p>";
-          setTimeout(function () {
+          setTimeout(() => {
             window.close();
           }, 1000);
         }

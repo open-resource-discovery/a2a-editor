@@ -1,7 +1,8 @@
-import React, { useEffect, useRef, useState } from "react";
-import Layout from "@theme/Layout";
-import useBaseUrl from "@docusaurus/useBaseUrl";
 import Head from "@docusaurus/Head";
+import useBaseUrl from "@docusaurus/useBaseUrl";
+import Layout from "@theme/Layout";
+import type React from "react";
+import { useEffect, useRef, useState } from "react";
 
 function getDocusaurusTheme(): "dark" | "light" {
   if (typeof document === "undefined") return "light";
@@ -144,7 +145,8 @@ export default function Playground(): React.JSX.Element {
               justifyContent: "center",
               background: "var(--ifm-background-color)",
               zIndex: 1,
-            }}>
+            }}
+          >
             Loading playground...
           </div>
         )}
@@ -156,7 +158,8 @@ export default function Playground(): React.JSX.Element {
               justifyContent: "center",
               height: "calc(100vh - var(--ifm-navbar-height, 60px))",
               color: "var(--ifm-color-danger)",
-            }}>
+            }}
+          >
             Error: {error}
           </div>
         )}

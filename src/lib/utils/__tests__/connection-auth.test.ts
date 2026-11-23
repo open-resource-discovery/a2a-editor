@@ -1,5 +1,5 @@
-import { describe, it, expect } from "vitest";
-import { mapStoreAuthType, buildConnHeaders } from "../connection-auth";
+import { describe, expect, it } from "vitest";
+import { buildConnHeaders, mapStoreAuthType } from "../connection-auth";
 
 describe("mapStoreAuthType", () => {
   it("maps oauth2 with access token to bearer", () => {

@@ -1,16 +1,16 @@
 import { useAgentCardStore } from "@lib/stores/agentCardStore";
 import { useConnectionStore } from "@lib/stores/connectionStore";
-import { AgentHeader } from "./sections/AgentHeader";
-import { ConnectionSection } from "./sections/ConnectionSection";
-import { CapabilitiesSection } from "./sections/CapabilitiesSection";
-import { SkillsSection } from "./sections/SkillsSection";
-import { SecuritySection } from "./sections/SecuritySection";
-import { SecurityRequirementsSection } from "./sections/SecurityRequirementsSection";
-import { ModesSection } from "./sections/ModesSection";
-import { ExtensionsSection } from "./sections/ExtensionsSection";
+import type { AgentCard } from "@lib/types/a2a";
 import { InfoCard, MarkdownText } from "@open-resource-discovery/ui-components";
 import { AlertTriangle, Building, ExternalLink, Globe, User } from "lucide-react";
-import type { AgentCard } from "@lib/types/a2a";
+import { AgentHeader } from "./sections/AgentHeader";
+import { CapabilitiesSection } from "./sections/CapabilitiesSection";
+import { ConnectionSection } from "./sections/ConnectionSection";
+import { ExtensionsSection } from "./sections/ExtensionsSection";
+import { ModesSection } from "./sections/ModesSection";
+import { SecurityRequirementsSection } from "./sections/SecurityRequirementsSection";
+import { SecuritySection } from "./sections/SecuritySection";
+import { SkillsSection } from "./sections/SkillsSection";
 
 interface AgentOverviewProps {
   disableExamplePrompts?: boolean;
@@ -152,7 +152,8 @@ function AgentInfoSections({ card }: { card: AgentCard }) {
               href={card.provider.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-primary">
+              className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-primary"
+            >
               <ExternalLink className="h-4 w-4" />
               {(() => {
                 try {
@@ -173,7 +174,8 @@ function AgentInfoSections({ card }: { card: AgentCard }) {
               href={card.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-primary hover:underline truncate">
+              className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-primary hover:underline truncate"
+            >
               <Globe className="h-3 w-3 shrink-0" />
               <span className="truncate">{card.url}</span>
             </a>
@@ -183,7 +185,8 @@ function AgentInfoSections({ card }: { card: AgentCard }) {
               href={card.documentationUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-primary hover:underline">
+              className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-primary hover:underline"
+            >
               <ExternalLink className="h-3 w-3 truncate" />
               Documentation
             </a>

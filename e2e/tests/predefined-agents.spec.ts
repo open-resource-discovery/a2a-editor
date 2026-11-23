@@ -1,4 +1,4 @@
-import { test, expect } from "../fixtures/playground";
+import { expect, test } from "../fixtures/playground";
 
 test.describe("Predefined Agents", () => {
   test.beforeEach(async ({ playground }) => {
@@ -60,14 +60,10 @@ test.describe("Predefined Agents", () => {
     await playground.addAgentBtn.click();
     await playground.addAgentUrl.fill("https://unique-agent.example.com");
     await playground.addAgentSubmit.click();
-    await expect(
-      page.locator("[data-testid^='agent-card-custom-']"),
-    ).toBeVisible({ timeout: 10000 });
+    await expect(page.locator("[data-testid^='agent-card-custom-']")).toBeVisible({ timeout: 10000 });
 
     await playground.agentSearch.fill("unique-agent.example");
-    await expect(
-      page.locator("[data-testid^='agent-card-custom-']"),
-    ).toBeVisible();
+    await expect(page.locator("[data-testid^='agent-card-custom-']")).toBeVisible();
     await expect(playground.agentCard("mock-echo")).toBeHidden();
   });
 });

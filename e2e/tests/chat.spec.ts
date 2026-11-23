@@ -1,4 +1,4 @@
-import { test, expect } from "../fixtures/playground";
+import { expect, test } from "../fixtures/playground";
 
 test.describe("Chat Flow", () => {
   test.beforeEach(async ({ playground }) => {

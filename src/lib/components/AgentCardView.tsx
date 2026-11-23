@@ -1,11 +1,11 @@
-import { useEffect } from "react";
-import type { AgentCard } from "@lib/types/a2a";
-import type { ValidationResult } from "@lib/types/validation";
 import { useAgentCardStore } from "@lib/stores/agentCardStore";
 import { useValidationStore } from "@lib/stores/validationStore";
+import type { AgentCard } from "@lib/types/a2a";
+import type { ValidationResult } from "@lib/types/validation";
+import { cn } from "@lib/utils/cn";
+import { useEffect } from "react";
 import { CardViewLayout } from "./layouts/CardViewLayout";
 import { ThemeRoot } from "./ThemeRoot";
-import { cn } from "@lib/utils/cn";
 
 export interface AgentCardViewProps {
   /** Initial agent card JSON string */
@@ -81,7 +81,7 @@ export function AgentCardView({
     } else if (initialAgentUrl) {
       loadFromUrl(initialAgentUrl);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // biome-ignore lint/correctness/useExhaustiveDependencies: Existing exception retained during tooling migration.
   }, []);
 
   // Notify parent of agent card changes

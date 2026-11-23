@@ -1,7 +1,7 @@
 import { useHttpLogStore } from "@lib/stores/httpLogStore";
-import { HttpLogEntry } from "./HttpLogEntry";
 import { Button } from "@open-resource-discovery/ui-components";
-import { Trash2, Network } from "lucide-react";
+import { Network, Trash2 } from "lucide-react";
+import { HttpLogEntry } from "./HttpLogEntry";
 
 export function RawHttpPanel() {
   const { logs, highlightedLogId, clearLogs } = useHttpLogStore();
@@ -24,11 +24,7 @@ export function RawHttpPanel() {
       {logs.length > 0 ? (
         <div className="space-y-2">
           {logs.map((entry) => (
-            <HttpLogEntry
-              key={entry.id}
-              entry={entry}
-              isHighlighted={entry.id === highlightedLogId}
-            />
+            <HttpLogEntry key={entry.id} entry={entry} isHighlighted={entry.id === highlightedLogId} />
           ))}
         </div>
       ) : (

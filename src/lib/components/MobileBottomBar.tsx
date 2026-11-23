@@ -1,8 +1,8 @@
-import { Menu, Code, FileText } from "lucide-react";
-import { Button, Badge } from "@open-resource-discovery/ui-components";
 import { useUIStore } from "@lib/stores/uiStore";
 import { useValidationStore } from "@lib/stores/validationStore";
 import { cn } from "@lib/utils/cn";
+import { Badge, Button } from "@open-resource-discovery/ui-components";
+import { Code, FileText, Menu } from "lucide-react";
 
 interface MobileBottomBarProps {
   showSettings?: boolean;
@@ -15,12 +15,7 @@ export function MobileBottomBar({ showSettings = true }: MobileBottomBarProps) {
   return (
     <div className="flex items-center justify-center gap-2 border-t bg-background px-4 py-2 pb-[max(0.5rem,env(safe-area-inset-bottom))]">
       {showSettings && (
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={openSettingsPanel}
-          aria-label="Open agents"
-        >
+        <Button variant="ghost" size="sm" onClick={openSettingsPanel} aria-label="Open agents">
           <Menu className="h-5 w-5" />
           <span className="ml-1 text-xs">Agents</span>
         </Button>

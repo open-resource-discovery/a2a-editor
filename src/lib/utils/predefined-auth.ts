@@ -1,4 +1,4 @@
-import type { AuthType, BasicCredentials, OAuth2Credentials, ApiKeyCredentials } from "@lib/types/connection";
+import type { ApiKeyCredentials, AuthType, BasicCredentials, OAuth2Credentials } from "@lib/types/connection";
 
 export type AddAuthType = "none" | "basic" | "bearer" | "apiKey";
 

@@ -1,5 +1,5 @@
-import { describe, it, expect, vi, afterEach } from "vitest";
-import { isOrdUrl, discoverAgentsFromOrd } from "../ord-discovery";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import { discoverAgentsFromOrd, isOrdUrl } from "../ord-discovery";
 
 afterEach(() => {
   vi.unstubAllGlobals();
@@ -107,7 +107,10 @@ describe("discoverAgentsFromOrd", () => {
 
   it("throws when the ORD config fetch returns a non-OK response", async () => {
     const fetchMock = vi.fn().mockResolvedValue({
-      ok: false, status: 404, statusText: "Not Found", json: vi.fn(),
+      ok: false,
+      status: 404,
+      statusText: "Not Found",
+      json: vi.fn(),
     });
     vi.stubGlobal("fetch", fetchMock);
 
@@ -116,7 +119,9 @@ describe("discoverAgentsFromOrd", () => {
 
   it("throws when the ORD config lists no documents", async () => {
     const fetchMock = vi.fn().mockResolvedValue({
-      ok: true, status: 200, json: () => Promise.resolve({ openResourceDiscoveryV1: { documents: [] } }),
+      ok: true,
+      status: 200,
+      json: () => Promise.resolve({ openResourceDiscoveryV1: { documents: [] } }),
     });
     vi.stubGlobal("fetch", fetchMock);
 
@@ -124,7 +129,8 @@ describe("discoverAgentsFromOrd", () => {
   });
 
   it("discovers an agent using the agents[] + exposedApiResources pattern", async () => {
-    const fetchMock = vi.fn()
+    const fetchMock = vi
+      .fn()
       .mockResolvedValueOnce({ ok: true, json: () => Promise.resolve(ORD_CONFIG) })
       .mockResolvedValueOnce({ ok: true, json: () => Promise.resolve(makeDocument()) })
       .mockResolvedValueOnce({ ok: true, json: () => Promise.resolve(SOLAR_CARD) });
@@ -141,7 +147,8 @@ describe("discoverAgentsFromOrd", () => {
   });
 
   it("stores the agent card URL (ending .json) as the agent url", async () => {
-    const fetchMock = vi.fn()
+    const fetchMock = vi
+      .fn()
       .mockResolvedValueOnce({ ok: true, json: () => Promise.resolve(ORD_CONFIG) })
       .mockResolvedValueOnce({ ok: true, json: () => Promise.resolve(makeDocument()) })
       .mockResolvedValueOnce({ ok: true, json: () => Promise.resolve(SOLAR_CARD) });
@@ -154,7 +161,8 @@ describe("discoverAgentsFromOrd", () => {
   });
 
   it("includes ORD tag and card skill tags", async () => {
-    const fetchMock = vi.fn()
+    const fetchMock = vi
+      .fn()
       .mockResolvedValueOnce({ ok: true, json: () => Promise.resolve(ORD_CONFIG) })
       .mockResolvedValueOnce({ ok: true, json: () => Promise.resolve(makeDocument()) })
       .mockResolvedValueOnce({ ok: true, json: () => Promise.resolve(SOLAR_CARD) });
@@ -178,7 +186,8 @@ describe("discoverAgentsFromOrd", () => {
         },
       ],
     };
-    const fetchMock = vi.fn()
+    const fetchMock = vi
+      .fn()
       .mockResolvedValueOnce({ ok: true, json: () => Promise.resolve(ORD_CONFIG) })
       .mockResolvedValueOnce({ ok: true, json: () => Promise.resolve(docWithoutAgents) })
       .mockResolvedValueOnce({ ok: true, json: () => Promise.resolve(SOLAR_CARD) });
@@ -200,7 +209,8 @@ describe("discoverAgentsFromOrd", () => {
         },
       ],
     };
-    const fetchMock = vi.fn()
+    const fetchMock = vi
+      .fn()
       .mockResolvedValueOnce({ ok: true, json: () => Promise.resolve(ORD_CONFIG) })
       .mockResolvedValueOnce({ ok: true, json: () => Promise.resolve(docWithCustomType) })
       .mockResolvedValueOnce({ ok: true, json: () => Promise.resolve(SOLAR_CARD) });
@@ -220,7 +230,8 @@ describe("discoverAgentsFromOrd", () => {
         },
       ],
     };
-    const fetchMock = vi.fn()
+    const fetchMock = vi
+      .fn()
       .mockResolvedValueOnce({ ok: true, json: () => Promise.resolve(ORD_CONFIG) })
       .mockResolvedValueOnce({ ok: true, json: () => Promise.resolve(doc) });
     vi.stubGlobal("fetch", fetchMock);
@@ -230,7 +241,8 @@ describe("discoverAgentsFromOrd", () => {
   });
 
   it("skips an agent when the card fetch returns non-OK", async () => {
-    const fetchMock = vi.fn()
+    const fetchMock = vi
+      .fn()
       .mockResolvedValueOnce({ ok: true, json: () => Promise.resolve(ORD_CONFIG) })
       .mockResolvedValueOnce({ ok: true, json: () => Promise.resolve(makeDocument()) })
       .mockResolvedValueOnce({ ok: false, status: 404, json: vi.fn() });
@@ -247,11 +259,20 @@ describe("discoverAgentsFromOrd", () => {
         { ordId: "ns:agent:B:v1", exposedApiResources: [{ ordId: "ns:api:B:v1" }] },
       ],
       apiResources: [
-        { ordId: "ns:api:A:v1", apiProtocol: "a2a", resourceDefinitions: [{ type: "a2a-agent-card", url: "/solar/agent.json" }] },
-        { ordId: "ns:api:B:v1", apiProtocol: "a2a", resourceDefinitions: [{ type: "a2a-agent-card", url: "/solar/agent.json" }] },
+        {
+          ordId: "ns:api:A:v1",
+          apiProtocol: "a2a",
+          resourceDefinitions: [{ type: "a2a-agent-card", url: "/solar/agent.json" }],
+        },
+        {
+          ordId: "ns:api:B:v1",
+          apiProtocol: "a2a",
+          resourceDefinitions: [{ type: "a2a-agent-card", url: "/solar/agent.json" }],
+        },
       ],
     };
-    const fetchMock = vi.fn()
+    const fetchMock = vi
+      .fn()
       .mockResolvedValueOnce({ ok: true, json: () => Promise.resolve(ORD_CONFIG) })
       .mockResolvedValueOnce({ ok: true, json: () => Promise.resolve(docWithDuplicates) })
       .mockResolvedValue({ ok: true, json: () => Promise.resolve(SOLAR_CARD) });
@@ -268,11 +289,20 @@ describe("discoverAgentsFromOrd", () => {
         { ordId: "ns:agent:Repair:v1", exposedApiResources: [{ ordId: "ns:api:Repair:v1" }] },
       ],
       apiResources: [
-        { ordId: "ns:api:Solar:v1", apiProtocol: "a2a", resourceDefinitions: [{ type: "a2a-agent-card", url: "/solar/agent.json" }] },
-        { ordId: "ns:api:Repair:v1", apiProtocol: "a2a", resourceDefinitions: [{ type: "a2a-agent-card", url: "/repair/agent.json" }] },
+        {
+          ordId: "ns:api:Solar:v1",
+          apiProtocol: "a2a",
+          resourceDefinitions: [{ type: "a2a-agent-card", url: "/solar/agent.json" }],
+        },
+        {
+          ordId: "ns:api:Repair:v1",
+          apiProtocol: "a2a",
+          resourceDefinitions: [{ type: "a2a-agent-card", url: "/repair/agent.json" }],
+        },
       ],
     };
-    const fetchMock = vi.fn()
+    const fetchMock = vi
+      .fn()
       .mockResolvedValueOnce({ ok: true, json: () => Promise.resolve(ORD_CONFIG) })
       .mockResolvedValueOnce({ ok: true, json: () => Promise.resolve(docWithTwo) })
       .mockResolvedValueOnce({ ok: true, json: () => Promise.resolve(SOLAR_CARD) })
@@ -286,7 +316,8 @@ describe("discoverAgentsFromOrd", () => {
   });
 
   it("passes auth headers to all fetch calls", async () => {
-    const fetchMock = vi.fn()
+    const fetchMock = vi
+      .fn()
       .mockResolvedValueOnce({ ok: true, json: () => Promise.resolve(ORD_CONFIG) })
       .mockResolvedValueOnce({ ok: true, json: () => Promise.resolve(makeDocument()) })
       .mockResolvedValueOnce({ ok: true, json: () => Promise.resolve(SOLAR_CARD) });

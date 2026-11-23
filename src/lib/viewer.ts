@@ -5,22 +5,20 @@
  * Use this for smaller bundle size (~80KB vs ~500KB).
  */
 
+export type { AgentViewerProps } from "./components/AgentViewer";
 // Main component
 export { AgentViewer } from "./components/AgentViewer";
-export type { AgentViewerProps } from "./components/AgentViewer";
-
-// Types (commonly needed)
-export type { AgentCard, AgentSkill, AgentCapabilities } from "./types/a2a";
-export type { ValidationResult, ValidationSummary } from "./types/validation";
-
-// Stores (for advanced usage)
-export { useAgentCardStore, selectParsedCard, selectParseError } from "./stores/agentCardStore";
-export { useValidationStore, selectValidationSummary } from "./stores/validationStore";
-export { useUIStore } from "./stores/uiStore";
-
 // Hooks
 export { useAutoValidate } from "./hooks/useAutoValidate";
 export { useTheme } from "./hooks/useTheme";
+
+// Stores (for advanced usage)
+export { selectParsedCard, selectParseError, useAgentCardStore } from "./stores/agentCardStore";
+export { useUIStore } from "./stores/uiStore";
+export { selectValidationSummary, useValidationStore } from "./stores/validationStore";
+// Types (commonly needed)
+export type { AgentCapabilities, AgentCard, AgentSkill } from "./types/a2a";
+export type { ValidationResult, ValidationSummary } from "./types/validation";
 
 // Utils
 export { cn } from "./utils/cn";

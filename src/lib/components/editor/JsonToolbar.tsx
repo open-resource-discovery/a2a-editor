@@ -1,6 +1,6 @@
-import { Copy, Wand2, RotateCcw, Check } from "lucide-react";
-import { Button } from "@open-resource-discovery/ui-components";
 import { useAgentCardStore } from "@lib/stores/agentCardStore";
+import { Button } from "@open-resource-discovery/ui-components";
+import { Check, Copy, RotateCcw, Wand2 } from "lucide-react";
 import { useState } from "react";
 
 export function JsonToolbar() {
@@ -34,11 +34,7 @@ export function JsonToolbar() {
         disabled={!rawJson.trim()}
         data-testid="toolbar-copy"
       >
-        {copied ? (
-          <Check className="h-4 w-4 text-success" />
-        ) : (
-          <Copy className="h-4 w-4" />
-        )}
+        {copied ? <Check className="h-4 w-4 text-success" /> : <Copy className="h-4 w-4" />}
         <span className="hidden sm:inline">{copied ? "Copied" : "Copy"}</span>
       </Button>
       <div className="flex-1" />

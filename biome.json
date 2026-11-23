@@ -1,0 +1,154 @@
+{
+  "$schema": "https://biomejs.dev/schemas/2.6.4/schema.json",
+  "vcs": {
+    "enabled": true,
+    "clientKind": "git",
+    "useIgnoreFile": true
+  },
+  "files": {
+    "includes": [
+      "**",
+      "!!**/node_modules",
+      "!!**/dist",
+      "!!**/dist-*",
+      "!!**/.test-dist",
+      "!!**/reports",
+      "!!**/coverage",
+      "!!**/.next",
+      "!!**/build",
+      "!!**/.docusaurus",
+      "!!**/vendor",
+      "!!**/generated",
+      "!!**/__snapshots__",
+      "!!**/test-results",
+      "!!**/playwright-report",
+      "!!**/storybook-static",
+      "!**/package-lock.json",
+      "!**/pnpm-lock.yaml",
+      "!**/examples",
+      "!**/fixtures",
+      "!**/original-schema",
+      "!**/.vscode-test",
+      "!**/example",
+      "!**/test-files",
+      "!**/resources",
+      "!**/schemas",
+      "!**/static",
+      "!**/res",
+      "!**/*.css",
+      "!**/*.scss",
+      "!**/*.html",
+      "!**/*.svg",
+      "!**/*.md",
+      "!**/*.yml",
+      "!**/*.yaml",
+      "!**/.github/**"
+    ]
+  },
+  "formatter": {
+    "enabled": true,
+    "formatWithErrors": false,
+    "indentStyle": "space",
+    "indentWidth": 2,
+    "lineEnding": "lf",
+    "lineWidth": 120,
+    "attributePosition": "auto",
+    "bracketSameLine": false,
+    "bracketSpacing": true,
+    "expand": "auto",
+    "useEditorconfig": true,
+    "includes": [
+      "**",
+      "!**/dist",
+      "!**/dist-standalone",
+      "!website/build",
+      "!website/.docusaurus",
+      "!website/static/standalone",
+      "!**/node_modules",
+      "!**/package-lock.json"
+    ]
+  },
+  "linter": {
+    "enabled": true,
+    "rules": {
+      "preset": "recommended",
+      "correctness": {
+        "noUnusedImports": "error",
+        "useHookAtTopLevel": "off",
+        "useExhaustiveDependencies": "warn"
+      },
+      "a11y": {
+        "noSvgWithoutTitle": "warn",
+        "useSemanticElements": "warn",
+        "useButtonType": "warn",
+        "useMediaCaption": "warn",
+        "noLabelWithoutControl": "warn"
+      },
+      "suspicious": {
+        "noArrayIndexKey": "warn",
+        "noAssignInExpressions": "warn",
+        "useIterableCallbackReturn": "warn"
+      }
+    }
+  },
+  "javascript": {
+    "formatter": {
+      "jsxQuoteStyle": "double",
+      "quoteProperties": "asNeeded",
+      "trailingCommas": "all",
+      "semicolons": "always",
+      "arrowParentheses": "always",
+      "bracketSameLine": false,
+      "quoteStyle": "double",
+      "attributePosition": "auto",
+      "bracketSpacing": true
+    },
+    "globals": [
+      "afterAll",
+      "afterEach",
+      "beforeAll",
+      "beforeEach",
+      "describe",
+      "expect",
+      "it",
+      "jest",
+      "setup",
+      "suite",
+      "teardown",
+      "test"
+    ],
+    "parser": {
+      "unsafeParameterDecoratorsEnabled": true
+    }
+  },
+  "html": {
+    "formatter": {
+      "indentScriptAndStyle": false,
+      "selfCloseVoidElements": "always"
+    }
+  },
+  "overrides": [
+    {
+      "includes": ["**/*.test.*", "**/*.spec.*", "**/__mocks__/**", "**/test/**", "**/tests/**"],
+      "linter": {
+        "rules": {
+          "suspicious": {
+            "noExplicitAny": "off",
+            "noExportsInTest": "off"
+          },
+          "style": {
+            "noNonNullAssertion": "off"
+          }
+        }
+      }
+    }
+  ],
+  "assist": {
+    "enabled": true,
+    "actions": {
+      "source": {
+        "organizeImports": "on"
+      }
+    }
+  }
+}

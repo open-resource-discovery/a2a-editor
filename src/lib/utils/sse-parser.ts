@@ -15,9 +15,7 @@ export interface SSEEvent {
  * Parse an SSE stream into individual events.
  * Handles buffering, multi-line data fields, and comment lines.
  */
-export async function* parseSSEStream(
-  body: ReadableStream<Uint8Array>,
-): AsyncGenerator<SSEEvent> {
+export async function* parseSSEStream(body: ReadableStream<Uint8Array>): AsyncGenerator<SSEEvent> {
   const decoder = new TextDecoder();
   const reader = body.getReader();
   let buffer = "";

@@ -1,5 +1,5 @@
 import type { AgentCard } from "@lib/types/a2a";
-import { SectionCard, Badge } from "@open-resource-discovery/ui-components";
+import { Badge, SectionCard } from "@open-resource-discovery/ui-components";
 import { SlidersHorizontal } from "lucide-react";
 
 interface ModesSectionProps {

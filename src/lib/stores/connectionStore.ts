@@ -1,29 +1,29 @@
-import { create } from "zustand";
+import { getMockAgentCard, isMockUrl } from "@lib/mock/agents";
+import type { AgentCard } from "@lib/types/a2a";
 import type {
+  ApiKeyCredentials,
   AuthType,
   BasicCredentials,
-  OAuth2Credentials,
-  ApiKeyCredentials,
   ConnectionStatus,
-  PredefinedAgent,
   DeviceCodeState,
+  OAuth2Credentials,
   OidcDiscoveryDoc,
+  PredefinedAgent,
 } from "@lib/types/connection";
-import type { AgentCard } from "@lib/types/a2a";
 import type { HttpLogEntry } from "@lib/types/httpLog";
-import { isMockUrl, getMockAgentCard } from "@lib/mock/agents";
-import { useHttpLogStore } from "./httpLogStore";
-import { v4 as uuidv4 } from "uuid";
-import {
-  generateCodeVerifier,
-  generateCodeChallenge,
-  generateState,
-  storeOAuthParams,
-  getStoredOAuthParams,
-  clearOAuthParams,
-  getDefaultOAuthRedirectUri,
-} from "@lib/utils/pkce";
 import { detectProtocolVersion, normalizeAgentCard, PROTOCOL_VERSIONS } from "@lib/utils/a2a-protocol";
+import {
+  clearOAuthParams,
+  generateCodeChallenge,
+  generateCodeVerifier,
+  generateState,
+  getDefaultOAuthRedirectUri,
+  getStoredOAuthParams,
+  storeOAuthParams,
+} from "@lib/utils/pkce";
+import { v4 as uuidv4 } from "uuid";
+import { create } from "zustand";
+import { useHttpLogStore } from "./httpLogStore";
 
 // Compute auth headers from current state
 function computeAuthHeaders(

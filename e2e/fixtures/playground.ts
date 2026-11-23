@@ -190,7 +190,7 @@ export const test = base.extend<{ playground: PlaygroundPage }>({
   playground: async ({ page, baseURL }, use) => {
     const isDocusaurus = baseURL?.includes("3001") ?? false;
     const pg = new PlaygroundPage(page, isDocusaurus);
-    // eslint-disable-next-line react-hooks/rules-of-hooks
+    // biome-ignore lint/correctness/useHookAtTopLevel: Existing exception retained during tooling migration.
     await use(pg);
   },
 });

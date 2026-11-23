@@ -1,13 +1,13 @@
-import { useEffect } from "react";
-import type { AgentCard } from "@lib/types/a2a";
-import type { ValidationResult } from "@lib/types/validation";
 import { useAgentCardStore } from "@lib/stores/agentCardStore";
 import { useConnectionStore } from "@lib/stores/connectionStore";
 import { useValidationStore } from "@lib/stores/validationStore";
+import type { AgentCard } from "@lib/types/a2a";
+import type { ValidationResult } from "@lib/types/validation";
+import { cn } from "@lib/utils/cn";
+import { useEffect } from "react";
+import { ErrorBoundary } from "./ErrorBoundary";
 import { PlaygroundLiteLayout } from "./layouts/PlaygroundLiteLayout";
 import { ThemeRoot } from "./ThemeRoot";
-import { ErrorBoundary } from "./ErrorBoundary";
-import { cn } from "@lib/utils/cn";
 
 export interface AgentPlaygroundLiteProps {
   /** Initial agent card JSON string */
@@ -87,7 +87,7 @@ export function AgentPlaygroundLite({
     } else if (initialAgentUrl) {
       loadFromUrl(initialAgentUrl);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // biome-ignore lint/correctness/useExhaustiveDependencies: Existing exception retained during tooling migration.
   }, []);
 
   // Notify parent of agent card changes

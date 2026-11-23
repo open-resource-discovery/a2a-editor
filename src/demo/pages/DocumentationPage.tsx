@@ -1,8 +1,8 @@
-import { useState, useEffect } from "react";
 import { AgentPlayground } from "@lib/components/AgentPlayground";
 import { AgentPlaygroundLite } from "@lib/components/AgentPlaygroundLite";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@lib/components/ui/tabs";
 import { usePredefinedAgentsStore } from "@lib/stores/predefinedAgentsStore";
+import { useEffect, useState } from "react";
 
 // Mock agents for the demo (only these will be shown)
 const MOCK_AGENTS = [
