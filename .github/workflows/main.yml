@@ -26,8 +26,8 @@ jobs:
       - name: Prettier
         run: npm run prettier:ci
 
-  unit-tests:
-    name: Unit Tests
+  unit-test-matrix:
+    name: Unit Tests (Node ${{ matrix.node-version }})
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -45,6 +45,18 @@ jobs:
 
       - name: Run Unit Tests
         run: npm test
+
+  unit-tests:
+    name: Unit Tests
+    needs: unit-test-matrix
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check all supported Node versions
+        env:
+          MATRIX_RESULT: ${{ needs.unit-test-matrix.result }}
+        run: test "$MATRIX_RESULT" = "success"
 
   build:
     name: Build
