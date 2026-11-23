@@ -21,8 +21,7 @@ jobs:
         if: github.event.action != 'closed'
         uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
-          node-version: ">=26"
-
+          node-version: "26.13.1"
       - name: Build preview
         if: github.event.action != 'closed'
         env:
@@ -41,7 +40,7 @@ jobs:
           npm run build
 
       - name: PR preview
-        uses: open-resource-discovery/pr-preview-action@a2116cdd5daaa1208cda0b354501f4db81ac0d13 # main; shared action PR #30
+        uses: open-resource-discovery/pr-preview-action@d4998f1ebe4699cedac6673d47c1edb0c6c73405 # main; shared action PR #30
         with:
           fork: false
           target-repo: open-resource-discovery/pr-preview
