@@ -103,8 +103,6 @@ jobs:
           build-args: |
             GIT_COMMIT_HASH=${{ steps.docker_tags.outputs.LAST_COMMIT_HASH }}
 
-    permissions:
-      contents: read
   githubRelease:
     needs: [npm, docker]
     if: |-
@@ -124,11 +122,10 @@ jobs:
           persist-credentials: true # Needed by the release/push step
       - name: Create GitHub Release
         uses: open-resource-discovery/github-release@2d8817b7382966b490d5c78125d97da14ee918bc # main
+        with:
+          ci-workflows: none
     permissions:
       contents: write
       pull-requests: write
-      actions: write
-      checks: write
-      statuses: write
 permissions:
   contents: read

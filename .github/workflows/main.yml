@@ -26,8 +26,6 @@ jobs:
       - name: Prettier
         run: npm run prettier:ci
 
-    permissions:
-      contents: read
   unit-tests:
     name: Unit Tests
     runs-on: ubuntu-latest
@@ -44,8 +42,6 @@ jobs:
       - name: Run Unit Tests
         run: npm test
 
-    permissions:
-      contents: read
   build:
     name: Build
     runs-on: ubuntu-latest
@@ -62,8 +58,6 @@ jobs:
       - name: Build
         run: npm run build
 
-    permissions:
-      contents: read
   inclusive-language:
     name: Inclusive Language
     runs-on: ubuntu-latest
@@ -75,8 +69,6 @@ jobs:
         with:
           fail-on-error: true
 
-    permissions:
-      contents: read
   e2e-tests:
     name: E2E Tests
     runs-on: ubuntu-latest
@@ -107,7 +99,5 @@ jobs:
           name: playwright-report
           path: playwright-report/
           retention-days: 14
-    permissions:
-      contents: read
 permissions:
   contents: read
