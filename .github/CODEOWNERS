@@ -1,0 +1,5 @@
+# Review owners for CI and build configuration.
+/.github/ @open-resource-discovery/a2a-editor-admin
+/renovate.json @open-resource-discovery/a2a-editor-admin
+/package.json @open-resource-discovery/a2a-editor-admin
+/package-lock.json @open-resource-discovery/a2a-editor-admin
