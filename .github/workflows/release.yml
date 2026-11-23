@@ -19,6 +19,9 @@ on:
         type: boolean
         default: true
 
+permissions:
+  contents: read
+
 jobs:
   npm:
     if: |-
@@ -35,12 +38,11 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
-
           persist-credentials: false
       - name: Setup Node.js
         uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
-          node-version: "26.13.1"
+          node-version: "26"
           registry-url: ${{ vars.NPM_REGISTRY }}
 
           package-manager-cache: false
@@ -65,7 +67,6 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
-
           persist-credentials: false
       - name: Login to Container Registry
         uses: docker/login-action@8aa5831fb8d48d8f76594c7ddde61ae58019f550 # v4.8.0
@@ -118,7 +119,6 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
-
           persist-credentials: true # Needed by the release/push step
       - name: Create GitHub Release
         uses: open-resource-discovery/github-release@2d8817b7382966b490d5c78125d97da14ee918bc # main
@@ -127,5 +127,3 @@ jobs:
     permissions:
       contents: write
       pull-requests: write
-permissions:
-  contents: read
