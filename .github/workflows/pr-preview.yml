@@ -40,7 +40,7 @@ jobs:
           npm run build
 
       - name: PR preview
-        uses: open-resource-discovery/pr-preview-action@d4998f1ebe4699cedac6673d47c1edb0c6c73405 # main; shared action PR #30
+        uses: open-resource-discovery/pr-preview-action@9772862b578870a2db7953e35e3b5952f09e3f3f # main; shared action PR #30
         with:
           fork: false
           target-repo: open-resource-discovery/pr-preview
@@ -48,7 +48,7 @@ jobs:
           umbrella-dir: a2a-editor
           token: ${{ secrets.PR_PREVIEW_TOKEN }}
           build-dir: website/build
-          wait-poll-attempts: 72
+          wait-poll-attempts: 180
     if: github.event.pull_request.head.repo.full_name == github.repository
 permissions:
   contents: read
