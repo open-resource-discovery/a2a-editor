@@ -25,6 +25,9 @@ jobs:
         uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: "26"
+      - name: Install pinned npm for dependency policy
+        run: npm install --global --ignore-scripts npm@11.20.0 --registry=https://registry.npmjs.org/
+
       - name: Build preview
         if: github.event.action != 'closed'
         env:
@@ -43,7 +46,7 @@ jobs:
           npm run build
 
       - name: PR preview
-        uses: open-resource-discovery/pr-preview-action@9772862b578870a2db7953e35e3b5952f09e3f3f # main; shared action PR #30
+        uses: open-resource-discovery/pr-preview-action@245fafc76cbc9b14ca2b6a2b61b9ca64b1d89c98 # main; shared action PR #30
         with:
           fork: false
           target-repo: open-resource-discovery/pr-preview
