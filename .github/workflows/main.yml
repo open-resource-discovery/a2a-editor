@@ -24,7 +24,7 @@ jobs:
         run: npm install --global --ignore-scripts npm@11.20.0 --registry=https://registry.npmjs.org/
 
       - name: Install NPM dependencies
-        run: npm ci
+        run: npm ci --ignore-scripts
 
       - name: ESLint
         run: npm run eslint:ci
@@ -50,7 +50,7 @@ jobs:
         run: npm install --global --ignore-scripts npm@11.20.0 --registry=https://registry.npmjs.org/
 
       - name: Install NPM dependencies
-        run: npm ci
+        run: npm ci --ignore-scripts
 
       - name: Run Unit Tests
         run: npm test
@@ -81,7 +81,7 @@ jobs:
         run: npm install --global --ignore-scripts npm@11.20.0 --registry=https://registry.npmjs.org/
 
       - name: Install NPM dependencies
-        run: npm ci
+        run: npm ci --ignore-scripts
 
       - name: Build
         run: npm run build
@@ -113,7 +113,7 @@ jobs:
         run: npm install --global --ignore-scripts npm@11.20.0 --registry=https://registry.npmjs.org/
 
       - name: Install NPM dependencies
-        run: npm ci
+        run: npm ci --ignore-scripts
 
       - name: Install website NPM dependencies
         run: npm --prefix website ci

@@ -36,13 +36,13 @@ jobs:
           VITE_PREDEFINED_AGENTS: ${{ secrets.VITE_PREDEFINED_AGENTS }}
         run: |
           set -euo pipefail
-          npm ci
+          npm ci --ignore-scripts
           npm run build:standalone
           mkdir -p website/static/standalone
           cp dist-standalone/a2a-playground.js website/static/standalone/
           cp dist-standalone/a2a-playground.css website/static/standalone/
           cd website
-          npm ci
+          npm ci --ignore-scripts
           npm run build
 
       - name: PR preview

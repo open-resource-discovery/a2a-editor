@@ -3,11 +3,9 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "prestart": "npm --prefix .. run prepare:website-assets",
     "docusaurus": "docusaurus",
-    "start": "docusaurus start",
-    "prebuild": "npm --prefix .. run prepare:website-assets",
-    "build": "docusaurus build",
+    "start": "npm --prefix .. run prepare:website-assets && docusaurus start",
+    "build": "npm --prefix .. run prepare:website-assets && docusaurus build",
     "swizzle": "docusaurus swizzle",
     "deploy": "docusaurus deploy",
     "clear": "docusaurus clear",
