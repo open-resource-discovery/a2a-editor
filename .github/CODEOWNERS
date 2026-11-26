@@ -7,4 +7,3 @@
 /website/.npmrc @open-resource-discovery/a2a-editor-admin
 /website/package.json @open-resource-discovery/a2a-editor-admin
 /website/package-lock.json @open-resource-discovery/a2a-editor-admin
-/SECURITY_INSTALL.md @open-resource-discovery/a2a-editor-admin
