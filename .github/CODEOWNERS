@@ -7,3 +7,6 @@
 /website/.npmrc @open-resource-discovery/a2a-editor-admin
 /website/package.json @open-resource-discovery/a2a-editor-admin
 /website/package-lock.json @open-resource-discovery/a2a-editor-admin
+
+# Review the installer policy with the corresponding package owners.
+/.npmrc @open-resource-discovery/a2a-editor-admin
