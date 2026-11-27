@@ -1,5 +1,3 @@
-# PR previews are temporarily paused.
-# Keep the producer and publisher disabled until reactivation is explicitly requested.
 name: PR Preview
 
 on:
