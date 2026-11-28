@@ -3,11 +3,9 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "prestart": "npm --prefix .. run prepare:website-assets",
     "docusaurus": "docusaurus",
-    "start": "docusaurus start",
-    "prebuild": "npm --prefix .. run prepare:website-assets",
-    "build": "docusaurus build",
+    "start": "npm --prefix .. run prepare:website-assets && docusaurus start",
+    "build": "npm --prefix .. run prepare:website-assets && docusaurus build",
     "swizzle": "docusaurus swizzle",
     "deploy": "docusaurus deploy",
     "clear": "docusaurus clear",
@@ -27,7 +25,10 @@
   },
   "overrides": {
     "serialize-javascript": "7.1.4",
-    "webpack-dev-server": "6.1.0"
+    "webpack-dev-server": "6.1.0",
+    "@docusaurus/core": {
+      "tinypool": "2.1.2"
+    }
   },
   "devDependencies": {
     "@docusaurus/module-type-aliases": "3.10.2",
@@ -50,6 +51,19 @@
     ]
   },
   "engines": {
-    "node": "26"
+    "node": ">=26"
+  },
+  "packageManager": "npm@11.20.0",
+  "devEngines": {
+    "packageManager": {
+      "name": "npm",
+      "version": ">=11.20.0",
+      "onFail": "error"
+    }
+  },
+  "allowScripts": {
+    "@parcel/watcher@2.5.6": false,
+    "core-js@3.48.0": false,
+    "fsevents@2.3.3": false
   }
 }

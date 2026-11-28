@@ -1,0 +1,12 @@
+# Review owners for CI and build configuration.
+/.github/ @open-resource-discovery/a2a-editor-admin
+/renovate.json @open-resource-discovery/a2a-editor-admin
+/package.json @open-resource-discovery/a2a-editor-admin
+/package-lock.json @open-resource-discovery/a2a-editor-admin
+/npmrc @open-resource-discovery/a2a-editor-admin
+/website/.npmrc @open-resource-discovery/a2a-editor-admin
+/website/package.json @open-resource-discovery/a2a-editor-admin
+/website/package-lock.json @open-resource-discovery/a2a-editor-admin
+
+# Review the installer policy with the corresponding package owners.
+/.npmrc @open-resource-discovery/a2a-editor-admin
